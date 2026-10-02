@@ -13,6 +13,7 @@ import {
   getProfile,
   isEmailRegistered,
   sendSignInLink,
+  setVerifyPending,
   stashReferralCode,
 } from "@/lib/db/store";
 
@@ -96,8 +97,19 @@ function SignupInner() {
       setStep("form");
       return;
     }
+    // Don't park the user here: notify, remember the pending verification,
+    // and hand them on to the app — the email link completes sign-in.
+    setVerifyPending(email.trim());
     setStep("verify");
   };
+
+  // Notify, then automatically continue to the app (the inbox link finishes
+  // sign-in whenever they click it).
+  useEffect(() => {
+    if (step !== "verify") return;
+    const t = window.setTimeout(() => router.push("/app"), 4500);
+    return () => window.clearTimeout(t);
+  }, [step, router]);
 
   const resendLink = async () => {
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
@@ -152,9 +164,18 @@ function SignupInner() {
               Click the link in your inbox to create your account — then
               you&apos;ll pick a plan.
             </p>
+            <p className="mt-2 text-xs text-gray-500">
+              Taking you to the app now — no need to wait here.
+            </p>
+            <button
+              onClick={() => router.push("/app")}
+              className="mt-5 w-full rounded-xl bg-[#20a957] py-3 font-bold text-white"
+            >
+              Continue to the app →
+            </button>
             <button
               onClick={resendLink}
-              className="mt-5 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300"
+              className="mt-3 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300"
             >
               Resend verification link
             </button>

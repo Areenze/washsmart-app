@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   applyReferralCode,
+  clearVerifyPending,
   createSubscription,
   exchangeCodeForSession,
   getMySubscription,
@@ -41,6 +42,8 @@ function CallbackInner() {
         const code = search.get("code");
         if (!code) throw new Error("Missing verification code.");
         await exchangeCodeForSession(code);
+        // The inbox hop is done — no more pending-verification reminder.
+        clearVerifyPending();
         // Attribute a friend's referral link (stashed on /app/signup before
         // the email hop). No-op when there is none or it is invalid.
         const stashedRef = takeStashedReferralCode();

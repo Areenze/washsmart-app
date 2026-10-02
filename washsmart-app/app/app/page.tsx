@@ -9,8 +9,10 @@ import InstallPrompt from "@/components/install-prompt";
 import ReferralCard from "@/components/referral-card";
 import { EmptyState, SectionTitle } from "@/components/ui";
 import {
+  clearVerifyPending,
   creditDaysLeft,
   fmtDate,
+  getVerifyPending,
   getWashSummary,
   getProfile,
   listApprovedPartners,
@@ -36,10 +38,18 @@ export default function UserHome() {
   const [summary, setSummary] = useState<WashSummary | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [history, setHistory] = useState<WashTransaction[]>([]);
+  const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      setProfile(await getProfile());
+      const p = await getProfile();
+      setProfile(p);
+      // A verification link was sent but not yet clicked: remind, don't trap.
+      if (p) {
+        clearVerifyPending();
+      } else {
+        setVerifyEmail(getVerifyPending());
+      }
       setSummary(await getWashSummary());
       setPartners(await listApprovedPartners());
       setHistory(await listWashHistory());
@@ -57,6 +67,30 @@ export default function UserHome() {
       <p className="text-lg text-gray-300">
         {greeting()} 👋, <span className="font-bold text-[#e9f2ec]">{firstName}</span>
       </p>
+
+      {verifyEmail && !profile && (
+        <div className="mt-4 flex items-start justify-between gap-3 rounded-2xl border border-[#20a957]/40 bg-[#0e2a1c] p-4">
+          <p className="text-sm text-gray-300">
+            ✉️{" "}
+            <span className="font-bold text-[#e9f2ec]">
+              Verification link sent to {verifyEmail}.
+            </span>
+            <br />
+            Click the link in your inbox to finish signing in — then pick
+            your plan.
+          </p>
+          <button
+            onClick={() => {
+              clearVerifyPending();
+              setVerifyEmail(null);
+            }}
+            aria-label="Dismiss"
+            className="text-xl leading-none text-gray-500"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <div className="mt-4">
         <InstallPrompt />

@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getProfile, isEmailRegistered, sendSignInLink } from "@/lib/db/store";
+import { getProfile, isEmailRegistered, sendSignInLink, setVerifyPending } from "@/lib/db/store";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +24,14 @@ export default function LoginPage() {
       if (await getProfile()) router.replace("/app");
     })();
   }, [router]);
+
+  // Notify, then automatically continue to the app (the inbox link finishes
+  // sign-in whenever they click it).
+  useEffect(() => {
+    if (step !== "sent") return;
+    const t = window.setTimeout(() => router.push("/app"), 4500);
+    return () => window.clearTimeout(t);
+  }, [step, router]);
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -46,6 +54,9 @@ export default function LoginPage() {
         setStep("form");
         return;
       }
+      // Don't park the user here: notify, remember the pending sign-in,
+      // and hand them on to the app — the email link completes sign-in.
+      setVerifyPending(email.trim());
       setStep("sent");
     } catch {
       setError("Something went wrong. Please try again.");
@@ -74,6 +85,15 @@ export default function LoginPage() {
               <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
               Click it to log in to WashSMART.
             </p>
+            <p className="mt-2 text-xs text-gray-500">
+              Taking you to the app now — no need to wait here.
+            </p>
+            <button
+              onClick={() => router.push("/app")}
+              className="mt-5 w-full rounded-xl bg-[#20a957] py-3 font-bold text-white"
+            >
+              Continue to the app →
+            </button>
           </div>
         ) : step === "unknown" ? (
           <div className="text-center">

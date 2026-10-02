@@ -1153,3 +1153,37 @@ export function whatsappShareUrl(code: string): string {
     `washing smarter: ${referralLink(code)}`;
   return `https://wa.me/?text=${encodeURIComponent(msg)}`;
 }
+
+/* ---------------- verification pending ----------------
+ * Magic-link auth needs the inbox hop. Instead of parking the user on a
+ * dead-end "check your inbox" screen, we stash the pending email, send them
+ * on to the app, and show a dismissible reminder banner there. */
+
+const VERIFY_PENDING_KEY = "washsmart_verify_pending";
+
+export function setVerifyPending(email: string): void {
+  if (!isBrowser() || !email) return;
+  try {
+    window.localStorage.setItem(VERIFY_PENDING_KEY, email.trim());
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getVerifyPending(): string | null {
+  if (!isBrowser()) return null;
+  try {
+    return window.localStorage.getItem(VERIFY_PENDING_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function clearVerifyPending(): void {
+  if (!isBrowser()) return;
+  try {
+    window.localStorage.removeItem(VERIFY_PENDING_KEY);
+  } catch {
+    /* ignore */
+  }
+}
