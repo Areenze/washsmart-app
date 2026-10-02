@@ -19,8 +19,9 @@ export function Logo({ size = 40 }: { size?: number }) {
 }
 
 export function Brand({ light = false }: { light?: boolean }) {
+  void light; // all headers are dark now; brand always renders light
   return (
-    <span className={`text-xl font-bold ${light ? "text-white" : ""}`}>
+    <span className="text-xl font-bold text-[#e9f2ec]">
       Wash<span className="text-[#20a957]">SMART</span>
     </span>
   );
@@ -36,7 +37,7 @@ export function BackButton({
   return (
     <button
       onClick={onClick}
-      className="mb-5 text-sm font-semibold text-[#168846]"
+      className="mb-5 text-sm font-semibold text-[#48d87c]"
     >
       {label}
     </button>
@@ -62,7 +63,7 @@ export function PrimaryButton({
       onClick={onClick}
       disabled={disabled}
       className={`rounded-xl py-3 font-bold text-white ${
-        disabled ? "cursor-not-allowed bg-gray-300" : "bg-[#20a957]"
+        disabled ? "cursor-not-allowed bg-white/15" : "bg-[#20a957]"
       } ${className}`}
     >
       {children}
@@ -82,7 +83,7 @@ export function OutlineButton({
   return (
     <button
       onClick={onClick}
-      className={`rounded-xl border border-[#20a957] py-3 font-bold text-[#168846] ${className}`}
+      className={`rounded-xl border border-[#20a957] py-3 font-bold text-[#48d87c] ${className}`}
     >
       {children}
     </button>
@@ -97,7 +98,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-3xl bg-white p-6 shadow-sm md:p-7 ${className}`}>
+    <div className={`rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-7 ${className}`}>
       {children}
     </div>
   );
@@ -111,10 +112,10 @@ export function Badge({
   tone?: "green" | "amber" | "gray" | "red";
 }) {
   const tones: Record<string, string> = {
-    green: "bg-green-100 text-green-700",
-    amber: "bg-amber-100 text-amber-800",
-    gray: "bg-gray-100 text-gray-600",
-    red: "bg-red-100 text-red-700",
+    green: "bg-[#20a957]/15 text-green-400",
+    amber: "bg-amber-500/15 text-amber-200",
+    gray: "bg-white/5 text-gray-300",
+    red: "bg-red-500/15 text-red-300",
   };
   return (
     <span
@@ -142,18 +143,18 @@ export function Field({
     <div>
       <label className="mb-1 block text-sm font-semibold">
         {label}
-        {required && <span className="ml-1 text-red-500">*</span>}
+        {required && <span className="ml-1 text-red-400">*</span>}
       </label>
       {children}
-      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
+      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
     </div>
   );
 }
 
 export function inputClass(bad: boolean): string {
-  return `w-full rounded-xl border px-4 py-3 text-sm outline-none focus:border-[#20a957] ${
-    bad ? "border-red-400 bg-red-50" : "border-gray-200"
+  return `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
+    bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
   }`;
 }
 
@@ -184,10 +185,10 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
+    <div className="rounded-3xl bg-[#111a14] p-10 text-center shadow-sm">
       <div className="text-5xl">{icon}</div>
       <h3 className="mt-3 text-xl font-bold">{title}</h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-gray-500">{body}</p>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-gray-400">{body}</p>
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
@@ -206,7 +207,7 @@ export function StepDots({
         <div
           key={i}
           className={`h-2 flex-1 rounded-full ${
-            i < current ? "bg-[#20a957]" : "bg-gray-200"
+            i < current ? "bg-[#20a957]" : "bg-white/10"
           }`}
         />
       ))}

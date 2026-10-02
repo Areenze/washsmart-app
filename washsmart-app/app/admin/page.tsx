@@ -29,26 +29,26 @@ export default function AdminPage() {
     s === "approved" ? "green" : s === "rejected" ? "red" : "amber";
 
   return (
-    <main className="min-h-screen bg-[#f5f8f6] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <span className="text-sm font-semibold text-gray-500">
+          <span className="text-sm font-semibold text-gray-400">
             Admin · Partner Applications
           </span>
         </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-5 py-8">
-        {authorized === null && <p className="text-gray-500">Loading…</p>}
+        {authorized === null && <p className="text-gray-400">Loading…</p>}
         {authorized === false && (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
+          <div className="rounded-3xl bg-[#111a14] p-10 text-center shadow-sm">
             <p className="text-4xl">🔒</p>
             <h1 className="mt-3 text-2xl font-bold">Admin access required</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-400">
               Sign in with a WashSMART staff account to review partner
               applications.
             </p>
@@ -59,7 +59,7 @@ export default function AdminPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold">Partner Applications</h1>
-            <p className="mt-1 text-gray-500">
+            <p className="mt-1 text-gray-400">
               {pendingCount} application{pendingCount === 1 ? "" : "s"} awaiting
               review. Approving adds the car wash to the user app immediately.
             </p>
@@ -72,7 +72,7 @@ export default function AdminPage() {
                 className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
                   filter === f
                     ? "bg-[#20a957] text-white"
-                    : "bg-white text-gray-500"
+                    : "bg-[#111a14] text-gray-400"
                 }`}
               >
                 {f}
@@ -99,16 +99,16 @@ export default function AdminPage() {
               <Link
                 key={a.ref}
                 href={`/admin/applications/${a.ref}`}
-                className="block rounded-2xl bg-white p-5 shadow-sm hover:border hover:border-[#20a957]"
+                className="block rounded-2xl bg-[#111a14] p-5 shadow-sm hover:border hover:border-[#20a957]"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="font-bold">{a.business.carWashName}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-400">
                       {a.business.ownerName} · {a.location.area},{" "}
                       {a.location.lga} · {a.business.phone}
                     </p>
-                    <p className="mt-1 font-mono text-xs text-gray-400">
+                    <p className="mt-1 font-mono text-xs text-gray-500">
                       {a.ref} · submitted {fmtDate(a.submittedAt)}
                     </p>
                   </div>

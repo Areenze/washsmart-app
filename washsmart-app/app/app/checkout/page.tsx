@@ -24,7 +24,7 @@ export default function CheckoutPage() {
     <Suspense
       fallback={
         <section className="mx-auto max-w-xl px-5 py-8">
-          <p className="text-gray-500">Loading…</p>
+          <p className="text-gray-400">Loading…</p>
         </section>
       }
     >
@@ -134,16 +134,16 @@ function CheckoutInner() {
   };
 
   const fieldClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm outline-none focus:border-[#20a957] ${
-      bad ? "border-red-400 bg-red-50" : "border-gray-200"
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
+      bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
-  const Req = () => <span className="ml-1 text-red-500">*</span>;
+  const Req = () => <span className="ml-1 text-red-400">*</span>;
 
   if (!plan) {
     return (
       <section className="mx-auto max-w-xl px-5 py-8">
-        <p className="text-gray-500">Loading…</p>
+        <p className="text-gray-400">Loading…</p>
       </section>
     );
   }
@@ -152,42 +152,42 @@ function CheckoutInner() {
     <section className="mx-auto max-w-xl px-5 py-8">
       <Link
         href="/app/subscription"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
 
       {step === "form" && (
-        <div className="rounded-3xl bg-white p-7 shadow-sm">
+        <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
           <h1 className="text-2xl font-bold">Complete Subscription</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-400">
             {plan.name} Plan · {plan.washes} washes per month
           </p>
           {loggedIn && (
-            <p className="mt-2 rounded-xl bg-[#edf8f1] p-3 text-xs font-semibold text-[#168846]">
+            <p className="mt-2 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
               Buying as {name} ({email}) — this plan will attach to your
               account.
             </p>
           )}
 
-          <div className="mt-6 rounded-2xl bg-[#edf8f1] p-5">
+          <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">{plan.name} Plan (monthly)</span>
+              <span className="text-gray-400">{plan.name} Plan (monthly)</span>
               <span className="font-bold">{plan.price}</span>
             </div>
             <div className="mt-3 flex justify-between border-t border-[#20a957]/20 pt-3 font-bold">
               <span>Total due today</span>
-              <span className="text-[#168846]">{plan.price}</span>
+              <span className="text-[#48d87c]">{plan.price}</span>
             </div>
           </div>
 
-          <p className="mt-6 text-xs font-semibold text-gray-500">
-            All fields marked <span className="text-red-500">*</span> are
+          <p className="mt-6 text-xs font-semibold text-gray-400">
+            All fields marked <span className="text-red-400">*</span> are
             required.
           </p>
 
           {sendError && (
-            <p className="mt-3 rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600">
+            <p className="mt-3 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">
               {sendError}
             </p>
           )}
@@ -206,7 +206,7 @@ function CheckoutInner() {
                 className={fieldClass(touched.name && !nameOk)}
               />
               {touched.name && !nameOk && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1 text-xs text-red-400">
                   Please enter your full name.
                 </p>
               )}
@@ -232,15 +232,15 @@ function CheckoutInner() {
                 className={fieldClass((touched.email && !emailOk) || isDuplicate)}
               />
               {touched.email && !emailOk && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1 text-xs text-red-400">
                   Please enter a valid email address.
                 </p>
               )}
               {checkingEmail && (
-                <p className="mt-1 text-xs text-gray-400">Checking email…</p>
+                <p className="mt-1 text-xs text-gray-500">Checking email…</p>
               )}
               {isDuplicate && (
-                <div className="mt-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
+                <div className="mt-2 rounded-xl bg-amber-500/10 p-3 text-xs text-amber-200">
                   <p className="font-bold">
                     This email address is already registered.
                   </p>
@@ -266,7 +266,7 @@ function CheckoutInner() {
                         setLinkSent(false);
                         setTouched((t) => ({ ...t, email: false }));
                       }}
-                      className="rounded-lg border border-amber-300 px-3 py-1.5 font-bold text-amber-800"
+                      className="rounded-lg border border-amber-300 px-3 py-1.5 font-bold text-amber-200"
                     >
                       Use a different email
                     </button>
@@ -295,7 +295,7 @@ function CheckoutInner() {
                 className={fieldClass(touched.phone && !phoneOk)}
               />
               {touched.phone && !phoneOk && (
-                <p className="mt-1 text-xs text-red-500">
+                <p className="mt-1 text-xs text-red-400">
                   Please enter a valid phone number.
                 </p>
               )}
@@ -308,13 +308,13 @@ function CheckoutInner() {
             className={`mt-6 w-full rounded-xl py-3 font-bold text-white ${
               valid && !isDuplicate
                 ? "bg-[#20a957]"
-                : "cursor-not-allowed bg-gray-300"
+                : "cursor-not-allowed bg-white/15"
             }`}
           >
             Pay {plan.price}
           </button>
 
-          <p className="mt-3 text-center text-xs text-gray-400">
+          <p className="mt-3 text-center text-xs text-gray-500">
             Demo checkout — no real charge is made. We&apos;ll email you a
             sign-in link to verify your address and activate your plan.
           </p>
@@ -322,38 +322,38 @@ function CheckoutInner() {
       )}
 
       {step === "processing" && (
-        <div className="rounded-3xl bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#dff4e6] border-t-[#20a957]" />
+        <div className="rounded-3xl bg-[#111a14] p-12 text-center shadow-sm">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
           <p className="mt-5 font-bold">Processing…</p>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-400">
             Please do not close this page.
           </p>
         </div>
       )}
 
       {step === "verify" && (
-        <div className="rounded-3xl bg-white p-7 shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#edf8f1] text-3xl">
+        <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
             ✉️
           </div>
           <h1 className="mt-4 text-center text-2xl font-bold">
             Verify your email
           </h1>
-          <p className="mt-2 text-center text-sm text-gray-500">
+          <p className="mt-2 text-center text-sm text-gray-400">
             We sent a sign-in link to{" "}
-            <span className="font-bold text-[#10251c]">{email.trim()}</span>.
+            <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
             Click the link in your inbox to verify your address and activate
             your {plan.name} subscription.
           </p>
 
           <button
             onClick={resendLink}
-            className="mt-5 w-full rounded-xl border border-gray-200 py-3 text-sm font-bold text-gray-600"
+            className="mt-5 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300"
           >
             Resend verification link
           </button>
           {resent && (
-            <p className="mt-2 text-center text-xs font-semibold text-[#168846]">
+            <p className="mt-2 text-center text-xs font-semibold text-[#48d87c]">
               A new verification link was sent to {email.trim()}.
             </p>
           )}
@@ -362,7 +362,7 @@ function CheckoutInner() {
               setStep("form");
               setIsDuplicate(false);
             }}
-            className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-400"
+            className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-500"
           >
             Use a different email address
           </button>

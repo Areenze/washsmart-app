@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0f0c;
+  --foreground: #e9f2ec;
 }
 
 @theme inline {
@@ -12,15 +12,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Dark form controls: dark dropdowns, calendars, scrollbars. */
+input,
+select,
+textarea {
+  color-scheme: dark;
 }

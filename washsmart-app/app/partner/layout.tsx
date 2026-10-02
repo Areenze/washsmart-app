@@ -39,8 +39,8 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
 
   if (partner === undefined) {
     return (
-      <main className="min-h-screen bg-[#f4f7f5]">
-        <p className="p-8 text-gray-500">Loading…</p>
+      <main className="min-h-screen bg-[#0a0f0c]">
+        <p className="p-8 text-gray-400">Loading…</p>
       </main>
     );
   }
@@ -51,8 +51,8 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f4f7f5] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <div className="flex min-h-screen flex-col bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/partner/dashboard" className="flex items-center gap-2">
             <Logo />
@@ -61,11 +61,11 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
               <p className="text-sm font-bold">{partner?.name ?? "Partner"}</p>
-              <p className="text-xs text-gray-500">Partner App</p>
+              <p className="text-xs text-gray-400">Partner App</p>
             </div>
             <button
               onClick={logout}
-              className="rounded-full border border-gray-200 px-4 py-2 text-xs font-bold text-gray-500"
+              className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-gray-400"
             >
               Log out
             </button>
@@ -75,7 +75,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
 
       <div className="mx-auto w-full max-w-7xl flex-1 px-5">{children}</div>
 
-      <nav className="sticky bottom-0 border-t bg-white px-2 py-3 md:hidden">
+      <nav className="sticky bottom-0 border-t bg-[#111a14] px-2 py-3 md:hidden">
         <div className="flex justify-around text-[11px]">
           {tabs.map((t) => (
             <Link
@@ -83,8 +83,8 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
               href={t.href}
               className={
                 pathname === t.href
-                  ? "font-bold text-[#168846]"
-                  : "text-gray-500"
+                  ? "font-bold text-[#48d87c]"
+                  : "text-gray-400"
               }
             >
               {t.label}
@@ -93,14 +93,14 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      <nav className="hidden border-t bg-white md:block">
+      <nav className="hidden border-t bg-[#111a14] md:block">
         <div className="mx-auto flex max-w-7xl gap-8 px-5 py-3 text-sm font-semibold">
           {tabs.map((t) => (
             <Link
               key={t.href}
               href={t.href}
               className={
-                pathname === t.href ? "text-[#168846]" : "text-gray-500"
+                pathname === t.href ? "text-[#48d87c]" : "text-gray-400"
               }
             >
               {t.label}

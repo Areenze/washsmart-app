@@ -20,7 +20,7 @@ export default function PartnerDetailPage() {
   if (partner === undefined) {
     return (
       <section className="mx-auto max-w-3xl px-5 py-8">
-        <p className="text-gray-500">Loading…</p>
+        <p className="text-gray-400">Loading…</p>
       </section>
     );
   }
@@ -53,16 +53,16 @@ export default function PartnerDetailPage() {
     <section className="mx-auto max-w-3xl px-5 py-8">
       <Link
         href="/app/partners"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
 
-      <div className="rounded-3xl bg-white p-7 shadow-sm">
+      <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold">{partner.name}</h1>
-            <p className="mt-1 text-gray-500">{partner.location}</p>
+            <p className="mt-1 text-gray-400">{partner.location}</p>
           </div>
           <Badge>Approved</Badge>
         </div>
@@ -70,14 +70,14 @@ export default function PartnerDetailPage() {
         <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           <span>
             ⭐ {partner.rating.toFixed(1)}{" "}
-            <span className="text-gray-400">({partner.reviews} reviews)</span>
+            <span className="text-gray-500">({partner.reviews} reviews)</span>
           </span>
           <span>{partner.distance} away</span>
           <span
             className={
               partner.status === "Open"
-                ? "font-semibold text-green-600"
-                : "text-gray-400"
+                ? "font-semibold text-green-400"
+                : "text-gray-500"
             }
           >
             {partner.status}
@@ -86,31 +86,31 @@ export default function PartnerDetailPage() {
 
         <div className="mt-6 space-y-3 border-t pt-6 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-500">Opening hours</span>
+            <span className="text-gray-400">Opening hours</span>
             <span className="font-semibold">{partner.hours}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Phone</span>
+            <span className="text-gray-400">Phone</span>
             <a
               href={`tel:${partner.phone.replace(/\s/g, "")}`}
-              className="font-semibold text-[#168846]"
+              className="font-semibold text-[#48d87c]"
             >
               {partner.phone}
             </a>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Address</span>
+            <span className="text-gray-400">Address</span>
             <span className="text-right font-semibold">{partner.address}</span>
           </div>
         </div>
 
         <div className="mt-6">
-          <p className="mb-3 text-sm font-bold text-gray-500">SERVICES</p>
+          <p className="mb-3 text-sm font-bold text-gray-400">SERVICES</p>
           <div className="flex flex-wrap gap-2">
             {partner.services.map((s) => (
               <span
                 key={s}
-                className="rounded-full bg-[#edf8f1] px-3 py-1.5 text-sm font-semibold text-[#168846]"
+                className="rounded-full bg-[#20a957]/10 px-3 py-1.5 text-sm font-semibold text-[#48d87c]"
               >
                 {s}
               </span>
@@ -127,7 +127,7 @@ export default function PartnerDetailPage() {
               Scan & Wash Here
             </Link>
           ) : (
-            <span className="flex-1 cursor-not-allowed rounded-xl bg-gray-300 py-3 text-center font-bold text-white">
+            <span className="flex-1 cursor-not-allowed rounded-xl bg-white/15 py-3 text-center font-bold text-white">
               Currently Closed
             </span>
           )}
@@ -135,7 +135,7 @@ export default function PartnerDetailPage() {
             href={mapsUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 rounded-xl border border-[#20a957] py-3 text-center font-bold text-[#168846]"
+            className="flex-1 rounded-xl border border-[#20a957] py-3 text-center font-bold text-[#48d87c]"
           >
             Get Directions
           </a>

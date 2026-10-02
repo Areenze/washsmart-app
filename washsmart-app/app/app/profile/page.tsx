@@ -77,7 +77,7 @@ export default function ProfilePage() {
     <section className="mx-auto max-w-3xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -133,7 +133,7 @@ export default function ProfilePage() {
       <Card className="mt-6">
         <h2 className="text-lg font-bold">My vehicles</h2>
         {vehicles.length === 0 ? (
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-3 text-sm text-gray-400">
             No vehicles added yet.
           </p>
         ) : (
@@ -141,22 +141,22 @@ export default function ProfilePage() {
             {vehicles.map((v) => (
               <div
                 key={v.id}
-                className="flex items-center justify-between rounded-xl bg-[#f5f8f6] px-4 py-3"
+                className="flex items-center justify-between rounded-xl bg-[#0a0f0c] px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#edf8f1] text-xl">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957]/10 text-xl">
                     🚗
                   </div>
                   <div>
                     <p className="font-bold">{v.label}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-400">
                       {[v.plate, v.color].filter(Boolean).join(" · ") || "—"}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => removeVehicle(v.id)}
-                  className="text-sm font-semibold text-red-500"
+                  className="text-sm font-semibold text-red-400"
                 >
                   Remove
                 </button>
@@ -187,7 +187,7 @@ export default function ProfilePage() {
         <button
           onClick={addVehicle}
           disabled={newVehicle.label.trim().length < 2}
-          className="mt-3 rounded-xl border border-[#20a957] px-5 py-2.5 text-sm font-bold text-[#168846] disabled:opacity-40"
+          className="mt-3 rounded-xl border border-[#20a957] px-5 py-2.5 text-sm font-bold text-[#48d87c] disabled:opacity-40"
         >
           + Add Vehicle
         </button>
@@ -198,19 +198,19 @@ export default function ProfilePage() {
         {subscription ? (
           <div className="mt-3 space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-500">Plan</span>
+              <span className="text-gray-400">Plan</span>
               <span className="font-bold">
                 {subscription.planName} · {subscription.price}/month
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Washes remaining</span>
+              <span className="text-gray-400">Washes remaining</span>
               <span className="font-bold">
                 {subscription.washesRemaining} of {subscription.washesTotal}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Renews</span>
+              <span className="text-gray-400">Renews</span>
               <span className="font-bold">{fmtDate(subscription.renewsAt)}</span>
             </div>
             <Link
@@ -222,7 +222,7 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className="mt-3">
-            <p className="text-sm text-gray-500">No active subscription.</p>
+            <p className="text-sm text-gray-400">No active subscription.</p>
             <Link
               href="/app/subscription"
               className="mt-3 block rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"

@@ -24,18 +24,18 @@ export default function EntryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#f5f8f6] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-2">
             <Logo />
             <Brand />
           </div>
           <div className="flex gap-4 text-sm font-semibold">
-            <Link href="/partner" className="text-[#168846]">
+            <Link href="/partner" className="text-[#48d87c]">
               Partner login
             </Link>
-            <Link href="/admin" className="text-gray-500">
+            <Link href="/admin" className="text-gray-400">
               Admin
             </Link>
           </div>
@@ -99,7 +99,7 @@ export default function EntryPage() {
                   className={`h-2 rounded-full transition-all ${
                     i === slide
                       ? "w-8 bg-[#48d87c]"
-                      : "w-2 bg-white/40 hover:bg-white/70"
+                      : "w-2 bg-[#111a14]/40 hover:bg-[#111a14]/70"
                   }`}
                 />
               ))}
@@ -115,23 +115,23 @@ export default function EntryPage() {
             ["✅", "Simple verification", "One QR scan per wash"],
             ["💳", "One subscription", "Plans from ₦8,000/month"],
           ].map(([icon, title, body]) => (
-            <div key={title} className="rounded-2xl bg-white p-6 shadow-sm">
+            <div key={title} className="rounded-2xl bg-[#111a14] p-6 shadow-sm">
               <div className="text-3xl">{icon}</div>
               <p className="mt-2 font-bold">{title}</p>
-              <p className="mt-1 text-sm text-gray-500">{body}</p>
+              <p className="mt-1 text-sm text-gray-400">{body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <footer className="border-t bg-white px-5 py-8 text-center">
-        <p className="text-sm font-semibold text-[#10251c]">
+      <footer className="border-t bg-[#111a14] px-5 py-8 text-center">
+        <p className="text-sm font-semibold text-[#e9f2ec]">
           Own a car wash?{" "}
-          <Link href="/join" className="text-[#168846] underline">
+          <Link href="/join" className="text-[#48d87c] underline">
             Earn today — become a partner &rarr;
           </Link>
         </p>
-        <p className="mt-3 text-xs text-gray-400">
+        <p className="mt-3 text-xs text-gray-500">
           WashSMART · Lagos, Nigeria · Demo build — no real payments are
           processed.
         </p>

@@ -15,7 +15,7 @@ export default function PartnerScanPage() {
     <Suspense
       fallback={
         <section className="py-8">
-          <p className="text-gray-500">Loading…</p>
+          <p className="text-gray-400">Loading…</p>
         </section>
       }
     >
@@ -52,7 +52,7 @@ function PartnerScanInner() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -92,7 +92,7 @@ function PartnerScanInner() {
                 setError("");
               }}
               placeholder="Paste QR token…"
-              className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-mono text-xs text-white placeholder:text-white/40"
+              className="w-full rounded-xl border border-white/20 bg-[#111a14]/10 px-4 py-3 font-mono text-xs text-white placeholder:text-white/40"
             />
             <button
               onClick={() => goVerify(manual)}

@@ -19,7 +19,7 @@ export default function HistoryPage() {
     <section className="mx-auto max-w-3xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -40,24 +40,24 @@ export default function HistoryPage() {
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl bg-[#111a14] shadow-sm">
           {history.map((w) => (
             <div
               key={w.id}
               className="flex items-center justify-between border-b p-5 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#edf8f1] text-xl">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#20a957]/10 text-xl">
                   🚗
                 </div>
                 <div>
                   <p className="font-bold">{w.partnerName}</p>
-                  <p className="text-sm text-gray-500">{w.location}</p>
+                  <p className="text-sm text-gray-400">{w.location}</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-sm font-semibold">{w.type}</p>
-                <p className="text-xs text-gray-400">{fmtDate(w.at)}</p>
+                <p className="text-xs text-gray-500">{fmtDate(w.at)}</p>
               </div>
             </div>
           ))}

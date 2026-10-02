@@ -22,11 +22,11 @@ import type { LedgerEntry, Partner } from "@/lib/db/types";
 function lineStyle(kind: LedgerEntry["kind"]): string {
   switch (kind) {
     case "wash_earning":
-      return "text-[#168846]";
+      return "text-[#48d87c]";
     case "settlement_payout":
-      return "text-gray-700";
+      return "text-gray-200";
     default:
-      return "text-red-600";
+      return "text-red-400";
   }
 }
 
@@ -114,20 +114,20 @@ export default function SettlementStatementPage() {
     };
   }, [partner, ref]);
 
-  if (!ready) return <p className="py-8 text-gray-500">Loading…</p>;
-  if (!partner) return <p className="py-8 text-gray-500">Loading…</p>;
+  if (!ready) return <p className="py-8 text-gray-400">Loading…</p>;
+  if (!partner) return <p className="py-8 text-gray-400">Loading…</p>;
   if (!data) {
     return (
       <section className="mx-auto max-w-3xl py-8">
         <Link
           href="/partner/earnings"
-          className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+          className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
         >
           ← Back to Earnings
         </Link>
         <Card>
           <p className="font-bold">Statement not found</p>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-400">
             This settlement doesn't belong to {partner.name} or doesn't exist.
           </p>
         </Card>
@@ -142,21 +142,21 @@ export default function SettlementStatementPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/earnings"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back to Earnings
       </Link>
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold">Settlement Statement</h1>
-          <p className="mt-1 text-gray-500">{data.title}</p>
-          <p className="text-sm text-gray-400">{data.subtitle}</p>
+          <p className="mt-1 text-gray-400">{data.title}</p>
+          <p className="text-sm text-gray-500">{data.subtitle}</p>
         </div>
         <span
           className={
             data.status === "paid"
-              ? "shrink-0 rounded-full bg-[#e7f6ec] px-3 py-1 text-xs font-bold text-[#168846]"
-              : "shrink-0 rounded-full bg-[#f5b942]/20 px-3 py-1 text-xs font-bold text-[#b07d10]"
+              ? "shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]"
+              : "shrink-0 rounded-full bg-[#f5b942]/20 px-3 py-1 text-xs font-bold text-[#f5b942]"
           }
         >
           {data.status === "paid" ? "✓ Paid" : "⏳ Pending"}
@@ -200,7 +200,7 @@ export default function SettlementStatementPage() {
         </p>
         <p className="text-sm text-white/60">{data.refLine}</p>
         {data.note && (
-          <p className="mt-2 rounded-xl bg-white/10 p-3 text-sm text-white/80">
+          <p className="mt-2 rounded-xl bg-[#111a14]/10 p-3 text-sm text-white/80">
             Note: {data.note}
           </p>
         )}
@@ -208,27 +208,27 @@ export default function SettlementStatementPage() {
 
       <h2 className="mt-8 text-xl font-bold">
         Ledger — audit trail{" "}
-        <span className="text-sm font-normal text-gray-400">
+        <span className="text-sm font-normal text-gray-500">
           ({data.lines.length} lines)
         </span>
       </h2>
       {data.lines.length === 0 ? (
         <Card className="mt-4">
-          <p className="text-gray-500">
+          <p className="text-gray-400">
             No ledger lines yet. Verified washes will appear here as they are
             scanned.
           </p>
         </Card>
       ) : (
-        <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="mt-4 overflow-hidden rounded-2xl bg-[#111a14] shadow-sm">
           {otherLines.map((l) => (
             <div
               key={l.id}
-              className="flex items-center justify-between gap-3 border-b bg-[#f7faf8] p-4"
+              className="flex items-center justify-between gap-3 border-b bg-[#0a0f0c] p-4"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold">{l.label}</p>
-                <p className="font-mono text-xs text-gray-400">{l.ref}</p>
+                <p className="font-mono text-xs text-gray-500">{l.ref}</p>
               </div>
               <p className={`shrink-0 font-bold ${lineStyle(l.kind)}`}>
                 {fmtLine(l)}
@@ -242,7 +242,7 @@ export default function SettlementStatementPage() {
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{l.label}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500">
                   {fmtDate(l.at)} ·{" "}
                   <span className="font-mono">{l.ref.slice(0, 18)}</span>
                 </p>
@@ -255,7 +255,7 @@ export default function SettlementStatementPage() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-gray-400">
+      <p className="mt-6 text-xs text-gray-500">
         Every naira is traceable: wash earnings (+) accrue per verified QR
         redemption, WashSMART commission and adjustments (−) are applied at
         settlement, and the payout (−) zeroes the cycle.

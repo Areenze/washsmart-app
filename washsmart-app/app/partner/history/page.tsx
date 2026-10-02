@@ -27,12 +27,12 @@ export default function PartnerHistoryPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
       <h1 className="text-3xl font-bold">Wash History</h1>
-      <p className="mt-2 text-gray-500">
+      <p className="mt-2 text-gray-400">
         Every subscriber wash verified at your car wash.
       </p>
 
@@ -53,7 +53,7 @@ export default function PartnerHistoryPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-2xl bg-[#111a14] shadow-sm">
           {txs.map((t) => (
             <div
               key={t.id}
@@ -61,13 +61,13 @@ export default function PartnerHistoryPage() {
             >
               <div>
                 <p className="font-bold">{t.subscriberName}</p>
-                <p className="text-sm text-gray-500">{t.type}</p>
+                <p className="text-sm text-gray-400">{t.type}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-[#168846]">
+                <p className="text-sm font-bold text-[#48d87c]">
                   {fmtNaira(t.payout)}
                 </p>
-                <p className="text-xs text-gray-400">{fmtDate(t.at)}</p>
+                <p className="text-xs text-gray-500">{fmtDate(t.at)}</p>
               </div>
             </div>
           ))}

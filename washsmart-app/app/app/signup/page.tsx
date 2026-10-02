@@ -97,42 +97,42 @@ export default function SignupPage() {
   };
 
   const fieldClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm outline-none focus:border-[#20a957] ${
-      bad ? "border-red-400 bg-red-50" : "border-gray-200"
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
+      bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
-  const Req = () => <span className="ml-1 text-red-500">*</span>;
+  const Req = () => <span className="ml-1 text-red-400">*</span>;
 
   return (
     <section className="mx-auto max-w-md px-5 py-12">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
 
-      <div className="rounded-3xl bg-white p-7 shadow-sm">
+      <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
         {step === "verify" ? (
           <div className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#edf8f1] text-3xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
               ✉️
             </div>
             <h1 className="mt-4 text-2xl font-bold">Verify your email</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-400">
               We sent a verification link to{" "}
-              <span className="font-bold text-[#10251c]">{email.trim()}</span>.
+              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
               Click the link in your inbox to create your account — then
               you&apos;ll pick a plan.
             </p>
             <button
               onClick={resendLink}
-              className="mt-5 w-full rounded-xl border border-gray-200 py-3 text-sm font-bold text-gray-600"
+              className="mt-5 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300"
             >
               Resend verification link
             </button>
             {resent && (
-              <p className="mt-2 text-center text-xs font-semibold text-[#168846]">
+              <p className="mt-2 text-center text-xs font-semibold text-[#48d87c]">
                 A new verification link was sent to {email.trim()}.
               </p>
             )}
@@ -141,29 +141,29 @@ export default function SignupPage() {
                 setStep("form");
                 setIsDuplicate(false);
               }}
-              className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-400"
+              className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-500"
             >
               Use a different email address
             </button>
           </div>
         ) : step === "processing" ? (
           <div className="p-8 text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#dff4e6] border-t-[#20a957]" />
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
             <p className="mt-5 font-bold">Creating your account…</p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-400">
               Please do not close this page.
             </p>
           </div>
         ) : (
           <>
             <h1 className="text-2xl font-bold">Create your account</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-400">
               One account for every WashSMART partner car wash. You&apos;ll
               pick a plan after verifying your email.
             </p>
 
             {sendError && (
-              <p className="mt-4 rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600">
+              <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">
                 {sendError}
               </p>
             )}
@@ -182,7 +182,7 @@ export default function SignupPage() {
                   className={fieldClass(touched.name && !nameOk)}
                 />
                 {touched.name && !nameOk && (
-                  <p className="mt-1 text-xs text-red-500">
+                  <p className="mt-1 text-xs text-red-400">
                     Please enter your full name.
                   </p>
                 )}
@@ -210,15 +210,15 @@ export default function SignupPage() {
                   )}
                 />
                 {touched.email && !emailOk && (
-                  <p className="mt-1 text-xs text-red-500">
+                  <p className="mt-1 text-xs text-red-400">
                     Please enter a valid email address.
                   </p>
                 )}
                 {checkingEmail && (
-                  <p className="mt-1 text-xs text-gray-400">Checking email…</p>
+                  <p className="mt-1 text-xs text-gray-500">Checking email…</p>
                 )}
                 {isDuplicate && (
-                  <div className="mt-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
+                  <div className="mt-2 rounded-xl bg-amber-500/10 p-3 text-xs text-amber-200">
                     <p className="font-bold">
                       This email address is already registered.
                     </p>
@@ -263,7 +263,7 @@ export default function SignupPage() {
                   className={fieldClass(touched.phone && !phoneOk)}
                 />
                 {touched.phone && !phoneOk && (
-                  <p className="mt-1 text-xs text-red-500">
+                  <p className="mt-1 text-xs text-red-400">
                     Please enter a valid phone number.
                   </p>
                 )}
@@ -275,16 +275,16 @@ export default function SignupPage() {
                 className={`w-full rounded-xl py-3 font-bold text-white ${
                   valid && !isDuplicate
                     ? "bg-[#20a957]"
-                    : "cursor-not-allowed bg-gray-300"
+                    : "cursor-not-allowed bg-white/15"
                 }`}
               >
                 Create account
               </button>
             </form>
 
-            <p className="mt-5 text-center text-sm text-gray-500">
+            <p className="mt-5 text-center text-sm text-gray-400">
               Already a subscriber?{" "}
-              <Link href="/app/login" className="font-bold text-[#168846]">
+              <Link href="/app/login" className="font-bold text-[#48d87c]">
                 Log in →
               </Link>
             </p>

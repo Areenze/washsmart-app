@@ -61,14 +61,14 @@ export default function PartnerLogin() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f4f7f5] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <span className="text-sm font-semibold text-gray-500">
+          <span className="text-sm font-semibold text-gray-400">
             Partner App
           </span>
         </div>
@@ -85,7 +85,7 @@ export default function PartnerLogin() {
 
         <form
           onSubmit={submit}
-          className="mt-6 rounded-3xl bg-white p-6 shadow-sm md:p-8"
+          className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8"
         >
           <label className="block text-sm font-bold" htmlFor="partner-id">
             Partner ID
@@ -97,9 +97,9 @@ export default function PartnerLogin() {
             placeholder="e.g. WS-2026-0001"
             autoComplete="username"
             autoCapitalize="characters"
-            className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
+            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
           />
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-gray-500">
             Your Partner ID was issued when your application was approved.
           </p>
 
@@ -114,19 +114,19 @@ export default function PartnerLogin() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your partner password"
               autoComplete="current-password"
-              className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
+              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
             />
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#168846]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
           </div>
 
           {error && (
-            <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700">
+            <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm font-semibold text-red-300">
               {error}
             </p>
           )}
@@ -140,11 +140,11 @@ export default function PartnerLogin() {
           </button>
         </form>
 
-        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#bfe3cd] bg-[#f0faf3] p-6">
-          <p className="text-sm font-bold text-[#0d5c33]">
+        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
+          <p className="text-sm font-bold text-[#48d87c]">
             🔑 Approved partners — tap to fill your Partner ID
           </p>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-400">
             Your password was issued privately when your application was
             approved. Contact WashSMART if you need a reset.
           </p>
@@ -154,16 +154,16 @@ export default function PartnerLogin() {
                 key={p.id}
                 type="button"
                 onClick={() => fill(p)}
-                className="w-full rounded-2xl bg-white p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
+                className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate font-bold">{p.name}</p>
-                    <p className="mt-0.5 font-mono text-xs text-gray-500">
+                    <p className="mt-0.5 font-mono text-xs text-gray-400">
                       ID: {p.partnerId}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-bold text-[#168846]">
+                  <span className="shrink-0 text-xs font-bold text-[#48d87c]">
                     Fill →
                   </span>
                 </div>
@@ -172,9 +172,9 @@ export default function PartnerLogin() {
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
+        <p className="mt-6 text-center text-xs text-gray-500">
           Not a partner yet?{" "}
-          <Link href="/join" className="font-bold text-[#168846]">
+          <Link href="/join" className="font-bold text-[#48d87c]">
             Apply here
           </Link>
         </p>

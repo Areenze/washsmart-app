@@ -57,33 +57,33 @@ export default function LoginPage() {
     <section className="mx-auto max-w-md px-5 py-12">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
 
-      <div className="rounded-3xl bg-white p-7 shadow-sm">
+      <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
         {step === "sent" ? (
           <div className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#edf8f1] text-3xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
               ✉️
             </div>
             <h1 className="mt-4 text-2xl font-bold">Check your inbox</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-400">
               We sent a sign-in link to{" "}
-              <span className="font-bold text-[#10251c]">{email.trim()}</span>.
+              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
               Click it to log in to WashSMART.
             </p>
           </div>
         ) : step === "unknown" ? (
           <div className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 text-3xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-3xl">
               🔍
             </div>
             <h1 className="mt-4 text-2xl font-bold">No account found</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-400">
               We couldn&apos;t find a WashSMART account for{" "}
-              <span className="font-bold text-[#10251c]">{email.trim()}</span>.
+              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
             </p>
             <Link
               href="/app/signup"
@@ -96,7 +96,7 @@ export default function LoginPage() {
                 setStep("form");
                 setTouched(false);
               }}
-              className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-400"
+              className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-500"
             >
               Try a different email address
             </button>
@@ -104,13 +104,13 @@ export default function LoginPage() {
         ) : (
           <>
             <h1 className="text-2xl font-bold">Welcome back</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-400">
               Log in with your email — we&apos;ll send you a secure sign-in
               link. No password needed.
             </p>
 
             {error && (
-              <p className="mt-3 rounded-xl bg-red-50 p-3 text-xs font-semibold text-red-600">
+              <p className="mt-3 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">
                 {error}
               </p>
             )}
@@ -127,14 +127,14 @@ export default function LoginPage() {
                   placeholder="e.g. adaeze@example.com"
                   inputMode="email"
                   autoComplete="email"
-                  className={`w-full rounded-xl border px-4 py-3 text-sm outline-none focus:border-[#20a957] ${
+                  className={`w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
                     touched && !emailOk
-                      ? "border-red-400 bg-red-50"
-                      : "border-gray-200"
+                      ? "border-red-400 bg-red-500/10"
+                      : "border-white/10 bg-white/5"
                   }`}
                 />
                 {touched && !emailOk && (
-                  <p className="mt-1 text-xs text-red-500">
+                  <p className="mt-1 text-xs text-red-400">
                     Please enter a valid email address.
                   </p>
                 )}
@@ -144,7 +144,7 @@ export default function LoginPage() {
                 disabled={step === "checking" || (touched && !emailOk)}
                 className={`w-full rounded-xl py-3 font-bold text-white ${
                   step === "checking"
-                    ? "cursor-wait bg-gray-300"
+                    ? "cursor-wait bg-white/15"
                     : "bg-[#20a957]"
                 }`}
               >
@@ -152,11 +152,11 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <p className="mt-5 text-center text-sm text-gray-500">
+            <p className="mt-5 text-center text-sm text-gray-400">
               New to WashSMART?{" "}
               <Link
                 href="/app/signup"
-                className="font-bold text-[#168846]"
+                className="font-bold text-[#48d87c]"
               >
                 Create an account →
               </Link>

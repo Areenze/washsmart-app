@@ -106,19 +106,19 @@ export default function EarningsPage() {
   }, []);
 
   if (!partner || !pending) {
-    return <p className="py-8 text-gray-500">Loading…</p>;
+    return <p className="py-8 text-gray-400">Loading…</p>;
   }
 
   return (
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
       <h1 className="text-3xl font-bold">Earnings &amp; Settlements</h1>
-      <p className="mt-2 text-gray-500">
+      <p className="mt-2 text-gray-400">
         Verified washes accrue on your ledger and pay out in a monthly
         settlement — never per wash.
       </p>
@@ -191,7 +191,7 @@ export default function EarningsPage() {
       <h2 className="mt-10 text-xl font-bold">Past settlements</h2>
       {past.length === 0 ? (
         <Card className="mt-4">
-          <p className="text-gray-500">
+          <p className="text-gray-400">
             No closed settlements yet. Your first payout will appear here after
             the monthly cycle runs.
           </p>
@@ -202,43 +202,43 @@ export default function EarningsPage() {
             <Card key={s.id}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold text-[#168846]">
+                  <p className="text-sm font-bold text-[#48d87c]">
                     ✓ Settlement Paid
                   </p>
                   <p className="mt-1 text-3xl font-bold">
                     {fmtNaira(s.payable)}
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-400">
                     Paid to {s.bankName} •••• {s.bankLast4}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-400">
                     Reference:{" "}
-                    <span className="font-mono font-bold text-gray-700">
+                    <span className="font-mono font-bold text-gray-200">
                       {s.id}
                     </span>
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[#e7f6ec] px-3 py-1 text-xs font-bold text-[#168846]">
+                <span className="shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]">
                   Paid
                 </span>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-2 border-t pt-4 text-center">
                 <div>
-                  <p className="text-xs text-gray-400">Period</p>
+                  <p className="text-xs text-gray-500">Period</p>
                   <p className="text-sm font-bold">{s.period}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Washes</p>
+                  <p className="text-xs text-gray-500">Washes</p>
                   <p className="text-sm font-bold">{s.washes}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Paid on</p>
+                  <p className="text-xs text-gray-500">Paid on</p>
                   <p className="text-sm font-bold">{fmtDate(s.paidAt!)}</p>
                 </div>
               </div>
               <Link
                 href={`/partner/settlements/${s.id}`}
-                className="mt-4 block rounded-xl border-2 border-[#168846] py-2.5 text-center text-sm font-bold text-[#168846]"
+                className="mt-4 block rounded-xl border-2 border-[#20a957]/50 py-2.5 text-center text-sm font-bold text-[#48d87c]"
               >
                 View Statement
               </Link>
@@ -251,12 +251,12 @@ export default function EarningsPage() {
       <Card className="mt-6">
         <div className="grid grid-cols-2 gap-4 text-center">
           <div>
-            <p className="text-xs text-gray-400">LIFETIME SETTLED WASHES</p>
+            <p className="text-xs text-gray-500">LIFETIME SETTLED WASHES</p>
             <p className="mt-1 text-2xl font-bold">{lifetime.washes}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-400">LIFETIME PAID OUT</p>
-            <p className="mt-1 text-2xl font-bold text-[#168846]">
+            <p className="text-xs text-gray-500">LIFETIME PAID OUT</p>
+            <p className="mt-1 text-2xl font-bold text-[#48d87c]">
               {fmtNaira(lifetime.paid)}
             </p>
           </div>
@@ -266,33 +266,33 @@ export default function EarningsPage() {
       {/* How the money flows */}
       <h2 className="mt-10 text-xl font-bold">How WashSMART pays you</h2>
       <Card className="mt-4">
-        <ol className="relative space-y-6 border-l-2 border-[#bfe3cd] pl-6">
+        <ol className="relative space-y-6 border-l-2 border-[#20a957]/30 pl-6">
           {MONEY_FLOW.map((step, i) => (
             <li key={step.title} className="relative">
               <span className="absolute -left-[34px] flex h-6 w-6 items-center justify-center rounded-full bg-[#168846] text-xs font-bold text-white">
                 {i + 1}
               </span>
               <p className="font-bold">{step.title}</p>
-              <p className="mt-0.5 text-sm text-gray-500">{step.body}</p>
+              <p className="mt-0.5 text-sm text-gray-400">{step.body}</p>
             </li>
           ))}
         </ol>
       </Card>
 
-      <Card className="mt-4 bg-[#f0faf3]">
-        <p className="font-bold text-[#0d5c33]">
+      <Card className="mt-4 bg-[#20a957]/10">
+        <p className="font-bold text-[#48d87c]">
           Why monthly settlements — not instant payout
         </p>
         <ul className="mt-3 space-y-2">
           {WHY_MONTHLY.map((w) => (
-            <li key={w} className="flex gap-2 text-sm text-gray-600">
-              <span className="text-[#168846]">✓</span> {w}
+            <li key={w} className="flex gap-2 text-sm text-gray-300">
+              <span className="text-[#48d87c]">✓</span> {w}
             </li>
           ))}
         </ul>
       </Card>
 
-      <p className="mt-6 text-xs text-gray-400">
+      <p className="mt-6 text-xs text-gray-500">
         Demo figures — production settlements are calculated by WashSMART and
         paid via Paystack transfers to your registered bank account.
       </p>

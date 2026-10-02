@@ -18,7 +18,7 @@ export default function AuthCallbackPage() {
     <Suspense
       fallback={
         <section className="mx-auto max-w-xl px-5 py-16 text-center">
-          <p className="text-gray-500">Verifying…</p>
+          <p className="text-gray-400">Verifying…</p>
         </section>
       }
     >
@@ -66,7 +66,7 @@ function CallbackInner() {
     return (
       <section className="mx-auto max-w-xl px-5 py-16 text-center">
         <h1 className="text-2xl font-bold">Verification didn&apos;t work</h1>
-        <p className="mt-3 text-sm text-gray-500">{error}</p>
+        <p className="mt-3 text-sm text-gray-400">{error}</p>
         <Link
           href="/app/subscription"
           className="mt-6 inline-block rounded-xl bg-[#20a957] px-6 py-3 font-bold text-white"
@@ -79,9 +79,9 @@ function CallbackInner() {
 
   return (
     <section className="mx-auto max-w-xl px-5 py-16 text-center">
-      <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#dff4e6] border-t-[#20a957]" />
+      <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
       <p className="mt-5 font-bold">Verifying your email…</p>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-gray-400">
         {mode === "signup"
           ? "Setting up your account, one moment."
           : mode === "login"

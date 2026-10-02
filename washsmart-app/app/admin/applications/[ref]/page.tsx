@@ -53,14 +53,14 @@ export default function ApplicationDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f8f6] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <Link href="/admin" className="text-sm font-semibold text-[#168846]">
+          <Link href="/admin" className="text-sm font-semibold text-[#48d87c]">
             ← All applications
           </Link>
         </div>
@@ -68,15 +68,15 @@ export default function ApplicationDetailPage() {
 
       <section className="mx-auto max-w-3xl px-5 py-8">
         {authorized === false && (
-          <div className="rounded-3xl bg-white p-10 text-center shadow-sm">
+          <div className="rounded-3xl bg-[#111a14] p-10 text-center shadow-sm">
             <p className="text-4xl">🔒</p>
             <h1 className="mt-3 text-2xl font-bold">Admin access required</h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-400">
               Sign in with a WashSMART staff account to review this application.
             </p>
           </div>
         )}
-        {authorized !== false && app === undefined && <p className="text-gray-500">Loading…</p>}
+        {authorized !== false && app === undefined && <p className="text-gray-400">Loading…</p>}
 
         {authorized !== false && app === null && (
           <EmptyState
@@ -98,11 +98,11 @@ export default function ApplicationDetailPage() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="font-mono text-sm text-gray-400">{app.ref}</p>
+                <p className="font-mono text-sm text-gray-500">{app.ref}</p>
                 <h1 className="mt-1 text-3xl font-bold">
                   {app.business.carWashName}
                 </h1>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-400">
                   Submitted {fmtDate(app.submittedAt)}
                 </p>
               </div>
@@ -157,7 +157,7 @@ export default function ApplicationDetailPage() {
                   .map((s) => (
                     <span
                       key={s}
-                      className="rounded-full bg-[#edf8f1] px-3 py-1.5 text-sm font-semibold text-[#168846]"
+                      className="rounded-full bg-[#20a957]/10 px-3 py-1.5 text-sm font-semibold text-[#48d87c]"
                     >
                       {s}
                     </span>
@@ -165,9 +165,9 @@ export default function ApplicationDetailPage() {
               </div>
               <Section h="Verification photos" />
               {app.photos.business.length + app.photos.location.length === 0 ? (
-                <p className="text-sm text-gray-500">No photos attached.</p>
+                <p className="text-sm text-gray-400">No photos attached.</p>
               ) : (
-                <ul className="space-y-1 text-sm text-gray-600">
+                <ul className="space-y-1 text-sm text-gray-300">
                   {app.photos.business.map((n) => (
                     <li key={n}>🏪 {n}</li>
                   ))}
@@ -183,7 +183,7 @@ export default function ApplicationDetailPage() {
                 <button
                   onClick={() => decide("reject")}
                   disabled={acting}
-                  className="flex-1 rounded-xl border border-red-300 py-3 font-bold text-red-600 disabled:opacity-50"
+                  className="flex-1 rounded-xl border border-red-300 py-3 font-bold text-red-400 disabled:opacity-50"
                 >
                   {acting ? "Working…" : "Reject"}
                 </button>
@@ -196,15 +196,15 @@ export default function ApplicationDetailPage() {
                 </button>
               </div>
             ) : (
-              <p className="mt-6 rounded-2xl bg-white p-4 text-center text-sm text-gray-500 shadow-sm">
+              <p className="mt-6 rounded-2xl bg-[#111a14] p-4 text-center text-sm text-gray-400 shadow-sm">
                 This application was {app.status}.{" "}
-                <Link href="/admin" className="font-bold text-[#168846]">
+                <Link href="/admin" className="font-bold text-[#48d87c]">
                   Back to queue
                 </Link>
               </p>
             )}
             {app.status === "pending" && (
-              <p className="mt-3 text-center text-xs text-gray-400">
+              <p className="mt-3 text-center text-xs text-gray-500">
                 Approving publishes this car wash to the user app immediately.
               </p>
             )}
@@ -216,15 +216,15 @@ export default function ApplicationDetailPage() {
 }
 
 function Section({ h }: { h: string }) {
-  return <h2 className="mb-3 mt-6 text-sm font-bold text-gray-500 first:mt-0">{h.toUpperCase()}</h2>;
+  return <h2 className="mb-3 mt-6 text-sm font-bold text-gray-400 first:mt-0">{h.toUpperCase()}</h2>;
 }
 
 function Rows({ rows }: { rows: [string, string][] }) {
   return (
-    <div className="divide-y rounded-2xl bg-[#f5f8f6]">
+    <div className="divide-y divide-white/10 rounded-2xl bg-[#0a0f0c]">
       {rows.map(([k, v]) => (
         <div key={k} className="flex justify-between gap-4 px-4 py-2.5 text-sm">
-          <span className="text-gray-500">{k}</span>
+          <span className="text-gray-400">{k}</span>
           <span className="text-right font-semibold">{v}</span>
         </div>
       ))}

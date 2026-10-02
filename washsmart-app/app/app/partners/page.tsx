@@ -20,21 +20,21 @@ export default function PartnersPage() {
     <section className="mx-auto max-w-7xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
       <h1 className="text-3xl font-bold">Find a WashSMART Partner</h1>
-      <p className="mt-2 text-gray-500">
+      <p className="mt-2 text-gray-400">
         Choose an approved car-wash center near you.
       </p>
 
-      <div className="mt-6 rounded-3xl bg-[#dff4e6] p-6">
-        <div className="flex h-56 items-center justify-center rounded-2xl bg-[#b9dfc5] md:h-72">
+      <div className="mt-6 rounded-3xl bg-[#20a957]/15 p-6">
+        <div className="flex h-56 items-center justify-center rounded-2xl bg-[#152419] md:h-72">
           <div className="text-center">
             <div className="text-5xl">📍</div>
             <p className="mt-2 font-bold">WashSMART Partner Map</p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               {partners.length} approved partner{partners.length === 1 ? "" : "s"} near you ·
               live Google Maps integration in production.
             </p>

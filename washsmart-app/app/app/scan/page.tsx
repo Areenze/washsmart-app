@@ -25,7 +25,7 @@ export default function ScanPage() {
     <Suspense
       fallback={
         <section className="mx-auto max-w-xl px-5 py-8">
-          <p className="text-gray-500">Loading…</p>
+          <p className="text-gray-400">Loading…</p>
         </section>
       }
     >
@@ -102,15 +102,15 @@ function ScanInner() {
     <section className="mx-auto max-w-xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
 
       {!partnerId && (
-        <div className="rounded-3xl bg-white p-7 shadow-sm">
+        <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
           <h1 className="text-2xl font-bold">Choose a partner</h1>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-400">
             Pick the car wash you're visiting to generate your wash QR.
           </p>
           <div className="mt-5 space-y-2">
@@ -120,10 +120,10 @@ function ScanInner() {
                 <Link
                   key={p.id}
                   href={`/app/scan?partner=${p.id}`}
-                  className="block rounded-xl border border-gray-200 px-4 py-3 font-semibold hover:border-[#20a957]"
+                  className="block rounded-xl border border-white/10 px-4 py-3 font-semibold hover:border-[#20a957]"
                 >
                   {p.name}
-                  <span className="ml-2 text-sm font-normal text-gray-400">
+                  <span className="ml-2 text-sm font-normal text-gray-500">
                     {p.location}
                   </span>
                 </Link>
@@ -175,12 +175,12 @@ function ScanInner() {
                   <QRCode text={token} size={224} />
                 ) : (
                   <div className="flex h-56 w-56 items-center justify-center">
-                    <p className="text-gray-400">Loading…</p>
+                    <p className="text-gray-500">Loading…</p>
                   </div>
                 )}
               </div>
 
-              <div className="mx-auto mt-4 flex max-w-xs items-center justify-between rounded-full bg-white/10 px-4 py-2 text-sm">
+              <div className="mx-auto mt-4 flex max-w-xs items-center justify-between rounded-full bg-[#111a14]/10 px-4 py-2 text-sm">
                 <span className="text-white/70">Refreshes in</span>
                 <span className="font-mono font-bold text-[#65e28e]">
                   0:{String(remainingSec).padStart(2, "0")}
@@ -197,7 +197,7 @@ function ScanInner() {
                 remaining
               </p>
 
-              <div className="mt-5 rounded-2xl bg-white/5 p-4 text-left">
+              <div className="mt-5 rounded-2xl bg-[#111a14]/5 p-4 text-left">
                 <p className="text-xs font-semibold text-white/50">
                   Demo token (for the partner scanner)
                 </p>

@@ -31,14 +31,14 @@ export default function PartnerDashboard() {
   }, []);
 
   if (!partner || !stats) {
-    return <p className="py-8 text-gray-500">Loading…</p>;
+    return <p className="py-8 text-gray-400">Loading…</p>;
   }
 
   return (
     <section className="py-8">
-      <p className="text-sm text-gray-500">APPROVED PARTNER</p>
+      <p className="text-sm text-gray-400">APPROVED PARTNER</p>
       <h1 className="mt-1 text-3xl font-bold">Welcome, {partner.name}</h1>
-      <p className="text-gray-500">{partner.location}</p>
+      <p className="text-gray-400">{partner.location}</p>
 
       <div className="mt-6 rounded-3xl bg-[#063c28] p-6 text-white md:p-8">
         <div className="grid gap-6 sm:grid-cols-3">
@@ -69,32 +69,32 @@ export default function PartnerDashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white p-6">
+        <div className="rounded-2xl bg-[#111a14] p-6">
           <h2 className="text-xl font-bold">All-time totals</h2>
           <div className="mt-4 grid grid-cols-2 gap-4">
-            <div className="rounded-xl bg-[#f5f8f6] p-4">
-              <p className="text-sm text-gray-500">Total washes</p>
+            <div className="rounded-xl bg-[#0a0f0c] p-4">
+              <p className="text-sm text-gray-400">Total washes</p>
               <p className="mt-1 text-2xl font-bold">{stats.totalWashes}</p>
             </div>
-            <div className="rounded-xl bg-[#f5f8f6] p-4">
-              <p className="text-sm text-gray-500">Total earnings</p>
-              <p className="mt-1 text-2xl font-bold text-[#168846]">
+            <div className="rounded-xl bg-[#0a0f0c] p-4">
+              <p className="text-sm text-gray-400">Total earnings</p>
+              <p className="mt-1 text-2xl font-bold text-[#48d87c]">
                 {fmtNaira(stats.totalEarnings)}
               </p>
             </div>
           </div>
           <Link
             href="/partner/earnings"
-            className="mt-4 inline-block text-sm font-semibold text-[#168846]"
+            className="mt-4 inline-block text-sm font-semibold text-[#48d87c]"
           >
             View earnings →
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-white p-6">
+        <div className="rounded-2xl bg-[#111a14] p-6">
           <h2 className="text-xl font-bold">Recent activity</h2>
           {recent.length === 0 ? (
-            <p className="mt-3 text-sm text-gray-500">
+            <p className="mt-3 text-sm text-gray-400">
               No washes recorded yet — scan your first customer QR above.
             </p>
           ) : (
@@ -109,9 +109,9 @@ export default function PartnerDashboard() {
                     <p className="text-sm font-semibold">
                       Wash confirmed — {t.subscriberName}
                     </p>
-                    <p className="text-xs text-gray-400">{fmtDate(t.at)}</p>
+                    <p className="text-xs text-gray-500">{fmtDate(t.at)}</p>
                   </div>
-                  <span className="text-sm font-bold text-[#168846]">
+                  <span className="text-sm font-bold text-[#48d87c]">
                     {fmtNaira(t.payout)}
                   </span>
                 </div>

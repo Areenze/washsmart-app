@@ -27,7 +27,7 @@ export default function SubscriptionPage() {
     <section className="mx-auto max-w-6xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -36,11 +36,11 @@ export default function SubscriptionPage() {
         <Card className="mb-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="text-sm text-gray-500">Current plan</p>
+              <p className="text-sm text-gray-400">Current plan</p>
               <h2 className="mt-1 text-2xl font-bold">
                 {subscription.planName} · {subscription.price}/month
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-400">
                 {subscription.washesRemaining} of {subscription.washesTotal}{" "}
                 washes remaining · renews {fmtDate(subscription.renewsAt)}
               </p>
@@ -54,7 +54,7 @@ export default function SubscriptionPage() {
         <h1 className="text-4xl font-bold">
           {subscription ? "Change Your Plan" : "Choose Your Subscription"}
         </h1>
-        <p className="mt-3 text-gray-500">Simple plans for every lifestyle.</p>
+        <p className="mt-3 text-gray-400">Simple plans for every lifestyle.</p>
       </div>
 
       <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -63,10 +63,10 @@ export default function SubscriptionPage() {
           return (
             <div
               key={plan.id}
-              className={`relative rounded-3xl bg-white p-7 shadow-sm ${
+              className={`relative rounded-3xl bg-[#111a14] p-7 shadow-sm ${
                 plan.popular
                   ? "border-2 border-[#20a957]"
-                  : "border border-gray-100"
+                  : "border border-white/10"
               }`}
             >
               {plan.popular && (
@@ -77,7 +77,7 @@ export default function SubscriptionPage() {
               <h2 className="text-xl font-bold">{plan.name}</h2>
               <div className="mt-5 text-4xl font-bold">
                 {plan.price}
-                <span className="text-sm font-normal text-gray-500">/month</span>
+                <span className="text-sm font-normal text-gray-400">/month</span>
               </div>
               <div className="mt-6 space-y-3 text-sm">
                 <p>✓ {plan.washes} washes per month</p>
@@ -86,7 +86,7 @@ export default function SubscriptionPage() {
                 <p>✓ Subscriber verification</p>
               </div>
               {isCurrent ? (
-                <div className="mt-8 w-full rounded-xl bg-[#edf8f1] py-3 text-center font-bold text-[#168846]">
+                <div className="mt-8 w-full rounded-xl bg-[#20a957]/10 py-3 text-center font-bold text-[#48d87c]">
                   Current Plan
                 </div>
               ) : (
@@ -102,7 +102,7 @@ export default function SubscriptionPage() {
         })}
       </div>
 
-      <p className="mt-6 text-center text-xs text-gray-400">
+      <p className="mt-6 text-center text-xs text-gray-500">
         Demo checkout — no real charge is made. Paystack integration in production.
       </p>
     </section>

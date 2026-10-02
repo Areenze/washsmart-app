@@ -41,7 +41,7 @@ export default function PartnerProfilePage() {
     })();
   }, []);
 
-  if (!partner) return <p className="py-8 text-gray-500">Loading…</p>;
+  if (!partner) return <p className="py-8 text-gray-400">Loading…</p>;
 
   const toggleOpen = async () => {
     const next = partner.status === "Open" ? "Closed" : "Open";
@@ -67,7 +67,7 @@ export default function PartnerProfilePage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -82,29 +82,29 @@ export default function PartnerProfilePage() {
         <h2 className="text-lg font-bold">{partner.name}</h2>
         <div className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Owner</span>
+            <span className="text-gray-400">Owner</span>
             <span className="font-semibold">{partner.ownerName}</span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Address</span>
+            <span className="text-gray-400">Address</span>
             <span className="text-right font-semibold">
               {partner.address}, {partner.area}
             </span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-gray-500">LGA / State</span>
+            <span className="text-gray-400">LGA / State</span>
             <span className="font-semibold">
               {partner.lga}, {partner.state}
             </span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Rating</span>
+            <span className="text-gray-400">Rating</span>
             <span className="font-semibold">
               ⭐ {partner.rating.toFixed(1)} ({partner.reviews} reviews)
             </span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="text-gray-500">Capacity</span>
+            <span className="text-gray-400">Capacity</span>
             <span className="font-semibold">
               {partner.bays} bays · ~{partner.dailyCapacity} cars/day
             </span>
@@ -149,7 +149,7 @@ export default function PartnerProfilePage() {
                   className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
                     services.includes(s)
                       ? "bg-[#20a957] text-white"
-                      : "bg-[#edf8f1] text-[#168846]"
+                      : "bg-[#20a957]/10 text-[#48d87c]"
                   }`}
                 >
                   {s}

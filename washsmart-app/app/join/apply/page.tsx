@@ -151,14 +151,14 @@ export default function ApplyWizard() {
     }));
 
   return (
-    <main className="min-h-screen bg-[#f5f8f6] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <span className="text-sm font-semibold text-gray-500">
+          <span className="text-sm font-semibold text-gray-400">
             Partner Application
           </span>
         </div>
@@ -171,11 +171,11 @@ export default function ApplyWizard() {
           <>
             <Link
               href="/join"
-              className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+              className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
             >
               ← Back
             </Link>
-            <p className="text-sm font-semibold text-[#168846]">
+            <p className="text-sm font-semibold text-[#48d87c]">
               STEP {step + 1} OF {STEP_TITLES.length}
             </p>
             <h1 className="mt-1 text-3xl font-bold">{STEP_TITLES[step]}</h1>
@@ -360,16 +360,16 @@ export default function ApplyWizard() {
                       <button
                         onClick={useMyLocation}
                         disabled={locating}
-                        className="shrink-0 rounded-xl border border-[#20a957] px-4 text-sm font-bold text-[#168846] disabled:opacity-50"
+                        className="shrink-0 rounded-xl border border-[#20a957] px-4 text-sm font-bold text-[#48d87c] disabled:opacity-50"
                       >
                         {locating ? "Locating…" : "📍 Pin"}
                       </button>
                     </div>
                   </Field>
-                  <div className="flex h-40 items-center justify-center rounded-2xl bg-[#dff4e6]">
+                  <div className="flex h-40 items-center justify-center rounded-2xl bg-[#20a957]/15">
                     <div className="text-center">
                       <div className="text-4xl">🗺️</div>
-                      <p className="mt-1 text-sm font-semibold text-gray-600">
+                      <p className="mt-1 text-sm font-semibold text-gray-300">
                         {draft.location.gps
                           ? `Pinned: ${draft.location.gps}`
                           : "Interactive map goes here"}
@@ -444,7 +444,7 @@ export default function ApplyWizard() {
                 <div>
                   <p className="mb-3 text-sm font-semibold">
                     Which services do you offer?{" "}
-                    <span className="text-red-500">*</span>
+                    <span className="text-red-400">*</span>
                   </p>
                   <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     {SERVICE_OPTIONS.map((s) => (
@@ -452,8 +452,8 @@ export default function ApplyWizard() {
                         key={s}
                         className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold ${
                           draft.services.includes(s)
-                            ? "border-[#20a957] bg-[#edf8f1] text-[#168846]"
-                            : "border-gray-200"
+                            ? "border-[#20a957] bg-[#20a957]/10 text-[#48d87c]"
+                            : "border-white/10"
                         }`}
                       >
                         <input
@@ -481,7 +481,7 @@ export default function ApplyWizard() {
                   {touched &&
                     draft.services.length === 0 &&
                     draft.otherService.trim().length <= 1 && (
-                      <p className="mt-2 text-xs text-red-500">
+                      <p className="mt-2 text-xs text-red-400">
                         Please select at least one service.
                       </p>
                     )}
@@ -494,13 +494,13 @@ export default function ApplyWizard() {
                     <p className="mb-2 text-sm font-semibold">
                       Business photos
                     </p>
-                    <p className="mb-3 text-xs text-gray-500">
+                    <p className="mb-3 text-xs text-gray-400">
                       Shopfront, wash bays, equipment — helps us verify your
                       business (demo upload).
                     </p>
-                    <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center hover:border-[#20a957]">
+                    <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
                       <div className="text-3xl">📷</div>
-                      <p className="mt-1 text-sm font-semibold text-[#168846]">
+                      <p className="mt-1 text-sm font-semibold text-[#48d87c]">
                         Choose photos
                       </p>
                       <input
@@ -512,7 +512,7 @@ export default function ApplyWizard() {
                       />
                     </label>
                     {draft.photos.business.length > 0 && (
-                      <ul className="mt-2 space-y-1 text-xs text-gray-600">
+                      <ul className="mt-2 space-y-1 text-xs text-gray-300">
                         {draft.photos.business.map((n) => (
                           <li key={n}>✓ {n}</li>
                         ))}
@@ -521,12 +521,12 @@ export default function ApplyWizard() {
                   </div>
                   <div>
                     <p className="mb-2 text-sm font-semibold">Location photos</p>
-                    <p className="mb-3 text-xs text-gray-500">
+                    <p className="mb-3 text-xs text-gray-400">
                       Street view / landmark nearby (demo upload).
                     </p>
-                    <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center hover:border-[#20a957]">
+                    <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
                       <div className="text-3xl">🏢</div>
-                      <p className="mt-1 text-sm font-semibold text-[#168846]">
+                      <p className="mt-1 text-sm font-semibold text-[#48d87c]">
                         Choose photos
                       </p>
                       <input
@@ -538,7 +538,7 @@ export default function ApplyWizard() {
                       />
                     </label>
                     {draft.photos.location.length > 0 && (
-                      <ul className="mt-2 space-y-1 text-xs text-gray-600">
+                      <ul className="mt-2 space-y-1 text-xs text-gray-300">
                         {draft.photos.location.map((n) => (
                           <li key={n}>✓ {n}</li>
                         ))}
@@ -557,7 +557,7 @@ export default function ApplyWizard() {
                   {step > 0 && (
                     <button
                       onClick={back}
-                      className="rounded-xl border border-gray-200 px-6 py-3 font-bold text-gray-500"
+                      className="rounded-xl border border-white/10 px-6 py-3 font-bold text-gray-400"
                     >
                       Back
                     </button>
@@ -614,13 +614,13 @@ function ReviewScreen({
   ];
   return (
     <div>
-      <p className="mb-4 text-sm text-gray-500">
+      <p className="mb-4 text-sm text-gray-400">
         Please review your application before submitting.
       </p>
-      <div className="divide-y rounded-2xl bg-[#f5f8f6]">
+      <div className="divide-y divide-white/10 rounded-2xl bg-[#0a0f0c]">
         {rows.map(([k, v]) => (
           <div key={k} className="flex justify-between gap-4 px-4 py-2.5 text-sm">
-            <span className="text-gray-500">{k}</span>
+            <span className="text-gray-400">{k}</span>
             <span className="text-right font-semibold">{v}</span>
           </div>
         ))}
@@ -628,7 +628,7 @@ function ReviewScreen({
       <div className="mt-8 flex gap-3">
         <button
           onClick={onEdit}
-          className="rounded-xl border border-gray-200 px-6 py-3 font-bold text-gray-500"
+          className="rounded-xl border border-white/10 px-6 py-3 font-bold text-gray-400"
         >
           ← Edit
         </button>
@@ -636,7 +636,7 @@ function ReviewScreen({
           Submit Application
         </PrimaryButton>
       </div>
-      <p className="mt-3 text-center text-xs text-gray-400">
+      <p className="mt-3 text-center text-xs text-gray-500">
         By submitting you agree to the WashSMART partner terms (demo).
       </p>
     </div>
@@ -657,7 +657,7 @@ function SuccessScreen({ app }: { app: PartnerApplication }) {
         </span>{" "}
         within 48 hours.
       </p>
-      <div className="mx-auto mt-6 max-w-sm rounded-2xl bg-white/10 p-5">
+      <div className="mx-auto mt-6 max-w-sm rounded-2xl bg-[#111a14]/10 p-5">
         <p className="text-xs font-semibold text-white/60">
           APPLICATION REFERENCE
         </p>

@@ -23,14 +23,14 @@ const steps = [
 
 export default function JoinLanding() {
   return (
-    <main className="min-h-screen bg-[#f5f8f6] text-[#10251c]">
-      <header className="border-b bg-white px-5 py-4">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+      <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <Link href="/partner" className="text-sm font-semibold text-[#168846]">
+          <Link href="/partner" className="text-sm font-semibold text-[#48d87c]">
             Already a partner? Log in
           </Link>
         </div>
@@ -39,7 +39,7 @@ export default function JoinLanding() {
       <section className="mx-auto max-w-7xl px-5 py-8">
         <Link
           href="/"
-          className="mb-5 inline-block text-sm font-semibold text-[#168846]"
+          className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
         >
           ← Home
         </Link>
@@ -70,10 +70,10 @@ export default function JoinLanding() {
         <h2 className="mt-12 text-2xl font-bold">Why partner with WashSMART?</h2>
         <div className="mt-5 grid gap-4 md:grid-cols-3">
           {benefits.map(([icon, title, body]) => (
-            <div key={title} className="rounded-2xl bg-white p-6 shadow-sm">
+            <div key={title} className="rounded-2xl bg-[#111a14] p-6 shadow-sm">
               <div className="text-3xl">{icon}</div>
               <p className="mt-3 font-bold">{title}</p>
-              <p className="mt-1 text-sm text-gray-500">{body}</p>
+              <p className="mt-1 text-sm text-gray-400">{body}</p>
             </div>
           ))}
         </div>
@@ -81,19 +81,19 @@ export default function JoinLanding() {
         <h2 className="mt-12 text-2xl font-bold">How it works</h2>
         <div className="mt-5 grid gap-4 md:grid-cols-4">
           {steps.map(([n, title, body]) => (
-            <div key={n} className="rounded-2xl bg-white p-6 shadow-sm">
+            <div key={n} className="rounded-2xl bg-[#111a14] p-6 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957] font-bold text-white">
                 {n}
               </div>
               <p className="mt-3 font-bold">{title}</p>
-              <p className="mt-1 text-sm text-gray-500">{body}</p>
+              <p className="mt-1 text-sm text-gray-400">{body}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-10 rounded-3xl bg-white p-8 text-center shadow-sm">
+        <div className="mt-10 rounded-3xl bg-[#111a14] p-8 text-center shadow-sm">
           <h2 className="text-2xl font-bold">Ready to grow your car wash?</h2>
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-gray-400">
             Applications are reviewed within 48 hours.
           </p>
           <Link
