@@ -19,6 +19,7 @@ import {
   getVehicles,
   saveProfile,
   saveVehicles,
+  signOut,
 } from "@/lib/db/store";
 import type { Profile, Subscription, Vehicle } from "@/lib/db/types";
 
@@ -237,6 +238,16 @@ export default function ProfilePage() {
       <div className="mt-6">
         <ReferralCard />
       </div>
+
+      <button
+        onClick={async () => {
+          await signOut();
+          window.location.href = "/";
+        }}
+        className="mt-6 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-400"
+      >
+        Log out
+      </button>
     </section>
   );
 }

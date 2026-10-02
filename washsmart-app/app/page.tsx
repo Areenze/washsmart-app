@@ -32,6 +32,9 @@ export default function EntryPage() {
             <Brand />
           </div>
           <div className="flex gap-4 text-sm font-semibold">
+            <Link href="/app/login" className="text-[#48d87c]">
+              Log in
+            </Link>
             <Link href="/partner" className="text-[#48d87c]">
               Partner login
             </Link>

@@ -3,11 +3,11 @@
 /* /app shell — header + mobile bottom nav for the subscriber experience. */
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
-import { getProfile } from "@/lib/db/store";
+import { getProfile, signOut } from "@/lib/db/store";
 
 const tabs = [
   { href: "/app", label: "Home" },
@@ -18,6 +18,7 @@ const tabs = [
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -33,11 +34,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const isActive = (href: string) =>
     href === "/app" ? pathname === "/app" : pathname.startsWith(href);
 
+  const logout = async () => {
+    await signOut();
+    router.replace("/");
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0f0c] text-[#e9f2ec]">
       <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/app" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2" aria-label="WashSMART home">
             <Logo />
             <Brand />
           </Link>
@@ -67,15 +73,23 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 Sign up
               </Link>
             </div>
-          ) : (
-            <Link
-              href="/app/profile"
-              aria-label="Profile"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957]/10 text-lg"
-            >
-              👤
-            </Link>
-          )}
+          ) : loggedIn === true ? (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={logout}
+                className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-gray-400"
+              >
+                Log out
+              </button>
+              <Link
+                href="/app/profile"
+                aria-label="Profile"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957]/10 text-lg"
+              >
+                👤
+              </Link>
+            </div>
+          ) : null}
         </div>
       </header>
 
