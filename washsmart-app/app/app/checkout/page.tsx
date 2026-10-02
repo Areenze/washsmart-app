@@ -161,7 +161,7 @@ function CheckoutInner() {
         <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
           <h1 className="text-2xl font-bold">Complete Subscription</h1>
           <p className="mt-1 text-sm text-gray-400">
-            {plan.name} Plan · {plan.washes} washes per month
+            {plan.name} Plan · {plan.washes} wash credits, valid 30 days
           </p>
           {loggedIn && (
             <p className="mt-2 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
@@ -172,7 +172,7 @@ function CheckoutInner() {
 
           <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">{plan.name} Plan (monthly)</span>
+              <span className="text-gray-400">{plan.name} Plan (30-day credits)</span>
               <span className="font-bold">{plan.price}</span>
             </div>
             <div className="mt-3 flex justify-between border-t border-[#20a957]/20 pt-3 font-bold">

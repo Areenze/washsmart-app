@@ -86,7 +86,7 @@ function CallbackInner() {
           ? "Setting up your account, one moment."
           : mode === "login"
             ? "Signing you in, one moment."
-            : "Activating your subscription, one moment."}
+            : "Adding your wash credits, one moment."}
       </p>
     </section>
   );

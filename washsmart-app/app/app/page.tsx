@@ -8,6 +8,7 @@ import PartnerCard from "@/components/partner-card";
 import InstallPrompt from "@/components/install-prompt";
 import { EmptyState, SectionTitle } from "@/components/ui";
 import {
+  creditDaysLeft,
   fmtDate,
   getMySubscription,
   getProfile,
@@ -122,7 +123,8 @@ export default function UserHome() {
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-gray-400">
-                  Renews {fmtDate(subscription.renewsAt)}
+                  Expires {fmtDate(subscription.expiresAt)} ·{" "}
+                  {creditDaysLeft(subscription.expiresAt)} days left
                 </p>
               </div>
               <Link

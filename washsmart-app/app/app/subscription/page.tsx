@@ -38,11 +38,11 @@ export default function SubscriptionPage() {
             <div>
               <p className="text-sm text-gray-400">Current plan</p>
               <h2 className="mt-1 text-2xl font-bold">
-                {subscription.planName} · {subscription.price}/month
+                {subscription.planName} · {subscription.price} / 30 days
               </h2>
               <p className="mt-1 text-sm text-gray-400">
                 {subscription.washesRemaining} of {subscription.washesTotal}{" "}
-                washes remaining · renews {fmtDate(subscription.renewsAt)}
+                washes left · expires {fmtDate(subscription.expiresAt)}
               </p>
             </div>
             <Badge>ACTIVE</Badge>
@@ -77,10 +77,10 @@ export default function SubscriptionPage() {
               <h2 className="text-xl font-bold">{plan.name}</h2>
               <div className="mt-5 text-4xl font-bold">
                 {plan.price}
-                <span className="text-sm font-normal text-gray-400">/month</span>
+                <span className="text-sm font-normal text-gray-400">/30 days</span>
               </div>
               <div className="mt-6 space-y-3 text-sm">
-                <p>✓ {plan.washes} washes per month</p>
+                <p>✓ {plan.washes} washes, valid 30 days</p>
                 <p>✓ Approved partner locations</p>
                 <p>✓ Digital wash tracking</p>
                 <p>✓ Subscriber verification</p>

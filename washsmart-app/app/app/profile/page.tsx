@@ -200,7 +200,7 @@ export default function ProfilePage() {
             <div className="flex justify-between">
               <span className="text-gray-400">Plan</span>
               <span className="font-bold">
-                {subscription.planName} · {subscription.price}/month
+                {subscription.planName} · {subscription.price}/30 days
               </span>
             </div>
             <div className="flex justify-between">
@@ -210,8 +210,8 @@ export default function ProfilePage() {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Renews</span>
-              <span className="font-bold">{fmtDate(subscription.renewsAt)}</span>
+              <span className="text-gray-400">Credits expire</span>
+              <span className="font-bold">{fmtDate(subscription.expiresAt)}</span>
             </div>
             <Link
               href="/app/subscription"

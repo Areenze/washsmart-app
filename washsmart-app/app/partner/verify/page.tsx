@@ -130,7 +130,7 @@ function VerifyInner() {
             <div className="flex justify-between py-1 text-sm">
               <span className="text-gray-400">Plan</span>
               <span className="font-bold">
-                {subscription.planName} · {subscription.washesTotal} washes/month
+                {subscription.planName} · {subscription.washesTotal} washes / 30 days
               </span>
             </div>
             <div className="flex justify-between py-1 text-sm">

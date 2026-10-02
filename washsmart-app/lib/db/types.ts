@@ -107,7 +107,7 @@ export interface Subscription {
   washesRemaining: number;
   status: "active" | "expired" | "cancelled";
   startedAt: string; // ISO
-  renewsAt: string; // ISO
+  expiresAt: string; // ISO — wash credits valid until (30 days from purchase)
   email: string;
 }
 

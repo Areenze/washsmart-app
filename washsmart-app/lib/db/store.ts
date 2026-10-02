@@ -178,7 +178,7 @@ function mapSubscription(r: any, email: string): Subscription {
     washesRemaining: r.washes_remaining,
     status: r.status,
     startedAt: r.started_at,
-    renewsAt: r.renews_at,
+    expiresAt: r.renews_at, // DB column renews_at now stores the credit expiry
     email,
   };
 }
@@ -581,48 +581,39 @@ export async function getMySubscription(): Promise<Subscription | null> {
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;
-  return mapSubscription(data, await profileEmail());
+  const sub = mapSubscription(data, await profileEmail());
+  // 30-day credits: a pack past its expiry is dead, even if the row still
+  // says 'active' (the DB functions mark it expired when hit). No rollover.
+  if (sub.status === "active" && new Date(sub.expiresAt).getTime() <= Date.now()) {
+    return null;
+  }
+  return sub;
 }
 
-/** Create the subscription for the signed-in subscriber (post verification). */
+/** Days left before the current wash credits expire (0 when none/expired). */
+export function creditDaysLeft(expiresAt: string): number {
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  return ms > 0 ? Math.ceil(ms / 86_400_000) : 0;
+}
+
+/**
+ * Grant 30-day wash credits for the signed-in subscriber (post verification).
+ * Uses the topup_subscription RPC: tops up the live pack if one exists
+ * (added credits share the current expiry, which never extends), otherwise
+ * starts a fresh 30-day pack. Records the payment in both cases.
+ */
 export async function createSubscription(input: {
   planId: string;
 }): Promise<Subscription> {
   const user = await currentUser();
   if (!user) throw new Error("Not signed in.");
-  const sb = getSupabase();
-  const plan = await getPlan(input.planId);
-  if (!plan) throw new Error("Unknown plan.");
-  const now = new Date();
-  const renews = new Date(now);
-  renews.setMonth(renews.getMonth() + 1);
-  const { data, error } = await sb
-    .from("subscriptions")
-    .insert({
-      owner_id: user.id,
-      plan_id: plan.id,
-      plan_name: plan.name,
-      amount: plan.amount,
-      washes_total: plan.washes,
-      washes_remaining: plan.washes,
-      status: "active",
-      started_at: now.toISOString(),
-      renews_at: renews.toISOString(),
-    })
-    .select(SUB_COLS)
-    .single();
-  if (error) throw error;
-  await sb.from("payments").insert({
-    subscription_id: data.id,
-    owner_id: user.id,
-    amount: plan.amount,
-    plan_name: plan.name,
-    method: "card (demo)",
-    reference: `WS-PAY-${now.getFullYear()}-${Math.floor(
-      1000 + Math.random() * 9000
-    )}`,
+  const { error } = await getSupabase().rpc("topup_subscription", {
+    p_plan_id: input.planId,
   });
-  return mapSubscription(data, await profileEmail());
+  if (error) throw new Error(error.message);
+  const sub = await getMySubscription();
+  if (!sub) throw new Error("Could not load your wash credits.");
+  return sub;
 }
 
 /* ---------------- registered emails (compat) ----------------
@@ -666,9 +657,10 @@ export async function getQRToken(): Promise<string | null> {
   const sb = getSupabase();
   const { data: subs } = await sb
     .from("subscriptions")
-    .select("id,washes_remaining,status")
+    .select("id,washes_remaining,status,renews_at")
     .eq("owner_id", user.id)
     .eq("status", "active")
+    .gt("renews_at", new Date().toISOString())
     .order("created_at", { ascending: false })
     .limit(1);
   const sub = subs?.[0];
@@ -781,7 +773,7 @@ export async function inspectToken(
     washesRemaining: r.washes_remaining,
     status: "active",
     startedAt: "",
-    renewsAt: "",
+    expiresAt: "",
     email: "",
   };
   return { ok: true, subscription };

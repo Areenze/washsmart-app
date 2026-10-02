@@ -113,7 +113,7 @@ export default function EntryPage() {
           {[
             ["📍", "Growing network", "Approved partners across Lagos"],
             ["✅", "Simple verification", "One QR scan per wash"],
-            ["💳", "One subscription", "Plans from ₦8,000/month"],
+            ["💳", "One subscription", "Plans from ₦8,000/30 days"],
           ].map(([icon, title, body]) => (
             <div key={title} className="rounded-2xl bg-[#111a14] p-6 shadow-sm">
               <div className="text-3xl">{icon}</div>
