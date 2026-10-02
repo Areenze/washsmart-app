@@ -4,8 +4,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
+import { getProfile } from "@/lib/db/store";
 
 const tabs = [
   { href: "/app", label: "Home" },
@@ -16,6 +18,17 @@ const tabs = [
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoggedIn(!!(await getProfile()));
+      } catch {
+        setLoggedIn(false);
+      }
+    })();
+  }, [pathname]);
 
   const isActive = (href: string) =>
     href === "/app" ? pathname === "/app" : pathname.startsWith(href);
@@ -39,13 +52,22 @@ export default function AppShell({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </nav>
-          <Link
-            href="/app/profile"
-            aria-label="Profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#edf8f1] text-lg"
-          >
-            👤
-          </Link>
+          {loggedIn === false ? (
+            <Link
+              href="/app/login"
+              className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white"
+            >
+              Log in
+            </Link>
+          ) : (
+            <Link
+              href="/app/profile"
+              aria-label="Profile"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#edf8f1] text-lg"
+            >
+              👤
+            </Link>
+          )}
         </div>
       </header>
 

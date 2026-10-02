@@ -39,7 +39,8 @@ function CallbackInner() {
         if (!code) throw new Error("Missing verification code.");
         await exchangeCodeForSession(code);
         const existing = await getMySubscription();
-        if (!existing || existing.status !== "active") {
+        // mode=login is a pure sign-in (from /app/login): never mint a plan here.
+        if (search.get("mode") !== "login" && (!existing || existing.status !== "active")) {
           const planId = search.get("plan") ?? "standard";
           await createSubscription({ planId });
         }

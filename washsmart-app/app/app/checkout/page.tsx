@@ -46,6 +46,8 @@ function CheckoutInner() {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
+  const [sendingLink, setSendingLink] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -100,6 +102,19 @@ function CheckoutInner() {
       window.setTimeout(() => setResent(false), 3000);
     } else {
       setSendError(res.error ?? "Could not resend the verification email.");
+    }
+  };
+
+  const sendLoginLink = async () => {
+    setSendingLink(true);
+    setSendError(null);
+    const redirectTo = `${window.location.origin}/app/auth/callback?mode=login`;
+    const res = await sendSignInLink(email, name, phone, redirectTo);
+    setSendingLink(false);
+    if (res.ok) {
+      setLinkSent(true);
+    } else {
+      setSendError(res.error ?? "Could not send the sign-in link.");
     }
   };
 
@@ -209,14 +224,25 @@ function CheckoutInner() {
                     This email address is already registered.
                   </p>
                   <p className="mt-1">
-                    Check your inbox for a sign-in link to continue with your
-                    existing account, or use a different email address.
+                    {linkSent
+                      ? "Sign-in link sent - check your inbox to continue."
+                      : "Get a sign-in link to continue with your existing account, or use a different email address."}
                   </p>
-                  <div className="mt-2 flex gap-2">
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {!linkSent && (
+                      <button
+                        onClick={sendLoginLink}
+                        disabled={sendingLink}
+                        className="rounded-lg bg-amber-600 px-3 py-1.5 font-bold text-white disabled:opacity-60"
+                      >
+                        {sendingLink ? "Sending..." : "Email me a sign-in link"}
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         setEmail("");
                         setIsDuplicate(false);
+                        setLinkSent(false);
                         setTouched((t) => ({ ...t, email: false }));
                       }}
                       className="rounded-lg border border-amber-300 px-3 py-1.5 font-bold text-amber-800"
@@ -224,10 +250,10 @@ function CheckoutInner() {
                       Use a different email
                     </button>
                     <Link
-                      href="/app"
+                      href="/app/login"
                       className="rounded-lg bg-amber-600 px-3 py-1.5 font-bold text-white"
                     >
-                      Back to Dashboard
+                      Go to login
                     </Link>
                   </div>
                 </div>

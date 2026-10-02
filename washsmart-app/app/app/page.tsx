@@ -88,6 +88,14 @@ export default function UserHome() {
               Find a Partner
             </Link>
           </div>
+          {!profile && (
+            <p className="mt-4 text-sm text-white/70">
+              Already a subscriber?{" "}
+              <Link href="/app/login" className="font-bold text-white underline">
+                Log in →
+              </Link>
+            </p>
+          )}
         </div>
 
         <div className="rounded-3xl bg-white p-6 shadow-sm">
