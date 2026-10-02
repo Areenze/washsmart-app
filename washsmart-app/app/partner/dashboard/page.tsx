@@ -1,0 +1,125 @@
+"use client";
+
+/* /partner/dashboard — TODAY washes, estimated earnings, subscribers
+ * served, [SCAN CUSTOMER QR], recent activity. */
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  currentPartnerSession,
+  fmtDate,
+  fmtNaira,
+  listPartnerTransactions,
+  partnerStats,
+  type PartnerStats,
+} from "@/lib/db/store";
+import type { Partner, WashTransaction } from "@/lib/db/types";
+
+export default function PartnerDashboard() {
+  const [partner, setPartner] = useState<Partner | null>(null);
+  const [stats, setStats] = useState<PartnerStats | null>(null);
+  const [recent, setRecent] = useState<WashTransaction[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const p = await currentPartnerSession();
+      if (!p) return;
+      setPartner(p);
+      setStats(await partnerStats(p.id));
+      setRecent((await listPartnerTransactions(p.id)).slice(0, 5));
+    })();
+  }, []);
+
+  if (!partner || !stats) {
+    return <p className="py-8 text-gray-500">Loading…</p>;
+  }
+
+  return (
+    <section className="py-8">
+      <p className="text-sm text-gray-500">APPROVED PARTNER</p>
+      <h1 className="mt-1 text-3xl font-bold">Welcome, {partner.name}</h1>
+      <p className="text-gray-500">{partner.location}</p>
+
+      <div className="mt-6 rounded-3xl bg-[#063c28] p-6 text-white md:p-8">
+        <div className="grid gap-6 sm:grid-cols-3">
+          <div>
+            <p className="text-sm text-white/60">TODAY</p>
+            <p className="mt-1 text-4xl font-bold">{stats.todayWashes}</p>
+            <p className="text-sm text-white/60">washes</p>
+          </div>
+          <div>
+            <p className="text-sm text-white/60">ESTIMATED EARNINGS</p>
+            <p className="mt-1 text-4xl font-bold text-[#65e28e]">
+              {fmtNaira(stats.todayEarnings)}
+            </p>
+            <p className="text-sm text-white/60">today</p>
+          </div>
+          <div>
+            <p className="text-sm text-white/60">SUBSCRIBERS SERVED</p>
+            <p className="mt-1 text-4xl font-bold">{stats.subscribersServed}</p>
+            <p className="text-sm text-white/60">all time</p>
+          </div>
+        </div>
+        <Link
+          href="/partner/scan"
+          className="mt-6 block w-full rounded-xl bg-[#2ed06a] py-4 text-center text-lg font-bold text-white"
+        >
+          📷 SCAN CUSTOMER QR
+        </Link>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl bg-white p-6">
+          <h2 className="text-xl font-bold">All-time totals</h2>
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div className="rounded-xl bg-[#f5f8f6] p-4">
+              <p className="text-sm text-gray-500">Total washes</p>
+              <p className="mt-1 text-2xl font-bold">{stats.totalWashes}</p>
+            </div>
+            <div className="rounded-xl bg-[#f5f8f6] p-4">
+              <p className="text-sm text-gray-500">Total earnings</p>
+              <p className="mt-1 text-2xl font-bold text-[#168846]">
+                {fmtNaira(stats.totalEarnings)}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/partner/earnings"
+            className="mt-4 inline-block text-sm font-semibold text-[#168846]"
+          >
+            View earnings →
+          </Link>
+        </div>
+
+        <div className="rounded-2xl bg-white p-6">
+          <h2 className="text-xl font-bold">Recent activity</h2>
+          {recent.length === 0 ? (
+            <p className="mt-3 text-sm text-gray-500">
+              No washes recorded yet — scan your first customer QR above.
+            </p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {recent.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center gap-3 border-b pb-3 last:border-0"
+                >
+                  <div className="h-3 w-3 shrink-0 rounded-full bg-[#20a957]" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold">
+                      Wash confirmed — {t.subscriberName}
+                    </p>
+                    <p className="text-xs text-gray-400">{fmtDate(t.at)}</p>
+                  </div>
+                  <span className="text-sm font-bold text-[#168846]">
+                    {fmtNaira(t.payout)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
