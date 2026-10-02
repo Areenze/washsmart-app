@@ -8,9 +8,11 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  applyReferralCode,
   createSubscription,
   exchangeCodeForSession,
   getMySubscription,
+  takeStashedReferralCode,
 } from "@/lib/db/store";
 
 export default function AuthCallbackPage() {
@@ -39,6 +41,16 @@ function CallbackInner() {
         const code = search.get("code");
         if (!code) throw new Error("Missing verification code.");
         await exchangeCodeForSession(code);
+        // Attribute a friend's referral link (stashed on /app/signup before
+        // the email hop). No-op when there is none or it is invalid.
+        const stashedRef = takeStashedReferralCode();
+        if (stashedRef) {
+          try {
+            await applyReferralCode(stashedRef);
+          } catch {
+            /* referral is best-effort; never block sign-in */
+          }
+        }
         const existing = await getMySubscription();
         const active = !!existing && existing.status === "active";
         if (mode === "login") {

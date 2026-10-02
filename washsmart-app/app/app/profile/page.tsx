@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ReferralCard from "@/components/referral-card";
 import {
   Card,
   Field,
@@ -232,6 +233,10 @@ export default function ProfilePage() {
           </div>
         )}
       </Card>
+
+      <div className="mt-6">
+        <ReferralCard />
+      </div>
     </section>
   );
 }

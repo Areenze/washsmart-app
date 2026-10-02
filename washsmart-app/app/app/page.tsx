@@ -6,16 +6,23 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import PartnerCard from "@/components/partner-card";
 import InstallPrompt from "@/components/install-prompt";
+import ReferralCard from "@/components/referral-card";
 import { EmptyState, SectionTitle } from "@/components/ui";
 import {
   creditDaysLeft,
   fmtDate,
-  getMySubscription,
+  getWashSummary,
   getProfile,
   listApprovedPartners,
   listWashHistory,
 } from "@/lib/db/store";
-import type { Partner, Profile, Subscription, WashTransaction } from "@/lib/db/types";
+import type { WashSummary } from "@/lib/db/store";
+import type {
+  Partner,
+  Profile,
+  Subscription,
+  WashTransaction,
+} from "@/lib/db/types";
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -26,20 +33,23 @@ function greeting(): string {
 
 export default function UserHome() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [summary, setSummary] = useState<WashSummary | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [history, setHistory] = useState<WashTransaction[]>([]);
 
   useEffect(() => {
     (async () => {
       setProfile(await getProfile());
-      setSubscription(await getMySubscription());
+      setSummary(await getWashSummary());
       setPartners(await listApprovedPartners());
       setHistory(await listWashHistory());
     })();
   }, []);
 
-  const outOfWashes = (subscription?.washesRemaining ?? 0) <= 0;
+  const subscription: Subscription | null = summary?.primary ?? null;
+  const totalWashes = summary?.totalRemaining ?? 0;
+  const bonusWashes = summary?.bonusRemaining ?? 0;
+  const outOfWashes = totalWashes <= 0;
   const firstName = profile?.name.split(" ")[0] ?? "there";
 
   return (
@@ -63,7 +73,7 @@ export default function UserHome() {
           </h1>
           <p className="mt-5 max-w-lg text-white/75">
             {subscription
-              ? `Your ${subscription.planName} subscription is active — ${subscription.washesRemaining} of ${subscription.washesTotal} washes left.`
+              ? `Your ${subscription.planName} subscription is active — ${totalWashes} wash${totalWashes === 1 ? "" : "es"} left.`
               : "Subscribe to WashSMART and access a growing network of approved car-wash partners."}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -99,6 +109,7 @@ export default function UserHome() {
           )}
         </div>
 
+        <div className="space-y-6">
         <div className="rounded-3xl bg-[#111a14] p-6 shadow-sm">
           {subscription ? (
             <>
@@ -116,12 +127,18 @@ export default function UserHome() {
               <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5">
                 <p className="text-sm text-gray-400">Washes remaining</p>
                 <div className="mt-1 text-4xl font-bold text-[#48d87c]">
-                  {subscription.washesRemaining}
+                  {totalWashes}
                   <span className="text-base font-normal text-gray-400">
                     {" "}
                     of {subscription.washesTotal}
                   </span>
                 </div>
+                {bonusWashes > 0 && (
+                  <p className="mt-1 text-xs font-semibold text-[#48d87c]">
+                    🎁 Includes {bonusWashes} free referral wash
+                    {bonusWashes === 1 ? "" : "es"}
+                  </p>
+                )}
                 <p className="mt-1 text-xs text-gray-400">
                   Expires {fmtDate(subscription.expiresAt)} ·{" "}
                   {creditDaysLeft(subscription.expiresAt)} days left
@@ -161,6 +178,8 @@ export default function UserHome() {
               </Link>
             </div>
           )}
+        </div>
+        {profile && <ReferralCard highlight={outOfWashes} />}
         </div>
       </div>
 

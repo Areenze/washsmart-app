@@ -6,13 +6,34 @@
  * metadata, and /app/auth/callback?mode=signup routes the fresh account
  * to /app/subscription to pick a plan (no plan is minted here). */
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { getProfile, isEmailRegistered, sendSignInLink } from "@/lib/db/store";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  getProfile,
+  isEmailRegistered,
+  sendSignInLink,
+  stashReferralCode,
+} from "@/lib/db/store";
 
 export default function SignupPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="mx-auto max-w-md px-5 py-12 text-center">
+          <p className="text-gray-400">Loading…</p>
+        </section>
+      }
+    >
+      <SignupInner />
+    </Suspense>
+  );
+}
+
+function SignupInner() {
   const router = useRouter();
+  const search = useSearchParams();
+  const referred = (search.get("ref") ?? "").trim().toUpperCase();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -34,6 +55,12 @@ export default function SignupPage() {
       if (await getProfile()) router.replace("/app");
     })();
   }, [router]);
+
+  // A friend's referral link: remember it through the email-verification
+  // hop so /app/auth/callback can attribute the referral after sign-in.
+  useEffect(() => {
+    if (referred) stashReferralCode(referred);
+  }, [referred]);
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const nameOk = name.trim().length > 1;
@@ -161,6 +188,12 @@ export default function SignupPage() {
               One account for every WashSMART partner car wash. You&apos;ll
               pick a plan after verifying your email.
             </p>
+            {referred && (
+              <p className="mt-3 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
+                🎉 You were invited by a friend — they&apos;ll earn a free
+                wash when you subscribe.
+              </p>
+            )}
 
             {sendError && (
               <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">

@@ -475,6 +475,7 @@ export async function getPlans(): Promise<Plan[]> {
   const { data, error } = await getSupabase()
     .from("plans")
     .select("*")
+    .neq("id", "referral") // internal bonus plan, never sold
     .order("amount");
   if (error) throw error;
   return (data ?? []).map(mapPlan);
@@ -570,24 +571,58 @@ async function profileEmail(): Promise<string> {
 }
 
 export async function getMySubscription(): Promise<Subscription | null> {
+  const summary = await getWashSummary();
+  return summary.primary;
+}
+
+/**
+ * Full wash-credit picture for the signed-in subscriber.
+ * primary: the subscription shown as "current" — the live paid pack when
+ * there is one, otherwise a live referral-bonus credit.
+ * totalRemaining: washes left across ALL live (unexpired, active) credits,
+ *   paid packs and referral bonuses alike.
+ */
+export interface WashSummary {
+  primary: Subscription | null;
+  totalRemaining: number;
+  bonusRemaining: number;
+  bonuses: Subscription[];
+}
+
+export async function getWashSummary(): Promise<WashSummary> {
+  const empty: WashSummary = {
+    primary: null,
+    totalRemaining: 0,
+    bonusRemaining: 0,
+    bonuses: [],
+  };
   const user = await currentUser();
-  if (!user) return null;
+  if (!user) return empty;
   const { data, error } = await getSupabase()
     .from("subscriptions")
     .select(SUB_COLS)
     .eq("owner_id", user.id)
+    .eq("status", "active")
     .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(25);
   if (error) throw error;
-  if (!data) return null;
-  const sub = mapSubscription(data, await profileEmail());
-  // 30-day credits: a pack past its expiry is dead, even if the row still
-  // says 'active' (the DB functions mark it expired when hit). No rollover.
-  if (sub.status === "active" && new Date(sub.expiresAt).getTime() <= Date.now()) {
-    return null;
-  }
-  return sub;
+  const email = await profileEmail();
+  const now = Date.now();
+  // 30-day credits: a row past its expiry is dead, even if it still says
+  // 'active' (the DB functions mark it expired when hit). No rollover.
+  const live = (data ?? [])
+    .map((r) => mapSubscription(r, email))
+    .filter((s) => new Date(s.expiresAt).getTime() > now);
+  const bonuses = live.filter((s) => s.planId === "referral");
+  const paid = live.filter((s) => s.planId !== "referral");
+  const primary =
+    paid[0] ?? bonuses.find((b) => b.washesRemaining > 0) ?? null;
+  return {
+    primary,
+    totalRemaining: live.reduce((n, s) => n + s.washesRemaining, 0),
+    bonusRemaining: bonuses.reduce((n, s) => n + s.washesRemaining, 0),
+    bonuses,
+  };
 }
 
 /** Days left before the current wash credits expire (0 when none/expired). */
@@ -649,8 +684,10 @@ export function resetDb(): void {
 
 /* ---------------- QR tokens ---------------- */
 
-/** Mint a fresh time-boxed token for the signed-in subscriber's subscription.
- *  Only the SHA-256 hash is stored server-side; the QR carries the raw token. */
+/** Mint a fresh time-boxed token for the signed-in subscriber.
+ *  Only the SHA-256 hash is stored server-side; the QR carries the raw token.
+ *  Draws from the live credit (paid pack or referral bonus) expiring soonest
+ *  that still has washes left, so credits are used before they expire. */
 export async function getQRToken(): Promise<string | null> {
   const user = await currentUser();
   if (!user) return null;
@@ -661,10 +698,11 @@ export async function getQRToken(): Promise<string | null> {
     .eq("owner_id", user.id)
     .eq("status", "active")
     .gt("renews_at", new Date().toISOString())
-    .order("created_at", { ascending: false })
+    .gt("washes_remaining", 0)
+    .order("renews_at", { ascending: true })
     .limit(1);
   const sub = subs?.[0];
-  if (!sub || sub.washes_remaining <= 0) return null;
+  if (!sub) return null;
   const raw = `WS1-${randomToken(32)}`;
   const hash = await sha256Hex(raw);
   const { error } = await sb.rpc("issue_wash_token", {
@@ -1039,4 +1077,79 @@ export async function currentPartnerSession(): Promise<Partner | undefined> {
   } catch {
     return undefined;
   }
+}
+
+/* ---------------- refer-a-friend ----------------
+ * Share a link; when a friend buys their first plan the referrer instantly
+ * gets a 1-wash credit valid 30 days (minted by topup_subscription). */
+
+const REF_STASH_KEY = "washsmart_ref";
+
+export function stashReferralCode(code: string): void {
+  if (!isBrowser() || !code) return;
+  try {
+    window.localStorage.setItem(REF_STASH_KEY, code.trim().toUpperCase());
+  } catch {
+    /* ignore */
+  }
+}
+
+export function takeStashedReferralCode(): string | null {
+  if (!isBrowser()) return null;
+  try {
+    const code = window.localStorage.getItem(REF_STASH_KEY);
+    window.localStorage.removeItem(REF_STASH_KEY);
+    return code;
+  } catch {
+    return null;
+  }
+}
+
+/** The caller's shareable referral code (mints one on first use). */
+export async function getReferralCode(): Promise<string> {
+  const user = await currentUser();
+  if (!user) throw new Error("Not signed in.");
+  const { data, error } = await getSupabase().rpc("mint_referral_code");
+  if (error) throw new Error(error.message);
+  return data as string;
+}
+
+/** How many friends have subscribed through this user's link. */
+export async function getReferralCount(): Promise<number> {
+  const user = await currentUser();
+  if (!user) return 0;
+  const { count, error } = await getSupabase()
+    .from("referrals")
+    .select("id", { count: "exact", head: true })
+    .eq("referrer_id", user.id);
+  if (error) return 0;
+  return count ?? 0;
+}
+
+/** Attribute the signed-in user to a referrer. Safe to call with junk. */
+export async function applyReferralCode(code: string): Promise<boolean> {
+  const user = await currentUser();
+  if (!user || !code) return false;
+  const { data, error } = await getSupabase().rpc("apply_referral_code", {
+    p_code: code.trim().toUpperCase(),
+  });
+  if (error) return false;
+  return !!data;
+}
+
+/** Public signup link carrying the referral code. */
+export function referralLink(code: string): string {
+  const origin = isBrowser()
+    ? window.location.origin
+    : "https://washsmart-alpha.vercel.app";
+  return `${origin}/app/signup?ref=${encodeURIComponent(code)}`;
+}
+
+/** WhatsApp share URL for the referral link (WhatsApp is huge in Lagos). */
+export function whatsappShareUrl(code: string): string {
+  const msg =
+    `I get my car washed with WashSMART across Lagos — one subscription, ` +
+    `multiple washes at approved partners. Join with my link and start ` +
+    `washing smarter: ${referralLink(code)}`;
+  return `https://wa.me/?text=${encodeURIComponent(msg)}`;
 }

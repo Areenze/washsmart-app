@@ -105,6 +105,12 @@ export default function SubscriptionPage() {
       <p className="mt-6 text-center text-xs text-gray-500">
         Demo checkout — no real charge is made. Paystack integration in production.
       </p>
+      <p className="mt-2 text-center text-xs text-gray-500">
+        🎁 Know a car owner?{" "}
+        <Link href="/app/profile" className="font-bold text-[#48d87c]">
+          Refer a friend, get 1 free wash →
+        </Link>
+      </p>
     </section>
   );
 }
