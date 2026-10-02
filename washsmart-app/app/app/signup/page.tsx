@@ -50,6 +50,7 @@ function SignupInner() {
   const [resent, setResent] = useState(false);
   const [linkSent, setLinkSent] = useState(false);
   const [sendingLink, setSendingLink] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -111,9 +112,19 @@ function SignupInner() {
     return () => window.clearTimeout(t);
   }, [step, router]);
 
+  // Resend cooldown: Supabase's built-in sender allows only a few emails per
+  // hour per project — don't let repeated taps burn the quota.
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = window.setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => window.clearTimeout(t);
+  }, [resendCooldown]);
+
   const resendLink = async () => {
+    if (resendCooldown > 0) return;
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
     const res = await sendSignInLink(email, name, phone, redirectTo);
+    setResendCooldown(60);
     if (res.ok) {
       setResent(true);
       window.setTimeout(() => setResent(false), 3000);
@@ -175,9 +186,12 @@ function SignupInner() {
             </button>
             <button
               onClick={resendLink}
-              className="mt-3 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300"
+              disabled={resendCooldown > 0}
+              className="mt-3 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300 disabled:opacity-50"
             >
-              Resend verification link
+              {resendCooldown > 0
+                ? `Resend available in ${resendCooldown}s`
+                : "Resend verification link"}
             </button>
             {resent && (
               <p className="mt-2 text-center text-xs font-semibold text-[#48d87c]">

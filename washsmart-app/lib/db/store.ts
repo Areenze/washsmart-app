@@ -266,7 +266,18 @@ export async function sendSignInLink(
       emailRedirectTo: redirectTo,
     },
   });
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (!error) return { ok: true };
+  // Supabase's built-in email sender allows only a few emails per hour per
+  // project — translate the cryptic 429 into something a human can act on.
+  if (/rate limit/i.test(error.message)) {
+    return {
+      ok: false,
+      error:
+        "Too many emails sent recently — please wait a little while and try again. " +
+        "Any link already in your inbox still works.",
+    };
+  }
+  return { ok: false, error: error.message };
 }
 
 /** Exchange the ?code= from the magic-link redirect for a session. */
