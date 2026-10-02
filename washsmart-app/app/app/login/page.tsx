@@ -86,10 +86,10 @@ export default function LoginPage() {
               <span className="font-bold text-[#10251c]">{email.trim()}</span>.
             </p>
             <Link
-              href="/app/subscription"
+              href="/app/signup"
               className="mt-6 block w-full rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
             >
-              Sign up for a plan
+              Create an account
             </Link>
             <button
               onClick={() => {
@@ -155,10 +155,10 @@ export default function LoginPage() {
             <p className="mt-5 text-center text-sm text-gray-500">
               New to WashSMART?{" "}
               <Link
-                href="/app/subscription"
+                href="/app/signup"
                 className="font-bold text-[#168846]"
               >
-                Sign up for a plan →
+                Create an account →
               </Link>
             </p>
           </>

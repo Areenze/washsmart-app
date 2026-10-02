@@ -75,7 +75,7 @@ export default function UserHome() {
               </Link>
             ) : (
               <Link
-                href="/app/subscription"
+                href="/app/signup"
                 className="rounded-full bg-[#28c866] px-6 py-3 font-bold text-white"
               >
                 Subscribe Now

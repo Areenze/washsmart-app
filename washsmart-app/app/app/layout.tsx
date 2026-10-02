@@ -53,12 +53,20 @@ export default function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
           {loggedIn === false ? (
-            <Link
-              href="/app/login"
-              className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white"
-            >
-              Log in
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/app/login"
+                className="text-sm font-bold text-[#168846]"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/app/signup"
+                className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white"
+              >
+                Sign up
+              </Link>
+            </div>
           ) : (
             <Link
               href="/app/profile"

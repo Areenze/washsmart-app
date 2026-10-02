@@ -1,7 +1,7 @@
 "use client";
 
 /* WashSMART landing — sliding hero carousel, subscriber-first entry.
- * [I'm a Car Owner] → /app (subscriber sign-up flow)
+ * [I'm a Car Owner] → /app/signup (standalone subscriber sign-up form)
  * Partner CTA lives in the footer → /join
  */
 
@@ -84,7 +84,7 @@ export default function EntryPage() {
             </p>
             <div className="mt-8">
               <Link
-                href="/app"
+                href="/app/signup"
                 className="inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-bold text-white shadow-lg transition hover:bg-[#1a8a47]"
               >
                 🚗 I&rsquo;m a Car Owner &rarr;

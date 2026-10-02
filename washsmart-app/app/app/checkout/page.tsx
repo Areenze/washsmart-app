@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   getPlans,
+  getProfile,
   isEmailRegistered,
   sendSignInLink,
 } from "@/lib/db/store";
@@ -40,6 +41,9 @@ function CheckoutInner() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  // Signed-up but planless users arrive here logged in: prefill their details
+  // and skip the duplicate-email gate (their email IS registered — it's theirs).
+  const [loggedIn, setLoggedIn] = useState(false);
   const [touched, setTouched] = useState({ name: false, email: false, phone: false });
   const [step, setStep] = useState<"form" | "processing" | "verify">("form");
   const [isDuplicate, setIsDuplicate] = useState(false);
@@ -54,6 +58,17 @@ function CheckoutInner() {
       const plans = await getPlans();
       const id = search.get("plan");
       setPlan(plans.find((p) => p.id === id) ?? plans[1] ?? plans[0]);
+      try {
+        const p = await getProfile();
+        if (p) {
+          setName(p.name ?? "");
+          setEmail(p.email ?? "");
+          setPhone(p.phone ?? "");
+          setLoggedIn(true);
+        }
+      } catch {
+        /* logged-out: fill the form manually */
+      }
     })();
   }, [search]);
 
@@ -63,7 +78,7 @@ function CheckoutInner() {
   const valid = nameOk && emailOk && phoneOk;
 
   const checkDuplicate = async () => {
-    if (!emailOk) return;
+    if (!emailOk || loggedIn) return;
     setCheckingEmail(true);
     try {
       setIsDuplicate(await isEmailRegistered(email));
@@ -77,7 +92,7 @@ function CheckoutInner() {
   const pay = async () => {
     setTouched({ name: true, email: true, phone: true });
     if (!valid) return;
-    if (await isEmailRegistered(email)) {
+    if (!loggedIn && (await isEmailRegistered(email))) {
       setIsDuplicate(true);
       return;
     }
@@ -148,6 +163,12 @@ function CheckoutInner() {
           <p className="mt-1 text-sm text-gray-500">
             {plan.name} Plan · {plan.washes} washes per month
           </p>
+          {loggedIn && (
+            <p className="mt-2 rounded-xl bg-[#edf8f1] p-3 text-xs font-semibold text-[#168846]">
+              Buying as {name} ({email}) — this plan will attach to your
+              account.
+            </p>
+          )}
 
           <div className="mt-6 rounded-2xl bg-[#edf8f1] p-5">
             <div className="flex justify-between text-sm">
