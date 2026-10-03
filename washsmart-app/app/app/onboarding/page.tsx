@@ -10,7 +10,6 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  getMySubscription,
   getProfile,
   getVehicles,
   saveVehicles,
@@ -56,11 +55,9 @@ function OnboardingInner() {
         router.replace("/app/signup");
         return;
       }
-      const sub = await getMySubscription().catch(() => null);
-      if (sub && sub.status === "active") {
-        router.replace("/app");
-        return;
-      }
+      // Note: subscribed users are welcome here too (e.g. they subscribed
+      // before vehicle registration existed) — the form prefills and
+      // "Continue" follows ?next=.
       const vs = await getVehicles().catch(() => []);
       if (vs.length > 0) {
         setDrafts(

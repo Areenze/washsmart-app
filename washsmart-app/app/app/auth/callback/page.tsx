@@ -60,9 +60,18 @@ function CallbackInner() {
         if (mode === "login") {
           // Pure sign-in (from /app/login): never mint a plan here.
         } else if (mode === "signup") {
-          // Fresh account from /app/signup: profile exists, no plan yet —
-          // register vehicles first, then pick a plan (unless subscribed).
-          router.replace(active ? "/app" : "/app/onboarding");
+          // Fresh account from /app/signup: profile exists.
+          // No plan yet -> register vehicles, then pick a plan.
+          // Already subscribed but no vehicles yet -> register vehicles,
+          // then back to the dashboard.
+          if (active) {
+            const vs = await getVehicles().catch(() => []);
+            router.replace(
+              vs.length > 0 ? "/app" : "/app/onboarding?next=/app"
+            );
+          } else {
+            router.replace("/app/onboarding");
+          }
           return;
         } else if (!active) {
           const planId = search.get("plan") ?? "standard";
