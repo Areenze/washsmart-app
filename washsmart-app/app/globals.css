@@ -3,6 +3,23 @@
 :root {
   --background: #0a0f0c;
   --foreground: #e9f2ec;
+
+  /* WashSMART brand greens */
+  --brand: #20a957;
+  --brand-deep: #063c28;
+  --brand-accent: #2ed06a;
+  --brand-bright: #48d87c;
+  --brand-hover: #1a8a47;
+
+  /* Surfaces */
+  --surface: #111a14;
+  --surface-2: #0d130f;
+
+  /* EverWash-inspired rhythm tokens */
+  --radius-pill: 9999px;
+  --radius-card: 1.5rem;
+  --shadow-card: 0 0 32px 5px rgb(0 0 0 / 0.28);
+  --section-pad: clamp(3rem, 4.5vw + 2rem, 6.5rem);
 }
 
 @theme inline {
@@ -12,10 +29,21 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+}
+
+::selection {
+  background: var(--brand);
+  color: #fff;
 }
 
 /* Dark form controls: dark dropdowns, calendars, scrollbars. */
@@ -23,4 +51,42 @@ input,
 select,
 textarea {
   color-scheme: dark;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-bright);
+  outline-offset: 2px;
+}
+
+/* EverWash-style gradient keyword for headlines (135deg secondary → accent) */
+.text-gradient-brand {
+  background: linear-gradient(135deg, var(--brand-bright), var(--brand-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* EverWash-style scroll reveal (pairs with the Reveal component) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

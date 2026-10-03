@@ -1,10 +1,13 @@
 "use client";
 
 /* Shared WashSMART UI primitives — green color scheme.
- * Primary #20a957 · dark #063c28 · accent #2ed06a · tint #edf8f1 · page #f5f8f6
+ * Primary #20a957 · dark #063c28 · accent #2ed06a · bright #48d87c
+ * Shapes follow the EverWash-inspired system: pill buttons/capsules,
+ * tinted icon chips, soft-shadow cards, staggered scroll reveals.
  */
 
 import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
 
 export function Logo({ size = 40 }: { size?: number }) {
   return (
@@ -62,8 +65,10 @@ export function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-xl py-3 font-bold text-white ${
-        disabled ? "cursor-not-allowed bg-white/15" : "bg-[#20a957]"
+      className={`rounded-full px-8 py-3.5 font-semibold tracking-wide text-white transition-all duration-200 active:scale-[0.98] ${
+        disabled
+          ? "cursor-not-allowed bg-white/15"
+          : "bg-[#20a957] shadow-lg shadow-[#20a957]/20 hover:bg-[#1a8a47] hover:shadow-xl hover:shadow-[#20a957]/25"
       } ${className}`}
     >
       {children}
@@ -83,7 +88,7 @@ export function OutlineButton({
   return (
     <button
       onClick={onClick}
-      className={`rounded-xl border border-[#20a957] py-3 font-bold text-[#48d87c] ${className}`}
+      className={`rounded-full border border-[#20a957] px-8 py-3.5 font-semibold tracking-wide text-[#48d87c] transition-all duration-200 hover:bg-[#20a957]/10 active:scale-[0.98] ${className}`}
     >
       {children}
     </button>
@@ -98,7 +103,80 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-7 ${className}`}>
+    <div
+      className={`rounded-3xl border border-white/5 bg-[#111a14] p-6 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] md:p-7 ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* EverWash-style icon chip: tinted pastel square, saturated glyph.
+ * Tones map to WashSMART greens so chips stay on-brand on dark surfaces. */
+export function IconChip({
+  icon,
+  tone = "green",
+  size = 64,
+}: {
+  icon: ReactNode;
+  tone?: "green" | "teal" | "amber";
+  size?: number;
+}) {
+  const tones: Record<string, string> = {
+    green: "bg-[#20a957]/15 text-[#48d87c]",
+    teal: "bg-cyan-400/15 text-cyan-300",
+    amber: "bg-amber-400/15 text-amber-300",
+  };
+  return (
+    <div
+      className={`flex items-center justify-center rounded-2xl ${tones[tone]}`}
+      style={{ width: size, height: size, fontSize: size * 0.45 }}
+      aria-hidden
+    >
+      {icon}
+    </div>
+  );
+}
+
+/* EverWash-style scroll reveal: fades/slides in on first view,
+ * with optional stagger delay (ms) for card grids. */
+export function Reveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      el.classList.add("is-visible");
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          el.classList.add("is-visible");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`reveal ${className}`}
+      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+    >
       {children}
     </div>
   );
