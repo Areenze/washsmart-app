@@ -129,14 +129,19 @@ export default function UserHome() {
   const totalWashes = summary?.totalRemaining ?? 0;
   const bonusWashes = summary?.bonusRemaining ?? 0;
   const outOfWashes = totalWashes <= 0;
-  const firstName = profile?.name.split(" ")[0] ?? "there";
+  const firstName = profile?.name?.trim().split(" ")[0] || "";
   const openPartners = partners.filter((p) => p.status === "Open");
   const qrPartner = partners.find((p) => p.id === qrPartnerId) ?? null;
 
   return (
     <section className="mx-auto max-w-7xl px-5 py-8">
       <p className="text-lg text-gray-300">
-        {greet} 👋, <span className="font-bold text-[#e9f2ec]">{firstName}</span>
+        {greet} 👋
+        {firstName ? (
+          <>
+            , <span className="font-bold text-[#e9f2ec]">{firstName}</span>
+          </>
+        ) : null}
       </p>
 
       {verifyEmail && !profile && (

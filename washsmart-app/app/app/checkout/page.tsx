@@ -83,6 +83,9 @@ function CheckoutInner() {
   const nameOk = name.trim().length > 1;
   const phoneOk = phone.trim().replace(/\D/g, "").length >= 7;
   const valid = nameOk && emailOk && phoneOk;
+  // Signed-in buyers with a complete profile never see the form twice —
+  // they get a read-only summary instead.
+  const profileComplete = loggedIn && valid;
   const needsVehicle =
     loggedIn && vehicles !== null && vehicles.length === 0;
   const canPay = valid && !isDuplicate && !needsVehicle;
@@ -179,7 +182,7 @@ function CheckoutInner() {
           <p className="mt-1 text-sm text-gray-400">
             {plan.name} Plan · {plan.washes} wash credits, valid 30 days
           </p>
-          {loggedIn && (
+          {loggedIn && !profileComplete && (
             <p className="mt-2 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
               Buying as {name} ({email}) — this plan will attach to your
               account.
@@ -197,18 +200,36 @@ function CheckoutInner() {
             </div>
           </div>
 
-          <p className="mt-6 text-xs font-semibold text-gray-400">
-            All fields marked <span className="text-red-400">*</span> are
-            required.
-          </p>
+          {profileComplete ? (
+            <div className="mt-6 rounded-2xl bg-white/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Subscribing as
+              </p>
+              <p className="mt-1 font-bold text-[#e9f2ec]">{name.trim()}</p>
+              <p className="text-sm text-gray-400">
+                {email.trim()} · {phone.trim()}
+              </p>
+              <Link
+                href="/app/profile"
+                className="mt-2 inline-block text-xs font-bold text-[#48d87c]"
+              >
+                Wrong details? Update them in your profile →
+              </Link>
+            </div>
+          ) : (
+            <>
+              <p className="mt-6 text-xs font-semibold text-gray-400">
+                All fields marked <span className="text-red-400">*</span> are
+                required.
+              </p>
 
-          {sendError && (
-            <p className="mt-3 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">
-              {sendError}
-            </p>
-          )}
+              {sendError && (
+                <p className="mt-3 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">
+                  {sendError}
+                </p>
+              )}
 
-          <div className="mt-3 space-y-4">
+              <div className="mt-3 space-y-4">
             <div>
               <label className="mb-1 block text-sm font-semibold">
                 Full name <Req />
@@ -317,6 +338,8 @@ function CheckoutInner() {
               )}
             </div>
           </div>
+            </>
+          )}
 
           {needsVehicle && (
             <div className="mt-6 rounded-xl bg-amber-500/10 p-4 text-sm text-amber-200">
