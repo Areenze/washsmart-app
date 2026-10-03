@@ -138,6 +138,15 @@ export default function PartnerLogin() {
           >
             {busy ? "Signing in…" : "Sign In"}
           </button>
+
+          <p className="mt-3 text-center text-sm">
+            <Link
+              href="/partner/forgot-password"
+              className="font-bold text-[#48d87c]"
+            >
+              Forgot password?
+            </Link>
+          </p>
         </form>
 
         <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
@@ -146,7 +155,14 @@ export default function PartnerLogin() {
           </p>
           <p className="mt-1 text-xs text-gray-400">
             Your password was issued privately when your application was
-            approved. Contact WashSMART if you need a reset.
+            approved.{" "}
+            <Link
+              href="/partner/forgot-password"
+              className="font-bold text-[#48d87c]"
+            >
+              Reset it here
+            </Link>{" "}
+            if you need a new one.
           </p>
           <div className="mt-4 space-y-2">
             {partners.map((p) => (

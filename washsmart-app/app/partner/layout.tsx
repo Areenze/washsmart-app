@@ -20,6 +20,13 @@ const tabs = [
   { href: "/partner/profile", label: "Profile" },
 ];
 
+// Pages that render outside the partner shell (own header, no session needed).
+const PUBLIC_PARTNER_PATHS = [
+  "/partner",
+  "/partner/forgot-password",
+  "/partner/reset-password",
+];
+
 export default function PartnerShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -29,11 +36,12 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
     (async () => {
       const p = await currentPartnerSession();
       setPartner(p ?? null);
-      if (!p && pathname !== "/partner") router.replace("/partner");
+      if (!p && !PUBLIC_PARTNER_PATHS.includes(pathname))
+        router.replace("/partner");
     })();
   }, [pathname, router]);
 
-  if (pathname === "/partner") {
+  if (PUBLIC_PARTNER_PATHS.includes(pathname)) {
     return <>{children}</>;
   }
 
