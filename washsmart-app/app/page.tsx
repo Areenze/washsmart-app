@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Brand, IconChip, Logo, Reveal } from "@/components/ui";
 
 const SLIDES = ["/images/hero-1.jpg", "/images/hero-2.jpg", "/images/hero-3.jpg"];
@@ -110,6 +111,13 @@ function NavLink({ href, children }: { href: string; children: string }) {
 export default function EntryPage() {
   const [slide, setSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [washQuery, setWashQuery] = useState("");
+  const router = useRouter();
+
+  const findWash = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(`/app/partners${washQuery.trim() ? `?q=${encodeURIComponent(washQuery.trim())}` : ""}`);
+  };
 
   useEffect(() => {
     const t = setInterval(
@@ -189,6 +197,31 @@ export default function EntryPage() {
                 🚗 I&rsquo;m a Car Owner &rarr;
               </Link>
             </div>
+
+            {/* EverWash-style location search pill → partner finder */}
+            <form onSubmit={findWash} className="mt-6 max-w-xl">
+              <p className="mb-2 text-sm font-semibold text-white/70">
+                Looking for a wash nearby?
+              </p>
+              <div className="flex flex-col gap-2 rounded-3xl bg-white p-2 shadow-xl sm:flex-row sm:items-center sm:rounded-full sm:pl-5">
+                <div className="flex flex-1 items-center gap-2 px-3 sm:px-0">
+                  <span aria-hidden className="text-lg">📍</span>
+                  <input
+                    value={washQuery}
+                    onChange={(e) => setWashQuery(e.target.value)}
+                    placeholder="Search by area or partner name…"
+                    aria-label="Search partners by area or name"
+                    className="w-full bg-transparent py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="rounded-full bg-[#20a957] px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+                >
+                  Find a wash
+                </button>
+              </div>
+            </form>
             <div className="mt-8 flex gap-2">
               {SLIDES.map((_, i) => (
                 <button

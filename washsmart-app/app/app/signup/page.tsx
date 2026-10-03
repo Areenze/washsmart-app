@@ -38,6 +38,9 @@ function SignupInner() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  // Invite code: prefilled from a ?ref= link, or typed in by hand
+  // (EverWash-style) — stashed so /app/auth/callback can attribute it.
+  const [inviteCode, setInviteCode] = useState(referred);
   const [touched, setTouched] = useState({
     name: false,
     email: false,
@@ -89,6 +92,8 @@ function SignupInner() {
       setIsDuplicate(true);
       return;
     }
+    // A manually entered invite code counts exactly like a ?ref= link.
+    if (inviteCode.trim()) stashReferralCode(inviteCode.trim());
     setStep("processing");
     setSendError(null);
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
@@ -223,7 +228,7 @@ function SignupInner() {
               One account for every WashSMART partner car wash. You&apos;ll
               pick a plan after verifying your email.
             </p>
-            {referred && (
+            {inviteCode.trim() && (
               <p className="mt-3 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
                 🎉 You were invited by a friend — they&apos;ll earn a free
                 wash when you subscribe.
@@ -335,6 +340,25 @@ function SignupInner() {
                     Please enter a valid phone number.
                   </p>
                 )}
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-semibold">
+                  Invite code{" "}
+                  <span className="font-normal text-gray-500">(optional)</span>
+                </label>
+                <input
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                  placeholder="e.g. ADAEZE-4F2K"
+                  autoComplete="off"
+                  spellCheck={false}
+                  className={fieldClass(false)}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Got a referral code from a friend? Enter it here — they earn
+                  a free wash when you subscribe.
+                </p>
               </div>
 
               <button
