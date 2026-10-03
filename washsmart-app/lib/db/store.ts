@@ -704,11 +704,12 @@ export async function createSubscription(input: {
  * registerEmail/seedDemoEmail are no-ops kept for compatibility. */
 
 export async function isEmailRegistered(email: string): Promise<boolean> {
-  const { data, error } = await getSupabase()
-    .from("profiles")
-    .select("id")
-    .eq("email", email.trim().toLowerCase())
-    .maybeSingle();
+  // Logged-out callers can't SELECT profiles directly (RLS only exposes a
+  // user's own row), so this goes through the SECURITY DEFINER RPC, which
+  // returns just the boolean without leaking profile data.
+  const { data, error } = await getSupabase().rpc("is_email_registered", {
+    p_email: email.trim().toLowerCase(),
+  });
   if (error) throw error;
   return !!data;
 }
