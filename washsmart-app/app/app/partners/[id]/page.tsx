@@ -35,7 +35,7 @@ export default function PartnerDetailPage() {
           action={
             <Link
               href="/app/partners"
-              className="inline-block rounded-xl bg-[#20a957] px-6 py-3 font-bold text-white"
+              className="inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Back to Partners
             </Link>
@@ -122,12 +122,12 @@ export default function PartnerDetailPage() {
           {partner.status === "Open" ? (
             <Link
               href={`/app/scan?partner=${partner.id}`}
-              className="flex-1 rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+              className="flex-1 rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               Scan & Wash Here
             </Link>
           ) : (
-            <span className="flex-1 cursor-not-allowed rounded-xl bg-white/15 py-3 text-center font-bold text-white">
+            <span className="flex-1 cursor-not-allowed rounded-full bg-white/15 py-3 text-center font-bold text-white">
               Currently Closed
             </span>
           )}
@@ -135,7 +135,7 @@ export default function PartnerDetailPage() {
             href={mapsUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 rounded-xl border border-[#20a957] py-3 text-center font-bold text-[#48d87c]"
+            className="flex-1 rounded-full border border-[#20a957] py-3 transition-all duration-200 hover:bg-[#20a957]/10 text-center font-bold text-[#48d87c]"
           >
             Get Directions
           </a>

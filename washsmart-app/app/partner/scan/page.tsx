@@ -75,7 +75,7 @@ function PartnerScanInner() {
 
         <button
           onClick={simulateCamera}
-          className="mt-6 w-full rounded-xl bg-[#2ed06a] py-3 font-bold text-white"
+          className="mt-6 w-full rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] font-bold text-white"
         >
           Simulate Camera Scan
         </button>

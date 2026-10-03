@@ -305,9 +305,9 @@ function CheckoutInner() {
           <button
             onClick={pay}
             disabled={!valid || isDuplicate}
-            className={`mt-6 w-full rounded-xl py-3 font-bold text-white ${
+            className={`mt-6 w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
               valid && !isDuplicate
-                ? "bg-[#20a957]"
+                ? "bg-[#20a957] hover:bg-[#1a8a47]"
                 : "cursor-not-allowed bg-white/15"
             }`}
           >
@@ -348,7 +348,7 @@ function CheckoutInner() {
 
           <button
             onClick={resendLink}
-            className="mt-5 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300"
+            className="mt-5 w-full rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-sm font-bold text-gray-300"
           >
             Resend verification link
           </button>

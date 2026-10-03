@@ -90,7 +90,7 @@ export default function LoginPage() {
             </p>
             <button
               onClick={() => router.push("/app")}
-              className="mt-5 w-full rounded-xl bg-[#20a957] py-3 font-bold text-white"
+              className="mt-5 w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Continue to the app →
             </button>
@@ -107,7 +107,7 @@ export default function LoginPage() {
             </p>
             <Link
               href="/app/signup"
-              className="mt-6 block w-full rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+              className="mt-6 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               Create an account
             </Link>
@@ -162,10 +162,10 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={step === "checking" || (touched && !emailOk)}
-                className={`w-full rounded-xl py-3 font-bold text-white ${
+                className={`w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
                   step === "checking"
                     ? "cursor-wait bg-white/15"
-                    : "bg-[#20a957]"
+                    : "bg-[#20a957] hover:bg-[#1a8a47]"
                 }`}
               >
                 {step === "checking" ? "Checking…" : "Email me a sign-in link"}

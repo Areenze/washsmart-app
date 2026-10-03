@@ -84,7 +84,7 @@ function CallbackInner() {
         <p className="mt-3 text-sm text-gray-400">{error}</p>
         <Link
           href="/app/subscription"
-          className="mt-6 inline-block rounded-xl bg-[#20a957] px-6 py-3 font-bold text-white"
+          className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
         >
           Back to Plans
         </Link>

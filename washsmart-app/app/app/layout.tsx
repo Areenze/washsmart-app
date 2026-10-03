@@ -41,7 +41,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0f0c] text-[#e9f2ec]">
-      <header className="border-b bg-[#111a14] px-5 py-4">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#111a14]/90 px-5 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2" aria-label="WashSMART home">
             <Logo />
@@ -52,9 +52,19 @@ export default function AppShell({ children }: { children: ReactNode }) {
               <Link
                 key={t.href}
                 href={t.href}
-                className={isActive(t.href) ? "text-[#48d87c]" : "text-gray-400"}
+                className={`group relative transition-colors ${
+                  isActive(t.href)
+                    ? "text-[#48d87c]"
+                    : "text-gray-400 hover:text-white"
+                }`}
               >
                 {t.label}
+                <span
+                  aria-hidden
+                  className={`absolute -bottom-1.5 left-0 h-[3px] w-full origin-left rounded-full bg-[#20a957] transition-transform duration-300 ${
+                    isActive(t.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                />
               </Link>
             ))}
           </nav>
@@ -62,13 +72,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-3">
               <Link
                 href="/app/login"
-                className="text-sm font-bold text-[#48d87c]"
+                className="text-sm font-bold text-[#48d87c] transition-colors hover:text-white"
               >
                 Log in
               </Link>
               <Link
                 href="/app/signup"
-                className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white"
+                className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
               >
                 Sign up
               </Link>
@@ -95,13 +105,17 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex-1">{children}</div>
 
-      <nav className="sticky bottom-0 border-t bg-[#111a14] px-4 py-3 md:hidden">
+      <nav className="sticky bottom-0 border-t border-white/5 bg-[#111a14]/95 px-4 py-3 backdrop-blur-md md:hidden">
         <div className="flex justify-around text-xs">
           {tabs.map((t) => (
             <Link
               key={t.href}
               href={t.href}
-              className={isActive(t.href) ? "font-bold text-[#48d87c]" : "text-gray-400"}
+              className={
+                isActive(t.href)
+                  ? "rounded-full bg-[#20a957]/15 px-4 py-1.5 font-bold text-[#48d87c]"
+                  : "px-4 py-1.5 text-gray-400"
+              }
             >
               {t.label}
             </Link>

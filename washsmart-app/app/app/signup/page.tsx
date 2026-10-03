@@ -180,14 +180,14 @@ function SignupInner() {
             </p>
             <button
               onClick={() => router.push("/app")}
-              className="mt-5 w-full rounded-xl bg-[#20a957] py-3 font-bold text-white"
+              className="mt-5 w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Continue to the app →
             </button>
             <button
               onClick={resendLink}
               disabled={resendCooldown > 0}
-              className="mt-3 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-300 disabled:opacity-50"
+              className="mt-3 w-full rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-sm font-bold text-gray-300 disabled:opacity-50"
             >
               {resendCooldown > 0
                 ? `Resend available in ${resendCooldown}s`
@@ -340,9 +340,9 @@ function SignupInner() {
               <button
                 type="submit"
                 disabled={!valid || isDuplicate}
-                className={`w-full rounded-xl py-3 font-bold text-white ${
+                className={`w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
                   valid && !isDuplicate
-                    ? "bg-[#20a957]"
+                    ? "bg-[#20a957] hover:bg-[#1a8a47]"
                     : "cursor-not-allowed bg-white/15"
                 }`}
               >

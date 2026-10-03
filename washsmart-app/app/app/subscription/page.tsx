@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Badge, Card } from "@/components/ui";
+import { Badge, Card, Reveal } from "@/components/ui";
 import {
   fmtDate,
   getMySubscription,
@@ -58,15 +58,15 @@ export default function SubscriptionPage() {
       </div>
 
       <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {plans.map((plan) => {
+        {plans.map((plan, i) => {
           const isCurrent = subscription?.planId === plan.id;
           return (
+            <Reveal key={plan.id} delay={i * 150}>
             <div
-              key={plan.id}
-              className={`relative rounded-3xl bg-[#111a14] p-7 shadow-sm ${
+              className={`relative rounded-3xl bg-[#111a14] p-7 ${
                 plan.popular
-                  ? "border-2 border-[#20a957]"
-                  : "border border-white/10"
+                  ? "border-2 border-[#20a957] shadow-[0_0_40px_8px_rgb(32_169_87/0.22)]"
+                  : "border border-white/10 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]"
               }`}
             >
               {plan.popular && (
@@ -80,10 +80,10 @@ export default function SubscriptionPage() {
                 <span className="text-sm font-normal text-gray-400">/30 days</span>
               </div>
               <div className="mt-6 space-y-3 text-sm">
-                <p>✓ {plan.washes} washes, valid 30 days</p>
-                <p>✓ Approved partner locations</p>
-                <p>✓ Digital wash tracking</p>
-                <p>✓ Subscriber verification</p>
+                <p><span className="font-bold text-[#48d87c]">✓</span> {plan.washes} washes, valid 30 days</p>
+                <p><span className="font-bold text-[#48d87c]">✓</span> Approved partner locations</p>
+                <p><span className="font-bold text-[#48d87c]">✓</span> Digital wash tracking</p>
+                <p><span className="font-bold text-[#48d87c]">✓</span> Subscriber verification</p>
               </div>
               {isCurrent ? (
                 <div className="mt-8 w-full rounded-xl bg-[#20a957]/10 py-3 text-center font-bold text-[#48d87c]">
@@ -92,12 +92,13 @@ export default function SubscriptionPage() {
               ) : (
                 <Link
                   href={`/app/checkout?plan=${plan.id}`}
-                  className="mt-8 block w-full rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+                  className="mt-8 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
                 >
                   {subscription ? "Switch to This Plan" : "Subscribe Now"}
                 </Link>
               )}
             </div>
+            </Reveal>
           );
         })}
       </div>

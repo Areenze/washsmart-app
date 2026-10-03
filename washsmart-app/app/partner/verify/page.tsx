@@ -142,13 +142,13 @@ function VerifyInner() {
           <div className="mt-6 flex gap-3">
             <Link
               href="/partner/scan"
-              className="flex-1 rounded-xl border border-white/10 py-3 text-center font-bold text-gray-400"
+              className="flex-1 rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-center font-bold text-gray-400"
             >
               Cancel
             </Link>
             <button
               onClick={approve}
-              className="flex-1 rounded-xl bg-[#20a957] py-3 font-bold text-white"
+              className="flex-1 rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Approve Wash
             </button>
@@ -185,7 +185,7 @@ function VerifyInner() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/partner/scan"
-              className="flex-1 rounded-xl bg-[#2ed06a] py-3 text-center font-bold text-white"
+              className="flex-1 rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] text-center font-bold text-white"
             >
               Scan Next Customer
             </Link>
@@ -211,13 +211,13 @@ function VerifyInner() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/partner/scan"
-              className="flex-1 rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+              className="flex-1 rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               Scan Again
             </Link>
             <Link
               href="/partner/dashboard"
-              className="flex-1 rounded-xl border border-white/10 py-3 text-center font-bold text-gray-400"
+              className="flex-1 rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-center font-bold text-gray-400"
             >
               Dashboard
             </Link>

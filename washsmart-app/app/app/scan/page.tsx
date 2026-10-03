@@ -140,7 +140,7 @@ function ScanInner() {
           action={
             <Link
               href="/app/scan"
-              className="inline-block rounded-xl bg-[#20a957] px-6 py-3 font-bold text-white"
+              className="inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Choose Partner
             </Link>
@@ -159,7 +159,7 @@ function ScanInner() {
               </p>
               <Link
                 href="/app/subscription"
-                className="mt-8 block w-full rounded-xl bg-[#2ed06a] py-3 font-bold text-white"
+                className="mt-8 block w-full rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] font-bold text-white"
               >
                 View Plans
               </Link>

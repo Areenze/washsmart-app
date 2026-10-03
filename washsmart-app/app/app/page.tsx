@@ -7,7 +7,7 @@ import Link from "next/link";
 import PartnerCard from "@/components/partner-card";
 import InstallPrompt from "@/components/install-prompt";
 import ReferralCard from "@/components/referral-card";
-import { EmptyState, SectionTitle } from "@/components/ui";
+import { EmptyState, IconChip, Reveal, SectionTitle } from "@/components/ui";
 import {
   clearVerifyPending,
   creditDaysLeft,
@@ -97,13 +97,14 @@ export default function UserHome() {
       </div>
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="overflow-hidden rounded-3xl bg-[#063c28] p-8 text-white">
+        <Reveal>
+        <div className="overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-8 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
           <p className="mb-3 text-sm font-semibold text-[#65e28e]">
             WASHSMART SUBSCRIBER
           </p>
           <h1 className="text-4xl font-bold leading-tight md:text-5xl">
             Your car deserves a
-            <span className="text-[#48d87c]"> smarter</span> way to stay clean.
+            <span className="text-gradient-brand"> smarter</span> way to stay clean.
           </h1>
           <p className="mt-5 max-w-lg text-white/75">
             {subscription
@@ -114,21 +115,21 @@ export default function UserHome() {
             {subscription ? (
               <Link
                 href="/app/scan"
-                className="rounded-full bg-[#28c866] px-6 py-3 font-bold text-white"
+                className="rounded-full bg-[#20a957] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/20 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
               >
                 Get My Wash QR
               </Link>
             ) : (
               <Link
                 href="/app/signup"
-                className="rounded-full bg-[#28c866] px-6 py-3 font-bold text-white"
+                className="rounded-full bg-[#20a957] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/20 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
               >
                 Subscribe Now
               </Link>
             )}
             <Link
               href="/app/partners"
-              className="rounded-full border border-white/40 px-6 py-3 font-bold"
+              className="rounded-full border border-white/40 px-6 py-3 font-semibold tracking-wide transition-all duration-200 hover:border-white/70 hover:bg-white/5 active:scale-[0.98]"
             >
               Find a Partner
             </Link>
@@ -142,9 +143,11 @@ export default function UserHome() {
             </p>
           )}
         </div>
+        </Reveal>
 
+        <Reveal delay={150}>
         <div className="space-y-6">
-        <div className="rounded-3xl bg-[#111a14] p-6 shadow-sm">
+        <div className="rounded-3xl border border-white/5 bg-[#111a14] p-6 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
           {subscription ? (
             <>
               <div className="flex items-center justify-between">
@@ -180,10 +183,10 @@ export default function UserHome() {
               </div>
               <Link
                 href="/app/scan"
-                className={`mt-5 block w-full rounded-xl py-3 text-center font-bold text-white ${
+                className={`mt-5 block w-full rounded-full py-3 transition-all duration-200 text-center font-bold text-white ${
                   outOfWashes
                     ? "pointer-events-none bg-white/15"
-                    : "bg-[#20a957]"
+                    : "bg-[#20a957] hover:bg-[#1a8a47]"
                 }`}
               >
                 {outOfWashes ? "No Washes Left" : "Scan & Wash"}
@@ -191,7 +194,7 @@ export default function UserHome() {
               {outOfWashes && (
                 <Link
                   href="/app/subscription"
-                  className="mt-3 block w-full rounded-xl border border-[#20a957] py-3 text-center text-sm font-bold text-[#48d87c]"
+                  className="mt-3 block w-full rounded-full border border-[#20a957] py-3 transition-all duration-200 hover:bg-[#20a957]/10 text-center text-sm font-bold text-[#48d87c]"
                 >
                   Renew Subscription
                 </Link>
@@ -199,14 +202,14 @@ export default function UserHome() {
             </>
           ) : (
             <div className="flex h-full flex-col justify-center text-center">
-              <div className="text-5xl">🧽</div>
+              <div className="flex justify-center"><IconChip icon="🧽" /></div>
               <h2 className="mt-3 text-xl font-bold">No active subscription</h2>
               <p className="mt-2 text-sm text-gray-400">
                 Choose a plan to start washing smarter today.
               </p>
               <Link
                 href="/app/subscription"
-                className="mt-5 block w-full rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+                className="mt-5 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
               >
                 View Plans
               </Link>
@@ -215,6 +218,7 @@ export default function UserHome() {
         </div>
         {profile && <ReferralCard highlight={outOfWashes} />}
         </div>
+        </Reveal>
       </div>
 
       <section className="mt-10">
@@ -238,8 +242,10 @@ export default function UserHome() {
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-3">
-            {partners.slice(0, 3).map((p) => (
-              <PartnerCard key={p.id} partner={p} />
+            {partners.slice(0, 3).map((p, i) => (
+              <Reveal key={p.id} delay={i * 150}>
+                <PartnerCard partner={p} />
+              </Reveal>
             ))}
           </div>
         )}

@@ -85,7 +85,7 @@ export default function ReferralCard({
             href={whatsappShareUrl(code)}
             target="_blank"
             rel="noreferrer"
-            className="mt-3 block w-full rounded-xl bg-[#25d366] py-3 text-center font-bold text-white"
+            className="mt-3 block w-full rounded-full bg-[#25d366] py-3 transition-all duration-200 hover:bg-[#1fb857] text-center font-bold text-white"
           >
             Share on WhatsApp
           </a>

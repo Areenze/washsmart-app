@@ -35,7 +35,7 @@ export default function PartnerCard({ partner }: { partner: Partner }) {
 
       <Link
         href={`/app/partners/${partner.id}`}
-        className="mt-4 block w-full rounded-xl border border-[#20a957] py-2 text-center text-sm font-semibold text-[#48d87c]"
+        className="mt-4 block w-full rounded-full border border-[#20a957] py-2 transition-all duration-200 hover:bg-[#20a957]/10 text-center text-sm font-semibold text-[#48d87c]"
       >
         View Partner
       </Link>

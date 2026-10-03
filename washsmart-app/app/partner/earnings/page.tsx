@@ -175,7 +175,7 @@ export default function EarningsPage() {
         </p>
         <Link
           href="/partner/settlements/current"
-          className="mt-4 block rounded-xl bg-[#2ed06a] py-3 text-center font-bold text-white"
+          className="mt-4 block rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] text-center font-bold text-white"
         >
           View Statement
         </Link>

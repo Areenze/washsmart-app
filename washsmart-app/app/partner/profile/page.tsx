@@ -113,8 +113,8 @@ export default function PartnerProfilePage() {
 
         <button
           onClick={toggleOpen}
-          className={`mt-5 w-full rounded-xl py-3 font-bold text-white ${
-            partner.status === "Open" ? "bg-gray-500" : "bg-[#20a957]"
+          className={`mt-5 w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
+            partner.status === "Open" ? "bg-gray-500" : "bg-[#20a957] hover:bg-[#1a8a47]"
           }`}
         >
           {partner.status === "Open" ? "Mark as Closed" : "Mark as Open"}

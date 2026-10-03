@@ -189,7 +189,7 @@ export default function ProfilePage() {
         <button
           onClick={addVehicle}
           disabled={newVehicle.label.trim().length < 2}
-          className="mt-3 rounded-xl border border-[#20a957] px-5 py-2.5 text-sm font-bold text-[#48d87c] disabled:opacity-40"
+          className="mt-3 rounded-full border border-[#20a957] px-5 py-2.5 transition-all duration-200 hover:bg-[#20a957]/10 text-sm font-bold text-[#48d87c] disabled:opacity-40"
         >
           + Add Vehicle
         </button>
@@ -217,7 +217,7 @@ export default function ProfilePage() {
             </div>
             <Link
               href="/app/subscription"
-              className="mt-3 block rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+              className="mt-3 block rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               Manage Subscription
             </Link>
@@ -227,7 +227,7 @@ export default function ProfilePage() {
             <p className="text-sm text-gray-400">No active subscription.</p>
             <Link
               href="/app/subscription"
-              className="mt-3 block rounded-xl bg-[#20a957] py-3 text-center font-bold text-white"
+              className="mt-3 block rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               View Plans
             </Link>
@@ -244,7 +244,7 @@ export default function ProfilePage() {
           await signOut();
           window.location.href = "/";
         }}
-        className="mt-6 w-full rounded-xl border border-white/10 py-3 text-sm font-bold text-gray-400"
+        className="mt-6 w-full rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-sm font-bold text-gray-400"
       >
         Log out
       </button>
