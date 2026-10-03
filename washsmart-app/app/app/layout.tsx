@@ -12,7 +12,6 @@ import { getProfile, signOut } from "@/lib/db/store";
 const tabs = [
   { href: "/app", label: "Home" },
   { href: "/app/partners", label: "Partners" },
-  { href: "/app/scan", label: "Scan" },
   { href: "/app/subscription", label: "Subscription" },
 ];
 

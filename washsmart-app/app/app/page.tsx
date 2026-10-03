@@ -2,16 +2,19 @@
 
 /* /app — subscriber home dashboard. */
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import PartnerCard from "@/components/partner-card";
 import InstallPrompt from "@/components/install-prompt";
 import ReferralCard from "@/components/referral-card";
+import QRCode from "@/components/qrcode";
 import { EmptyState, IconChip, Reveal, SectionTitle } from "@/components/ui";
 import {
+  TOKEN_TTL_MS,
   clearVerifyPending,
   creditDaysLeft,
   fmtDate,
+  getQRToken,
   getVerifyPending,
   getWashSummary,
   getProfile,
@@ -40,6 +43,28 @@ export default function UserHome() {
   const [history, setHistory] = useState<WashTransaction[]>([]);
   const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
 
+  // Dashboard wash QR: partner-specific code minted right here, so the
+  // subscriber never needs the separate Scan tab. The last-used partner
+  // is remembered between visits.
+  const [qrPartnerId, setQrPartnerId] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      return window.localStorage.getItem("washsmart.lastPartner");
+    } catch {
+      return null;
+    }
+  });
+  const [qrToken, setQrToken] = useState<string | null>(null);
+  const [qrIssuedAt, setQrIssuedAt] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
+
+  const mintQr = useCallback(async () => {
+    const t = await getQRToken();
+    setQrToken(t);
+    setQrIssuedAt(Date.now());
+    setNow(Date.now());
+  }, []);
+
   useEffect(() => {
     (async () => {
       const p = await getProfile();
@@ -56,11 +81,53 @@ export default function UserHome() {
     })();
   }, []);
 
+  // Drop a remembered partner that is no longer listed.
+  useEffect(() => {
+    if (qrPartnerId && partners.length > 0 && !partners.some((p) => p.id === qrPartnerId)) {
+      setQrPartnerId(null);
+      try {
+        window.localStorage.removeItem("washsmart.lastPartner");
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [partners, qrPartnerId]);
+
+  // Mint (and auto-refresh) the QR token while a partner is selected.
+  useEffect(() => {
+    if (!profile || !qrPartnerId) {
+      setQrToken(null);
+      return;
+    }
+    try {
+      window.localStorage.setItem("washsmart.lastPartner", qrPartnerId);
+    } catch {
+      /* ignore */
+    }
+    mintQr();
+  }, [profile, qrPartnerId, mintQr]);
+
+  useEffect(() => {
+    if (!qrPartnerId) return;
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [qrPartnerId]);
+
+  const qrRemainingMs = Math.max(0, TOKEN_TTL_MS - (now - qrIssuedAt));
+  const qrRemainingSec = Math.ceil(qrRemainingMs / 1000);
+
+  useEffect(() => {
+    if (qrToken && qrRemainingMs <= 0) mintQr();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qrRemainingMs]);
+
   const subscription: Subscription | null = summary?.primary ?? null;
   const totalWashes = summary?.totalRemaining ?? 0;
   const bonusWashes = summary?.bonusRemaining ?? 0;
   const outOfWashes = totalWashes <= 0;
   const firstName = profile?.name.split(" ")[0] ?? "there";
+  const openPartners = partners.filter((p) => p.status === "Open");
+  const qrPartner = partners.find((p) => p.id === qrPartnerId) ?? null;
 
   return (
     <section className="mx-auto max-w-7xl px-5 py-8">
@@ -96,7 +163,105 @@ export default function UserHome() {
         <InstallPrompt />
       </div>
 
-      <div className="mt-4 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      {/* My Wash QR — lives on the dashboard now (was the Scan tab). */}
+      <Reveal className="mt-6">
+        <section
+          id="wash-qr"
+          aria-label="My Wash QR"
+          className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-6 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] md:p-8"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold tracking-wide text-[#65e28e]">
+                WASHSMART VERIFICATION
+              </p>
+              <h2 className="mt-1 text-2xl font-bold">My Wash QR</h2>
+            </div>
+            {profile && openPartners.length > 0 && (
+              <label className="flex items-center gap-2 text-sm">
+                <span className="font-semibold text-white/70">Washing at</span>
+                <select
+                  value={qrPartnerId ?? ""}
+                  onChange={(e) => setQrPartnerId(e.target.value || null)}
+                  aria-label="Choose the partner you're visiting"
+                  className="max-w-[220px] rounded-full border border-white/20 bg-[#0a0f0c] px-4 py-2.5 text-sm font-semibold text-[#e9f2ec] outline-none focus:border-[#20a957]"
+                >
+                  <option value="">Choose a partner…</option>
+                  {openPartners.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
+
+          {!profile ? (
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white/5 p-5">
+              <p className="text-sm text-white/75">
+                Log in to generate your wash QR.
+              </p>
+              <Link
+                href="/app/login"
+                className="rounded-full bg-[#20a957] px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+              >
+                Log in →
+              </Link>
+            </div>
+          ) : !qrPartner ? (
+            <p className="mt-6 rounded-2xl bg-white/5 p-5 text-sm text-white/70">
+              Pick the car wash you&rsquo;re visiting above to generate your
+              wash QR.
+            </p>
+          ) : outOfWashes ? (
+            <div className="mt-6 text-center">
+              <p className="text-xl font-bold">No washes left</p>
+              <p className="mt-2 text-sm text-white/70">
+                Top up to keep washing smarter.
+              </p>
+              <Link
+                href="/app/subscription"
+                className="mt-4 inline-block rounded-full bg-[#2ed06a] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#25b856]"
+              >
+                View Plans
+              </Link>
+            </div>
+          ) : (
+            <div className="mt-6 flex flex-col items-center gap-6 md:flex-row md:gap-10">
+              <div className="rounded-2xl bg-white p-3 shadow-xl">
+                {qrToken ? (
+                  <QRCode text={qrToken} size={200} />
+                ) : (
+                  <div className="flex h-[200px] w-[200px] items-center justify-center">
+                    <p className="text-sm text-gray-500">Loading…</p>
+                  </div>
+                )}
+              </div>
+              <div className="text-center md:text-left">
+                <p className="font-bold">{qrPartner.name}</p>
+                <p className="mt-1 text-sm text-white/60">{qrPartner.location}</p>
+                <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-[#111a14]/40 px-4 py-2 text-sm">
+                  <span className="text-white/70">Refreshes in</span>
+                  <span className="font-mono font-bold text-[#65e28e]">
+                    {Math.floor(qrRemainingSec / 60)}:
+                    {String(qrRemainingSec % 60).padStart(2, "0")}
+                  </span>
+                </div>
+                <p className="mt-4 text-sm text-white/70">
+                  Present this QR at {qrPartner.name}. The partner scans it to
+                  verify and deduct one wash.
+                </p>
+                <p className="mt-2 text-sm font-semibold text-[#65e28e]">
+                  {totalWashes} {totalWashes === 1 ? "wash" : "washes"} remaining
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
+      </Reveal>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <Reveal>
         <div className="overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-8 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
           <p className="mb-3 text-sm font-semibold text-[#65e28e]">
@@ -114,7 +279,7 @@ export default function UserHome() {
           <div className="mt-7 flex flex-wrap gap-3">
             {subscription ? (
               <Link
-                href="/app/scan"
+                href="#wash-qr"
                 className="rounded-full bg-[#20a957] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/20 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
               >
                 Get My Wash QR
@@ -182,7 +347,7 @@ export default function UserHome() {
                 </p>
               </div>
               <Link
-                href="/app/scan"
+                href="#wash-qr"
                 className={`mt-5 block w-full rounded-full py-3 transition-all duration-200 text-center font-bold text-white ${
                   outOfWashes
                     ? "pointer-events-none bg-white/15"
