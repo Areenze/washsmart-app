@@ -79,7 +79,11 @@ export async function POST(request: Request) {
   try {
     const res = await fetch(
       `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
-      { headers: { Authorization: `Bearer ${secret}` } }
+      {
+        headers: { Authorization: `Bearer ${secret}` },
+        // Fail fast instead of hanging the serverless function.
+        signal: AbortSignal.timeout(8000),
+      }
     );
     verification = await res.json();
   } catch {
