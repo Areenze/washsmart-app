@@ -754,12 +754,13 @@ export async function getQRToken(): Promise<string | null> {
   if (!sub) return null;
   const raw = `WS1-${randomToken(32)}`;
   const hash = await sha256Hex(raw);
-  const { error } = await sb.rpc("issue_wash_token", {
+  const { data: issued, error } = await sb.rpc("issue_wash_token", {
     p_subscription_id: sub.id,
     p_token_hash: hash,
     p_ttl_seconds: 300,
   });
-  if (error) return null;
+  // No rows + no error means the pack lapsed and was voided server-side.
+  if (error || !issued || issued.length === 0) return null;
   // Stash the latest token so the partner demo scanner can simulate a
   // camera read on the same device.
   if (isBrowser()) {
@@ -882,6 +883,11 @@ export async function redeemWash(
     p_partner_id: partnerId,
     p_type: "Standard Wash",
   });
+  if (!error && (!data || data.length === 0)) {
+    // Subscription lapsed: the RPC voided the pack (status='expired') and
+    // returned no rows instead of raising, so the voiding is committed.
+    return { ok: false, reason: "inactive-subscription" };
+  }
   if (error || !data || data.length === 0) {
     const msg = error?.message ?? "";
     const reason: RedeemFailure = msg.includes("already used")
