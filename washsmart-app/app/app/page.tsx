@@ -42,6 +42,9 @@ export default function UserHome() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [history, setHistory] = useState<WashTransaction[]>([]);
   const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
+  // Greeting is time-of-day based: render a stable value for SSR/hydration,
+  // then swap to the real greeting after mount so server and client agree.
+  const [greet, setGreet] = useState("Welcome");
 
   // Dashboard wash QR: partner-specific code minted right here, so the
   // subscriber never needs the separate Scan tab. The last-used partner
@@ -66,6 +69,7 @@ export default function UserHome() {
   }, []);
 
   useEffect(() => {
+    setGreet(greeting());
     (async () => {
       const p = await getProfile();
       setProfile(p);
@@ -132,7 +136,7 @@ export default function UserHome() {
   return (
     <section className="mx-auto max-w-7xl px-5 py-8">
       <p className="text-lg text-gray-300">
-        {greeting()} 👋, <span className="font-bold text-[#e9f2ec]">{firstName}</span>
+        {greet} 👋, <span className="font-bold text-[#e9f2ec]">{firstName}</span>
       </p>
 
       {verifyEmail && !profile && (
