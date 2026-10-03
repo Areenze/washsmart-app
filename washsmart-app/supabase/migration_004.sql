@@ -136,7 +136,7 @@ begin
    where token_hash = p_token_hash;
 
   update subscriptions
-     set washes_remaining = washes_remaining - 1
+     set washes_remaining = subscriptions.washes_remaining - 1
    where id = v_sub.id
   returning * into v_sub;
 
