@@ -200,9 +200,6 @@ export default function EntryPage() {
 
             {/* EverWash-style location search pill → partner finder */}
             <form onSubmit={findWash} className="mt-6 max-w-xl">
-              <p className="mb-2 text-sm font-semibold text-white/70">
-                Looking for a wash nearby?
-              </p>
               <div className="flex flex-col gap-2 rounded-3xl bg-white p-2 shadow-xl sm:flex-row sm:items-center sm:rounded-full sm:pl-5">
                 <div className="flex flex-1 items-center gap-2 px-3 sm:px-0">
                   <span aria-hidden className="text-lg">📍</span>
