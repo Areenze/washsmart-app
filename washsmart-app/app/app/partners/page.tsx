@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PartnerCard from "@/components/partner-card";
 import { EmptyState, Reveal } from "@/components/ui";
-import { listApprovedPartners } from "@/lib/db/store";
+import { listApprovedPartners, submitLocationRequest } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
 
 export default function PartnersPage() {
@@ -30,6 +30,11 @@ function PartnersInner() {
   const search = useSearchParams();
   const [partners, setPartners] = useState<Partner[]>([]);
   const [q, setQ] = useState(search.get("q") ?? "");
+  const [reqEmail, setReqEmail] = useState("");
+  const [reqArea, setReqArea] = useState("");
+  const [reqState, setReqState] = useState<
+    "idle" | "sending" | "done" | "error"
+  >("idle");
 
   useEffect(() => {
     (async () => setPartners(await listApprovedPartners()))();
@@ -41,6 +46,17 @@ function PartnersInner() {
         `${p.name} ${p.location}`.toLowerCase().includes(query)
       )
     : partners;
+
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reqEmail.trim());
+  const canSend = emailOk && reqArea.trim().length > 1 && reqState !== "sending";
+
+  const sendRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSend) return;
+    setReqState("sending");
+    const res = await submitLocationRequest(reqEmail, reqArea);
+    setReqState(res.ok ? "done" : "error");
+  };
 
   return (
     <section className="mx-auto max-w-7xl px-5 py-8">
@@ -78,6 +94,14 @@ function PartnersInner() {
           </button>
         )}
       </form>
+
+      <div className="mt-10 text-center">
+        <h2 className="text-2xl font-bold md:text-3xl">Partner Locations</h2>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-gray-400">
+          Check back often — we are continually adding partner washes to our
+          network across Lagos.
+        </p>
+      </div>
 
       <div className="mt-6 rounded-3xl bg-[#20a957]/15 p-6">
         <div className="flex h-56 items-center justify-center rounded-2xl bg-[#152419] md:h-72">
@@ -121,6 +145,66 @@ function PartnersInner() {
           ))}
         </div>
       )}
+
+      {/* Request coverage — "Don't see a WashSMART location in your area?" */}
+      <div className="mt-14 rounded-3xl border border-white/5 bg-[#0d130f] p-8 text-center shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] md:p-10">
+        <h2 className="text-2xl font-bold md:text-3xl">
+          Don&rsquo;t see a WashSMART location in your area?
+        </h2>
+        <p className="mx-auto mt-2 max-w-xl text-sm text-gray-400">
+          Let us know what neighborhood or city you&rsquo;d like to see next —
+          we expand where subscribers ask us to.
+        </p>
+
+        {reqState === "done" ? (
+          <div className="mx-auto mt-6 max-w-xl rounded-2xl bg-[#20a957]/10 p-5">
+            <p className="font-bold text-[#48d87c]">Request received ✓</p>
+            <p className="mt-1 text-sm text-gray-400">
+              We&rsquo;ll prioritize <span className="font-semibold text-[#e9f2ec]">{reqArea.trim()}</span> as
+              our network grows. Watch your inbox for launch news.
+            </p>
+          </div>
+        ) : (
+          <form
+            onSubmit={sendRequest}
+            className="mx-auto mt-6 flex max-w-2xl flex-col gap-3 sm:flex-row"
+          >
+            <input
+              value={reqEmail}
+              onChange={(e) => setReqEmail(e.target.value)}
+              placeholder="Email"
+              inputMode="email"
+              autoComplete="email"
+              aria-label="Email address"
+              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957]"
+            />
+            <input
+              value={reqArea}
+              onChange={(e) => setReqArea(e.target.value)}
+              placeholder="Neighborhood or city"
+              aria-label="Neighborhood or city"
+              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957]"
+            />
+            <button
+              type="submit"
+              disabled={!canSend}
+              className={`shrink-0 rounded-full px-8 py-3 text-sm font-bold text-white transition-all duration-200 active:scale-[0.98] ${
+                canSend
+                  ? "bg-[#20a957] shadow-lg shadow-[#20a957]/20 hover:bg-[#1a8a47]"
+                  : "cursor-not-allowed bg-white/15"
+              }`}
+            >
+              {reqState === "sending" ? "Sending…" : "→ Send"}
+            </button>
+          </form>
+        )}
+        {reqState === "error" && (
+          <p className="mt-3 text-sm font-semibold text-red-400">
+            Couldn&rsquo;t send your request — please check your connection and
+            try again.
+          </p>
+        )}
+      </div>
     </section>
   );
 }

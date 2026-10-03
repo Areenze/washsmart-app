@@ -304,6 +304,26 @@ export async function isAdmin(): Promise<boolean> {
 
 /* ---------------- partners ---------------- */
 
+/* Subscriber asks for coverage in their neighborhood/city.
+ * Public insert (RLS); only admins can read the requests. */
+export async function submitLocationRequest(
+  email: string,
+  area: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const { error } = await getSupabase()
+      .from("location_requests")
+      .insert({ email: email.trim(), area: area.trim() });
+    if (error) throw error;
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Could not send your request.",
+    };
+  }
+}
+
 const PARTNER_COLS =
   "id,name,owner_name,phone,whatsapp,email,partner_id,settlement_rate,bank_name,bank_account_last4,address,area,lga,state,gps,hours,services,bays,daily_capacity,years_operating,staff_count,rating,reviews,open_now,status,approved_at,created_at";
 
