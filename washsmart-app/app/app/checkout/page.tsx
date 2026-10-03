@@ -14,10 +14,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   getPlans,
   getProfile,
+  getVehicles,
   isEmailRegistered,
   sendSignInLink,
 } from "@/lib/db/store";
-import type { Plan } from "@/lib/db/types";
+import type { Plan, Vehicle } from "@/lib/db/types";
 
 export default function CheckoutPage() {
   return (
@@ -44,6 +45,9 @@ function CheckoutInner() {
   // Signed-up but planless users arrive here logged in: prefill their details
   // and skip the duplicate-email gate (their email IS registered — it's theirs).
   const [loggedIn, setLoggedIn] = useState(false);
+  // Logged-in buyers must have at least one registered vehicle: a WashSMART
+  // subscription covers registered cars only.
+  const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
   const [touched, setTouched] = useState({ name: false, email: false, phone: false });
   const [step, setStep] = useState<"form" | "processing" | "verify">("form");
   const [isDuplicate, setIsDuplicate] = useState(false);
@@ -65,6 +69,7 @@ function CheckoutInner() {
           setEmail(p.email ?? "");
           setPhone(p.phone ?? "");
           setLoggedIn(true);
+          setVehicles(await getVehicles().catch(() => []));
         }
       } catch {
         /* logged-out: fill the form manually */
@@ -76,6 +81,9 @@ function CheckoutInner() {
   const nameOk = name.trim().length > 1;
   const phoneOk = phone.trim().replace(/\D/g, "").length >= 7;
   const valid = nameOk && emailOk && phoneOk;
+  const needsVehicle =
+    loggedIn && vehicles !== null && vehicles.length === 0;
+  const canPay = valid && !isDuplicate && !needsVehicle;
 
   const checkDuplicate = async () => {
     if (!emailOk || loggedIn) return;
@@ -302,11 +310,29 @@ function CheckoutInner() {
             </div>
           </div>
 
+          {needsVehicle && (
+            <div className="mt-6 rounded-xl bg-amber-500/10 p-4 text-sm text-amber-200">
+              <p className="font-bold">Register your vehicle first.</p>
+              <p className="mt-1">
+                A WashSMART subscription covers your registered cars only —
+                add at least one vehicle before subscribing.
+              </p>
+              <Link
+                href={`/app/onboarding?next=${encodeURIComponent(
+                  `/app/checkout?plan=${plan.id}`
+                )}`}
+                className="mt-3 inline-block rounded-full bg-amber-600 px-5 py-2 font-bold text-white"
+              >
+                Register vehicles →
+              </Link>
+            </div>
+          )}
+
           <button
             onClick={pay}
-            disabled={!valid || isDuplicate}
+            disabled={!canPay}
             className={`mt-6 w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
-              valid && !isDuplicate
+              canPay
                 ? "bg-[#20a957] hover:bg-[#1a8a47]"
                 : "cursor-not-allowed bg-white/15"
             }`}

@@ -50,6 +50,7 @@ export default function ProfilePage() {
       name: profile.name.trim(),
       email: profile.email.trim(),
       phone: profile.phone.trim(),
+      area: profile.area?.trim() || undefined,
     });
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2500);
@@ -124,6 +125,14 @@ export default function ProfilePage() {
               inputMode="tel"
               autoComplete="tel"
               className={inputClass(touched && !phoneOk)}
+            />
+          </Field>
+          <Field label="Area in Lagos">
+            <input
+              value={profile.area ?? ""}
+              onChange={(e) => setProfile({ ...profile, area: e.target.value })}
+              placeholder="e.g. Lekki Phase 1"
+              className={inputClass(false)}
             />
           </Field>
         </div>

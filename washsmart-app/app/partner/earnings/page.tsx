@@ -31,7 +31,7 @@ function fmtSigned(n: number): string {
 const MONEY_FLOW: { title: string; body: string }[] = [
   {
     title: "Subscriber pays",
-    body: "Customer buys a WashSMART plan (e.g. ₦12,000 Standard · 4 washes) — payment confirmed via Paystack.",
+    body: "Customer buys a WashSMART plan (e.g. ₦12,000 Standard · 6 washes) — payment confirmed via Paystack.",
   },
   {
     title: "Wash is redeemed",

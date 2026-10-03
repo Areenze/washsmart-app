@@ -13,6 +13,7 @@ import {
   createSubscription,
   exchangeCodeForSession,
   getMySubscription,
+  getVehicles,
   takeStashedReferralCode,
 } from "@/lib/db/store";
 
@@ -60,12 +61,17 @@ function CallbackInner() {
           // Pure sign-in (from /app/login): never mint a plan here.
         } else if (mode === "signup") {
           // Fresh account from /app/signup: profile exists, no plan yet —
-          // send them to pick one (unless they already have one).
-          router.replace(active ? "/app" : "/app/subscription");
+          // register vehicles first, then pick a plan (unless subscribed).
+          router.replace(active ? "/app" : "/app/onboarding");
           return;
         } else if (!active) {
           const planId = search.get("plan") ?? "standard";
           await createSubscription({ planId });
+          // Checkout-first arrivals never registered vehicles: send them to
+          // onboarding before the dashboard (unless they already have cars).
+          const vs = await getVehicles().catch(() => []);
+          router.replace(vs.length > 0 ? "/app" : "/app/onboarding?next=/app");
+          return;
         }
         router.replace("/app");
       } catch (e) {

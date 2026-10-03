@@ -527,7 +527,7 @@ export async function getProfile(): Promise<Profile | null> {
   if (!user) return null;
   const { data, error } = await getSupabase()
     .from("profiles")
-    .select("name,email,phone")
+    .select("name,email,phone,area")
     .eq("id", user.id)
     .maybeSingle();
   if (error) throw error;
@@ -547,9 +547,26 @@ export async function saveProfile(p: Profile): Promise<void> {
   const { error } = await getSupabase()
     .from("profiles")
     .upsert(
-      { id: user.id, name: p.name, email: p.email, phone: p.phone },
+      {
+        id: user.id,
+        name: p.name,
+        email: p.email,
+        phone: p.phone,
+        area: p.area ?? null,
+      },
       { onConflict: "id" }
     );
+  if (error) throw error;
+}
+
+/* Update just the subscriber's Lagos area (used by vehicle onboarding). */
+export async function setProfileArea(area: string): Promise<void> {
+  const user = await currentUser();
+  if (!user) throw new Error("Not signed in.");
+  const { error } = await getSupabase()
+    .from("profiles")
+    .update({ area })
+    .eq("id", user.id);
   if (error) throw error;
 }
 
