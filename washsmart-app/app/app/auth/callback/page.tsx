@@ -75,6 +75,12 @@ function CallbackInner() {
           return;
         } else if (!active) {
           const planId = search.get("plan") ?? "standard";
+          if (process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
+            // Real payments: the email is verified — collect payment next.
+            // The subscription is minted only after Paystack confirms.
+            router.replace(`/app/checkout/pay?plan=${planId}`);
+            return;
+          }
           await createSubscription({ planId });
           // Checkout-first arrivals never registered vehicles: send them to
           // onboarding before the dashboard (unless they already have cars).

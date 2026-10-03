@@ -34,6 +34,8 @@ export default function CheckoutPage() {
   );
 }
 
+const PAYSTACK_ENABLED = !!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+
 function CheckoutInner() {
   const router = useRouter();
   const search = useSearchParams();
@@ -102,6 +104,12 @@ function CheckoutInner() {
     if (!valid) return;
     if (!loggedIn && (await isEmailRegistered(email))) {
       setIsDuplicate(true);
+      return;
+    }
+    if (loggedIn && PAYSTACK_ENABLED) {
+      // Signed-in buyer, real payments: email is already verified —
+      // go straight to the Paystack payment step.
+      router.push(`/app/checkout/pay?plan=${plan?.id ?? "standard"}`);
       return;
     }
     setStep("processing");
@@ -341,8 +349,9 @@ function CheckoutInner() {
           </button>
 
           <p className="mt-3 text-center text-xs text-gray-500">
-            Demo checkout — no real charge is made. We&apos;ll email you a
-            sign-in link to verify your address and activate your plan.
+            {PAYSTACK_ENABLED
+              ? "Secure payment via Paystack. We'll email you a sign-in link to verify your address first."
+              : "Demo checkout — no real charge is made. We'll email you a sign-in link to verify your address and activate your plan."}
           </p>
         </div>
       )}
