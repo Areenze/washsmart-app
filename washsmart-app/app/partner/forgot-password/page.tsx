@@ -4,15 +4,28 @@
  * Enter the Partner ID; we look up the account email and send a reset link.
  * No service-role key needed — the reset email goes through Supabase Auth. */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Brand, Logo } from "@/components/ui";
 import { getSupabase } from "@/lib/db/supabase";
+import { listApprovedPartners } from "@/lib/db/store";
+import type { Partner } from "@/lib/db/types";
 
 export default function PartnerForgotPassword() {
   const [partnerId, setPartnerId] = useState("");
   const [phase, setPhase] = useState<"form" | "sending" | "sent">("form");
   const [error, setError] = useState<string | null>(null);
+  const [partners, setPartners] = useState<Partner[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setPartners(await listApprovedPartners());
+      } catch {
+        /* non-fatal */
+      }
+    })();
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,6 +135,39 @@ export default function PartnerForgotPassword() {
                 </Link>
               </p>
             </form>
+          )}
+
+          {partners.length > 0 && phase !== "sent" && (
+            <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
+              <p className="text-sm font-bold text-[#48d87c]">
+                🔑 Approved partners — tap to fill your Partner ID
+              </p>
+              <div className="mt-4 space-y-2">
+                {partners.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => {
+                      setPartnerId(p.partnerId);
+                      setError(null);
+                    }}
+                    className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-bold">{p.name}</p>
+                        <p className="mt-0.5 font-mono text-xs text-gray-400">
+                          ID: {p.partnerId}
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-xs font-bold text-[#48d87c]">
+                        Fill →
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </section>
