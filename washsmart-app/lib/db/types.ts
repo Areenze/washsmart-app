@@ -40,6 +40,8 @@ export interface Partner {
   partnerStatus: PartnerStatus;
   appliedAt: string; // ISO date
   approvedAt?: string;
+  /** Public gallery photo URLs (Supabase Storage) */
+  photos: string[];
 }
 
 export interface PartnerApplication {

@@ -203,18 +203,9 @@ export default function ApplicationDetailPage() {
           ))}
         </div>
         <Section h="Verification photos" />
-        {app.photos.business.length + app.photos.location.length === 0 ? (
-          <p className="text-sm text-gray-400">No photos attached.</p>
-        ) : (
-          <ul className="space-y-1 text-sm text-gray-300">
-            {app.photos.business.map((n) => (
-              <li key={n}>🏪 {n}</li>
-            ))}
-            {app.photos.location.map((n) => (
-              <li key={n}>📍 {n}</li>
-            ))}
-          </ul>
-        )}
+        <PhotoThumbs
+          urls={[...app.photos.business, ...app.photos.location]}
+        />
       </div>
 
       {/* ---------------- inspection ---------------- */}
@@ -435,6 +426,38 @@ function Section({ h }: { h: string }) {
     <h2 className="mb-3 mt-6 text-sm font-bold text-gray-400 first:mt-0">
       {h.toUpperCase()}
     </h2>
+  );
+}
+
+/** Photo thumbnails — handles storage URLs and legacy plain filenames. */
+export function PhotoThumbs({ urls }: { urls: string[] }) {
+  const isUrl = (s: string) => /^https?:\/\//.test(s);
+  if (urls.length === 0) {
+    return <p className="text-sm text-gray-400">No photos attached.</p>;
+  }
+  return (
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      {urls.map((u, i) =>
+        isUrl(u) ? (
+          <a key={i} href={u} target="_blank" rel="noreferrer">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={u}
+              alt={`Photo ${i + 1}`}
+              className="h-24 w-full rounded-xl object-cover transition-transform hover:scale-105"
+              loading="lazy"
+            />
+          </a>
+        ) : (
+          <div
+            key={i}
+            className="flex h-24 items-center justify-center rounded-xl bg-white/5 px-2 text-center text-xs text-gray-400"
+          >
+            {u}
+          </div>
+        )
+      )}
+    </div>
   );
 }
 

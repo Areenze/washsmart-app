@@ -119,6 +119,7 @@ function mapPartner(r: any): Partner {
     partnerStatus: r.status,
     appliedAt: r.created_at,
     approvedAt: r.approved_at ?? undefined,
+    photos: r.photos ?? [],
   };
 }
 
@@ -447,7 +448,7 @@ export async function deleteLocationRequest(id: string): Promise<void> {
 }
 
 const PARTNER_COLS =
-  "id,name,owner_name,phone,whatsapp,email,partner_id,settlement_rate,bank_name,bank_account_last4,address,area,lga,state,gps,hours,services,bays,daily_capacity,years_operating,staff_count,rating,reviews,open_now,status,approved_at,created_at";
+  "id,name,owner_name,phone,whatsapp,email,partner_id,settlement_rate,bank_name,bank_account_last4,address,area,lga,state,gps,hours,services,bays,daily_capacity,years_operating,staff_count,rating,reviews,open_now,status,approved_at,created_at,photos";
 
 export async function listApprovedPartners(): Promise<Partner[]> {
   const { data, error } = await getSupabase()
@@ -568,6 +569,7 @@ const PARTNER_PATCH_COLS: Record<string, string> = {
   bankName: "bank_name",
   bankLast4: "bank_account_last4",
   settlementRate: "settlement_rate",
+  photos: "photos",
 };
 
 export async function updatePartner(

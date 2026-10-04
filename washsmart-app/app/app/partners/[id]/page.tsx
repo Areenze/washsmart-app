@@ -119,6 +119,25 @@ export default function PartnerDetailPage() {
           </div>
         </div>
 
+        {partner.photos.length > 0 && (
+          <div className="mt-6">
+            <p className="mb-3 text-sm font-bold text-gray-400">PHOTOS</p>
+            <div className="grid grid-cols-3 gap-2">
+              {partner.photos.map((u, i) => (
+                <a key={i} href={u} target="_blank" rel="noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={u}
+                    alt={`${partner.name} photo ${i + 1}`}
+                    className="h-24 w-full rounded-xl object-cover transition-transform hover:scale-105"
+                    loading="lazy"
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           {partner.status === "Open" ? (
             <Link

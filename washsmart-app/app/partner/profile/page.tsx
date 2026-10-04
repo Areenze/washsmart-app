@@ -10,6 +10,7 @@ import {
   getPartner,
   updatePartner,
 } from "@/lib/db/store";
+import { deletePhoto, uploadPhoto } from "@/lib/db/photos";
 import type { Partner } from "@/lib/db/types";
 
 const ALL_SERVICES = [
@@ -41,6 +42,9 @@ export default function PartnerProfilePage() {
   const [phone, setPhone] = useState("");
   const [services, setServices] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -55,8 +59,42 @@ export default function PartnerProfilePage() {
       setCloseTime(c);
       setPhone(fresh.phone);
       setServices(fresh.services);
+      setPhotos(fresh.photos ?? []);
     })();
   }, []);
+
+  const addPhotos = async (files: FileList | null) => {
+    if (!files || files.length === 0 || !partner) return;
+    setPhotoError(null);
+    setUploadingPhoto(true);
+    try {
+      const urls: string[] = [];
+      for (const f of Array.from(files)) {
+        urls.push(await uploadPhoto(f, `partners/${partner.id}`));
+      }
+      const next = [...photos, ...urls].slice(0, 12);
+      const updated = await updatePartner(partner.id, { photos: next });
+      if (updated) {
+        setPartner({ ...updated });
+        setPhotos(updated.photos ?? next);
+      }
+    } catch (e) {
+      setPhotoError(e instanceof Error ? e.message : "Upload failed.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const removePhotoAt = async (url: string) => {
+    if (!partner) return;
+    const next = photos.filter((u) => u !== url);
+    const updated = await updatePartner(partner.id, { photos: next });
+    if (updated) {
+      setPartner({ ...updated });
+      setPhotos(updated.photos ?? next);
+    }
+    deletePhoto(url).catch(() => {});
+  };
 
   if (!partner) return <p className="py-8 text-gray-400">Loading…</p>;
 
@@ -156,6 +194,52 @@ export default function PartnerProfilePage() {
         >
           {partner.status === "Open" ? "Mark as Closed" : "Mark as Open"}
         </button>
+      </Card>
+
+      <Card className="mt-6">
+        <h2 className="text-lg font-bold">Photos</h2>
+        <p className="mt-1 text-sm text-gray-400">
+          Show subscribers your wash — shopfront, bays, finished cars. Photos
+          appear on your listing in the subscriber app.
+        </p>
+        <label className="mt-4 block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
+          <div className="text-3xl">📷</div>
+          <p className="mt-1 text-sm font-semibold text-[#48d87c]">
+            {uploadingPhoto ? "Uploading…" : "Add photos"}
+          </p>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            disabled={uploadingPhoto}
+            onChange={(e) => {
+              addPhotos(e.target.files);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        {photoError && (
+          <p className="mt-2 text-sm font-semibold text-red-400">{photoError}</p>
+        )}
+        {photos.length > 0 && (
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {photos.map((u) => (
+              <div key={u} className="relative overflow-hidden rounded-xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={u} alt="Partner photo" className="h-24 w-full object-cover" loading="lazy" />
+                <button
+                  type="button"
+                  onClick={() => removePhotoAt(u)}
+                  aria-label="Remove photo"
+                  className="absolute right-1 top-1 rounded-full bg-black/70 px-2 py-0.5 text-xs font-bold text-white"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       <Card className="mt-6">

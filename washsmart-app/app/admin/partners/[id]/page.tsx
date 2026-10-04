@@ -110,6 +110,26 @@ export default function AdminPartnerDetailPage() {
               </div>
             </>
           )}
+          {p.photos?.length > 0 && (
+            <>
+              <h3 className="mb-2 mt-4 text-sm font-bold text-gray-400">
+                PHOTOS ({p.photos.length})
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                {p.photos.map((u: string, i: number) => (
+                  <a key={i} href={u} target="_blank" rel="noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={u}
+                      alt={`Photo ${i + 1}`}
+                      className="h-16 w-full rounded-lg object-cover"
+                      loading="lazy"
+                    />
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
         </Section>
 
         <Section title="Verification">

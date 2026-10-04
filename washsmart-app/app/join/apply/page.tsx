@@ -5,7 +5,7 @@
  * review → success (ref WS-2026-XXXX, Pending Review).
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   Brand,
@@ -18,6 +18,7 @@ import {
   inputClass,
 } from "@/components/ui";
 import { submitApplication, type ApplicationInput } from "@/lib/db/store";
+import { deletePhoto, uploadPhoto } from "@/lib/db/photos";
 import type { PartnerApplication } from "@/lib/db/types";
 
 const SERVICE_OPTIONS = [
@@ -63,11 +64,79 @@ const digitsOk = (v: string) => v.trim().replace(/\D/g, "").length >= 7;
 const composeHours = (open: string, close: string) =>
   open && close ? `${open} – ${close}` : "";
 
+function PhotoPicker({
+  kind,
+  title,
+  hint,
+  icon,
+  urls,
+  uploading,
+  onFiles,
+  onRemove,
+}: {
+  kind: "business" | "location";
+  title: string;
+  hint: string;
+  icon: string;
+  urls: string[];
+  uploading: boolean;
+  onFiles: (kind: "business" | "location", files: FileList | null) => void;
+  onRemove: (kind: "business" | "location", url: string) => void;
+}) {
+  return (
+    <div>
+      <p className="mb-2 text-sm font-semibold">{title}</p>
+      <p className="mb-3 text-xs text-gray-400">{hint}</p>
+      <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
+        <div className="text-3xl">{icon}</div>
+        <p className="mt-1 text-sm font-semibold text-[#48d87c]">
+          {uploading ? "Uploading…" : "Choose photos"}
+        </p>
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          disabled={uploading}
+          onChange={(e) => {
+            onFiles(kind, e.target.files);
+            e.target.value = "";
+          }}
+        />
+      </label>
+      {urls.length > 0 && (
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {urls.map((u) => (
+            <div key={u} className="relative overflow-hidden rounded-xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={u} alt="Upload" className="h-24 w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => onRemove(kind, u)}
+                aria-label="Remove photo"
+                className="absolute right-1 top-1 rounded-full bg-black/70 px-2 py-0.5 text-xs font-bold text-white"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ApplyWizard() {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [touched, setTouched] = useState(false);
   const [done, setDone] = useState<PartnerApplication | null>(null);
+  const [uploading, setUploading] = useState<"" | "business" | "location">("");
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  // Groups this draft's uploads under one storage prefix.
+  const draftId = useRef(
+    `draft-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  );
   const [locating, setLocating] = useState(false);
 
   const setBiz = (k: keyof Draft["business"], v: string) =>
@@ -163,13 +232,32 @@ export default function ApplyWizard() {
     }, 900);
   };
 
-  const onFiles = (kind: "business" | "location", files: FileList | null) => {
-    if (!files) return;
-    const names = Array.from(files).map((f) => f.name);
+  const onFiles = async (kind: "business" | "location", files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setUploadError(null);
+    setUploading(kind);
+    try {
+      const urls: string[] = [];
+      for (const f of Array.from(files)) {
+        urls.push(await uploadPhoto(f, `applications/${draftId.current}`));
+      }
+      setDraft((d) => ({
+        ...d,
+        photos: { ...d.photos, [kind]: [...d.photos[kind], ...urls] },
+      }));
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : "Upload failed.");
+    } finally {
+      setUploading("");
+    }
+  };
+
+  const removePhoto = (kind: "business" | "location", url: string) => {
     setDraft((d) => ({
       ...d,
-      photos: { ...d.photos, [kind]: [...d.photos[kind], ...names] },
+      photos: { ...d.photos, [kind]: d.photos[kind].filter((u) => u !== url) },
     }));
+    deletePhoto(url).catch(() => {});
   };
 
   const submit = async () => {
@@ -538,61 +626,29 @@ export default function ApplyWizard() {
 
               {step === 4 && (
                 <div className="space-y-6">
-                  <div>
-                    <p className="mb-2 text-sm font-semibold">
-                      Business photos
-                    </p>
-                    <p className="mb-3 text-xs text-gray-400">
-                      Shopfront, wash bays, equipment — helps us verify your
-                      business (demo upload).
-                    </p>
-                    <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
-                      <div className="text-3xl">📷</div>
-                      <p className="mt-1 text-sm font-semibold text-[#48d87c]">
-                        Choose photos
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => onFiles("business", e.target.files)}
-                      />
-                    </label>
-                    {draft.photos.business.length > 0 && (
-                      <ul className="mt-2 space-y-1 text-xs text-gray-300">
-                        {draft.photos.business.map((n) => (
-                          <li key={n}>✓ {n}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <div>
-                    <p className="mb-2 text-sm font-semibold">Location photos</p>
-                    <p className="mb-3 text-xs text-gray-400">
-                      Street view / landmark nearby (demo upload).
-                    </p>
-                    <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
-                      <div className="text-3xl">🏢</div>
-                      <p className="mt-1 text-sm font-semibold text-[#48d87c]">
-                        Choose photos
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => onFiles("location", e.target.files)}
-                      />
-                    </label>
-                    {draft.photos.location.length > 0 && (
-                      <ul className="mt-2 space-y-1 text-xs text-gray-300">
-                        {draft.photos.location.map((n) => (
-                          <li key={n}>✓ {n}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
+                  <PhotoPicker
+                    kind="business"
+                    title="Business photos"
+                    hint="Shopfront, wash bays, equipment — helps us verify your business."
+                    icon="📷"
+                    urls={draft.photos.business}
+                    uploading={uploading === "business"}
+                    onFiles={onFiles}
+                    onRemove={removePhoto}
+                  />
+                  <PhotoPicker
+                    kind="location"
+                    title="Location photos"
+                    hint="Street view / landmark nearby."
+                    icon="🏢"
+                    urls={draft.photos.location}
+                    uploading={uploading === "location"}
+                    onFiles={onFiles}
+                    onRemove={removePhoto}
+                  />
+                  {uploadError && (
+                    <p className="text-sm font-semibold text-red-400">{uploadError}</p>
+                  )}
                 </div>
               )}
 
