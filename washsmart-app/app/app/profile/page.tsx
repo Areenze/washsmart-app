@@ -251,12 +251,30 @@ export default function ProfilePage() {
       <button
         onClick={async () => {
           await signOut();
-          window.location.href = "/";
+          window.location.replace("/app");
         }}
         className="mt-6 w-full rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-sm font-bold text-gray-400"
       >
         Log out
       </button>
+
+      <Card className="mt-6">
+        <h2 className="text-lg font-bold">About WashSMART</h2>
+        <div className="mt-3 space-y-1 text-sm">
+          <Link href="/" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
+            WashSMART website <span className="text-gray-500">→</span>
+          </Link>
+          <Link href="/find-a-wash" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
+            Find a wash <span className="text-gray-500">→</span>
+          </Link>
+          <Link href="/terms" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
+            Terms of service <span className="text-gray-500">→</span>
+          </Link>
+          <Link href="/privacy" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
+            Privacy policy <span className="text-gray-500">→</span>
+          </Link>
+        </div>
+      </Card>
     </section>
   );
 }
