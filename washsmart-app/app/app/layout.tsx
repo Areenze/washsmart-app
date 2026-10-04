@@ -18,11 +18,22 @@ const tabs = [
   { id: "subscription", label: "Subscription" },
 ];
 
+// Auth/callback pages render without the Home/Partners/Subscription tabs.
+const HIDE_TABS_PATHS = [
+  "/app/login",
+  "/app/signup",
+  "/app/forgot-password",
+  "/app/reset-password",
+  "/app/auth/callback",
+];
+
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [activeId, setActiveId] = useState("home");
+  // Clean chrome on auth/callback pages: no Home/Partners/Subscription tabs.
+  const hideTabs = HIDE_TABS_PATHS.includes(pathname);
 
   useEffect(() => {
     (async () => {
@@ -94,6 +105,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <Logo />
             <Brand />
           </Link>
+          {!hideTabs && (
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
             {tabs.map((t) => (
               <button
@@ -116,6 +128,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               </button>
             ))}
           </nav>
+          )}
           {loggedIn === false ? (
             <div className="flex items-center gap-3">
               <Link
@@ -154,6 +167,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex-1">{children}</div>
 
+      {!hideTabs && (
       <nav className="sticky bottom-0 border-t border-white/5 bg-[#111a14]/95 px-4 py-3 backdrop-blur-md md:hidden">
         <div className="flex justify-around text-xs">
           {tabs.map((t) => (
@@ -172,6 +186,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           ))}
         </div>
       </nav>
+      )}
     </div>
   );
 }
