@@ -89,6 +89,26 @@ export default function ProfilePage() {
       </Link>
       <SectionTitle>Profile</SectionTitle>
 
+      {showAdmin && (
+        <Link
+          href="/admin"
+          className="mb-6 flex items-center justify-between rounded-3xl border border-[#f5b942]/30 bg-[#f5b942]/10 p-5 transition-colors hover:bg-[#f5b942]/15"
+        >
+          <div>
+            <p className="flex items-center gap-2 font-bold text-[#f5b942]">
+              Admin dashboard
+              <span className="rounded-md bg-[#f5b942]/20 px-1.5 py-0.5 text-[10px] font-bold tracking-[0.12em]">
+                ADMIN
+              </span>
+            </p>
+            <p className="mt-1 text-sm text-gray-400">
+              Subscribers, partners, settlements, reports…
+            </p>
+          </div>
+          <span className="text-2xl text-[#f5b942]">→</span>
+        </Link>
+      )}
+
       <Card>
         <h2 className="text-lg font-bold">Account details</h2>
         <div className="mt-4 space-y-4">
@@ -264,15 +284,6 @@ export default function ProfilePage() {
       <Card className="mt-6">
         <h2 className="text-lg font-bold">About WashSMART</h2>
         <div className="mt-3 space-y-1 text-sm">
-          {showAdmin && (
-            <Link href="/admin" className="flex items-center justify-between rounded-xl bg-[#f5b942]/10 px-3 py-2.5 font-semibold text-[#f5b942] transition-colors hover:bg-[#f5b942]/15">
-              <span className="flex items-center gap-2">
-                Admin dashboard
-                <span className="rounded-md bg-[#f5b942]/20 px-1.5 py-0.5 text-[10px] font-bold tracking-[0.12em]">ADMIN</span>
-              </span>
-              <span>→</span>
-            </Link>
-          )}
           <Link href="/" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
             WashSMART website <span className="text-gray-500">→</span>
           </Link>
