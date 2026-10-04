@@ -86,7 +86,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col bg-[#0a0f0c] text-[#e9f2ec]">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#111a14]/90 px-5 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/" className="flex items-center gap-2" aria-label="WashSMART home">
+          <Link href="/app" className="flex items-center gap-2" aria-label="WashSMART home">
             <Logo />
             <Brand />
           </Link>
