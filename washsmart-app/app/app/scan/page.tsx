@@ -44,12 +44,14 @@ function ScanInner() {
   const [issuedAt, setIssuedAt] = useState(0);
   const [now, setNow] = useState(Date.now());
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const mint = useCallback(async () => {
     const t = await getQRToken();
     setToken(t);
     setIssuedAt(Date.now());
     setSubscription(await getMySubscription());
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -150,7 +152,12 @@ function ScanInner() {
 
       {partner && (
         <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
-          {outOfWashes ? (
+          {loading ? (
+            <>
+              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white" />
+              <p className="mt-5 font-bold">Preparing your wash QR…</p>
+            </>
+          ) : outOfWashes ? (
             <>
               <h1 className="text-3xl font-bold">No washes left</h1>
               <p className="mt-3 text-white/70">
