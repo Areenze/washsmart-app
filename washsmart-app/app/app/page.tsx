@@ -275,7 +275,7 @@ export default function UserHome() {
         </section>
       </Reveal>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr] [&>*]:min-w-0">
         <Reveal>
         <div className="overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-8 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
           <p className="mb-3 text-sm font-semibold text-[#65e28e]">

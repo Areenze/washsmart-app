@@ -71,7 +71,7 @@ export default function ReferralCard({
       {code ? (
         <>
           <div className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-            <p className="flex-1 truncate text-xs text-gray-300">
+            <p className="min-w-0 flex-1 truncate text-xs text-gray-300">
               {referralLink(code)}
             </p>
             <button
