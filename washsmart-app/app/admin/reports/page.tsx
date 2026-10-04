@@ -43,11 +43,28 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 
 export default function AdminReportsPage() {
   const [report, setReport] = useState<ReportData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => setReport(await adminReportData().catch(() => null)))();
+    (async () => {
+      try {
+        const r = await adminReportData();
+        setReport(r);
+      } catch (e: any) {
+        setError(e?.message ?? "Could not load reports.");
+      }
+    })();
   }, []);
 
+  if (error)
+    return (
+      <div>
+        <h1 className="text-2xl font-bold">Reports</h1>
+        <p className="mt-4 rounded-2xl bg-red-500/10 p-4 text-sm text-red-400">
+          {error}
+        </p>
+      </div>
+    );
   if (!report) return <p className="text-gray-400">Crunching numbers…</p>;
 
   const { totals, credits } = report;

@@ -1305,7 +1305,7 @@ export async function adminReportData(): Promise<ReportData> {
   const since = `${months[0].key}-01T00:00:00.000Z`;
 
   const [payRes, washRes, subRes] = await Promise.all([
-    db.from("payments").select("amount,plan_name,created_at").gte("created_at", since).limit(5000),
+    db.from("payments").select("amount,plan_name,paid_at").gte("paid_at", since).limit(5000),
     db
       .from("wash_transactions")
       .select("id,redeemed_at,partner_id,payout,partner:partners(name)")
@@ -1325,7 +1325,7 @@ export async function adminReportData(): Promise<ReportData> {
     month: m.label,
     key: m.key,
     value: payments
-      .filter((p) => monthKey(p.created_at) === m.key)
+      .filter((p) => monthKey(p.paid_at) === m.key)
       .reduce((s, p) => s + Number(p.amount ?? 0), 0),
   }));
   const washesByMonth = months.map((m) => ({
