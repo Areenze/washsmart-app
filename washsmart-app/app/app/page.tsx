@@ -40,6 +40,9 @@ function greeting(): string {
 export default function UserHome() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [summary, setSummary] = useState<WashSummary | null>(null);
+  // True once the first data load has finished (success or failure) — so a
+  // slow/failed fetch never flashes a wrong "no washes" empty state.
+  const [loaded, setLoaded] = useState(false);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [history, setHistory] = useState<WashTransaction[]>([]);
   const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
@@ -75,17 +78,21 @@ export default function UserHome() {
       /* ignore */
     }
     (async () => {
-      const p = await getProfile();
-      setProfile(p);
-      // A verification link was sent but not yet clicked: remind, don't trap.
-      if (p) {
-        clearVerifyPending();
-      } else {
-        setVerifyEmail(getVerifyPending());
+      try {
+        const p = await getProfile();
+        setProfile(p);
+        // A verification link was sent but not yet clicked: remind, don't trap.
+        if (p) {
+          clearVerifyPending();
+        } else {
+          setVerifyEmail(getVerifyPending());
+        }
+        setSummary(await getWashSummary());
+        setPartners(await listApprovedPartners());
+        setHistory(await listWashHistory());
+      } finally {
+        setLoaded(true);
       }
-      setSummary(await getWashSummary());
-      setPartners(await listApprovedPartners());
-      setHistory(await listWashHistory());
     })();
   }, []);
 
@@ -206,7 +213,12 @@ export default function UserHome() {
             </div>
           </div>
 
-          {!profile ? (
+          {!loaded ? (
+            <div className="mt-6 flex items-center justify-center gap-3 rounded-2xl bg-white/5 p-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+              <p className="text-sm text-white/70">Loading your washes…</p>
+            </div>
+          ) : !profile ? (
             <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white/5 p-5">
               <p className="text-sm text-white/75">
                 Log in to generate your wash QR.
@@ -315,7 +327,12 @@ export default function UserHome() {
         <Reveal delay={150}>
         <div className="space-y-6">
         <div className="rounded-3xl border border-white/5 bg-[#111a14] p-6 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
-          {subscription ? (
+          {!loaded ? (
+            <div className="flex items-center justify-center gap-3 py-10">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+              <p className="text-sm text-gray-400">Loading subscription…</p>
+            </div>
+          ) : subscription ? (
             <>
               <div className="flex items-center justify-between">
                 <div>
