@@ -5,7 +5,7 @@ import Link from "next/link";
 const SECTIONS: [string, string][] = [
   [
     "What we collect",
-    "To run your subscription we collect: your name, email address, phone number, password (stored securely, never in plain text), your registered vehicles (make, model, plate number, color), your Lagos area, your wash credits and redemption history, referral activity, and support tickets you file.",
+    "To run your subscription we collect: your name, email address, phone number, password (stored securely, never in plain text), your registered vehicles (make, model, plate number, color), your Lagos area, your wash credits and redemption history, referral activity, and support tickets you file. We also record anonymous usage analytics (pages visited, tied to a random browser session — no cookies, no IP storage) to improve the service.",
   ],
   [
     "How we use it",

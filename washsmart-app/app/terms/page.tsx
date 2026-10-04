@@ -16,6 +16,18 @@ const SECTIONS: [string, string][] = [
     "To redeem a wash, present your WashSMART QR code at an approved partner. The partner scans the code to verify your subscription and deduct one credit. WashSMART records every redemption. Partners cannot create washes or payouts without a verified redemption.",
   ],
   [
+    "Eligible washes",
+    "One wash credit covers one standard wash (exterior wash plus the partner's standard inclusions). Premium services such as detailing, waxing, or engine cleaning may attract additional charges payable directly to the partner at their displayed prices.",
+  ],
+  [
+    "Credits are personal",
+    "Wash credits are tied to your account and the vehicles registered on it. Credits cannot be transferred, resold, or shared with other accounts.",
+  ],
+  [
+    "If a partner can't serve you",
+    "If a partner is temporarily unavailable or refuses a valid redemption, do not pay cash — report it through in-app support with the partner name and time. We investigate every report and will restore or replace credits wrongly affected.",
+  ],
+  [
     "Payments",
     "Payments are processed by our payment provider. Prices are shown in Nigerian Naira (₦) and include any applicable fees shown at checkout. WashSMART may update plan prices; changes apply to new purchases only and never change the washes already on your account.",
   ],

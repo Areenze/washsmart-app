@@ -339,6 +339,44 @@ export default function EntryPage() {
         </Reveal>
       </section>
 
+      {/* Is WashSMART for me? */}
+      <section className="border-t border-white/5 bg-[#0d130f]">
+        <div className="mx-auto max-w-7xl px-5 py-16 md:py-20">
+          <Reveal>
+            <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              IS WASHSMART FOR ME?
+            </p>
+            <h2 className="mt-3 text-center text-3xl font-bold md:text-4xl">
+              Built for drivers who wash regularly.
+            </h2>
+          </Reveal>
+          <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-3">
+            {[
+              ["🚗", "Daily commuters"],
+              ["🚕", "Ride-hailing drivers"],
+              ["👨‍👩‍👧", "Families, multiple cars"],
+              ["🏢", "Businesses & fleets"],
+              ["🚘", "Car enthusiasts"],
+              ["🧽", "Weekly wash regulars"],
+            ].map(([icon, label], i) => (
+              <Reveal key={label} delay={i * 75}>
+                <div className="flex items-center gap-3 rounded-2xl bg-[#111a14] px-5 py-4">
+                  <span className="text-2xl">{icon}</span>
+                  <span className="text-sm font-semibold">{label}</span>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal delay={150}>
+            <p className="mx-auto mt-8 max-w-2xl text-center text-gray-400">
+              If you already pay for car washes regularly, a subscription makes
+              your routine simpler — and one subscription covers every car you
+              register.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* How it works */}
       <section id="how-it-works" className="scroll-mt-24 border-t border-white/5 bg-[#0d130f]">
         <div className="mx-auto max-w-7xl px-5 py-16 md:py-24">
@@ -361,6 +399,38 @@ export default function EntryPage() {
               </Reveal>
             ))}
           </div>
+          <Reveal delay={200}>
+            <div className="mt-10 rounded-3xl border border-[#20a957]/25 bg-[#0e2a1c] p-8">
+              <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+                AT THE CAR WASH
+              </p>
+              <p className="mt-2 text-center text-xl font-bold">
+                Arrive. Verify. Wash.
+              </p>
+              <div className="mx-auto mt-6 flex max-w-3xl flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
+                {[
+                  "Drive to any approved partner",
+                  "Show your QR code",
+                  "Partner verifies your credits",
+                  "One credit deducted — get washed",
+                ].map((s, i, arr) => (
+                  <div key={s} className="flex flex-1 items-center gap-3">
+                    <div className="min-w-0 flex-1 rounded-2xl bg-[#111a14] px-4 py-3 text-center text-sm font-semibold">
+                      {s}
+                    </div>
+                    {i < arr.length - 1 && (
+                      <span aria-hidden className="hidden shrink-0 text-[#48d87c] sm:block">
+                        →
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-center text-sm text-gray-400">
+                Drive away — the wash appears in your WashSMART history.
+              </p>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -411,6 +481,54 @@ export default function EntryPage() {
         </div>
       </section>
 
+      {/* Value comparison */}
+      <section className="border-t border-white/5 bg-[#0d130f]">
+        <div className="mx-auto max-w-4xl px-5 py-16 md:py-24">
+          <Reveal>
+            <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              THE WASHSMART DIFFERENCE
+            </p>
+            <h2 className="mt-3 text-center text-3xl font-bold md:text-4xl">
+              Turn random washes into a routine.
+            </h2>
+          </Reveal>
+          <Reveal delay={100}>
+            <div className="mt-8 overflow-hidden rounded-3xl border border-white/5">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="bg-[#111a14] text-gray-400">
+                    <th className="px-5 py-4 font-semibold"></th>
+                    <th className="px-5 py-4 font-semibold">Pay as you go</th>
+                    <th className="bg-[#0e2a1c] px-5 py-4 font-bold text-[#48d87c]">
+                      WashSMART
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {[
+                    ["Wash credits, one subscription", false, true],
+                    ["Wash at multiple partner locations", false, true],
+                    ["Cashless redemption", false, true],
+                    ["Digital wash history", false, true],
+                    ["Verified partner standards", false, true],
+                  ].map(([label, a, b]) => (
+                    <tr key={label as string} className="bg-[#111a14]/50">
+                      <td className="px-5 py-3.5 font-semibold">{label}</td>
+                      <td className="px-5 py-3.5 text-gray-600">
+                        {a ? "✓" : "—"}
+                      </td>
+                      <td className="bg-[#0e2a1c]/60 px-5 py-3.5 font-bold text-[#48d87c]">
+                        {b ? "✓" : "—"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* Plans */}
       <section id="plans" className="scroll-mt-24 border-t border-white/5 bg-[#0d130f]">
         <div className="mx-auto max-w-7xl px-5 py-16 md:py-24">
@@ -423,7 +541,8 @@ export default function EntryPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-center text-gray-400">
               Every plan gives you wash credits valid for 30 days, redeemable at
-              any approved WashSMART partner.
+              any approved WashSMART partner — and one subscription covers every
+              car you register.
             </p>
           </Reveal>
           <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
@@ -469,6 +588,36 @@ export default function EntryPage() {
             Credits valid 30 days from purchase. Unused credits expire — no
             rollover.
           </p>
+          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-gray-400">
+            <span className="font-bold text-white">You&rsquo;re in control.</span>{" "}
+            No lock-in — cancel anytime and your remaining credits stay valid
+            until they expire. Manage everything from your WashSMART account.
+          </p>
+        </div>
+      </section>
+
+      {/* Referrals */}
+      <section className="border-t border-white/5">
+        <div className="mx-auto max-w-4xl px-5 py-16 md:py-20 text-center">
+          <Reveal>
+            <p className="text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              REFER & EARN
+            </p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+              Give a wash. Get a wash.
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-gray-400">
+              Share your referral link — when a friend buys their first plan,
+              you get <span className="font-bold text-white">1 free wash credit</span>,
+              valid for 30 days.
+            </p>
+            <Link
+              href="/app/signup"
+              className="mt-6 inline-block rounded-full border-2 border-[#20a957]/50 px-8 py-3.5 font-bold text-[#48d87c] transition-all duration-200 hover:border-[#20a957] hover:bg-[#20a957]/10 active:scale-[0.98]"
+            >
+              Start Referring &rarr;
+            </Link>
+          </Reveal>
         </div>
       </section>
 
@@ -483,9 +632,11 @@ export default function EntryPage() {
               <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3 text-left">
                 {[
                   ["📍", "Location verified"],
-                  ["⭐", "Service standards"],
+                  ["⭐", "Service quality"],
+                  ["🏢", "Operating standards"],
+                  ["😊", "Customer experience"],
                   ["📱", "Digital verification"],
-                  ["🧾", "Transaction tracking"],
+                  ["📊", "Ongoing monitoring"],
                 ].map(([icon, label]) => (
                   <div
                     key={label}
@@ -676,8 +827,7 @@ export default function EntryPage() {
           </div>
         </div>
         <p className="mx-auto mt-8 max-w-7xl text-xs text-gray-600">
-          WashSMART · Lagos, Nigeria · Demo build — no real payments are
-          processed.
+          © 2026 WashSMART · Lagos, Nigeria
         </p>
       </footer>
     </main>

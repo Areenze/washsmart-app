@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import SwRegister from "@/components/sw-register";
+import Analytics from "@/components/analytics";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "WashSMART — One Subscription. Multiple Washes.",
   description:
-    "Subscribe to WashSMART and access a growing network of approved car-wash partners in Lagos.",
+    "Subscribe to WashSMART and get wash credits redeemable at approved car-wash partners across Lagos. One subscription. Multiple washes. No cash at the wash center.",
+  keywords: [
+    "car wash subscription Lagos",
+    "car wash Lagos",
+    "car wash membership Lagos",
+    "mobile car wash Lagos",
+    "car detailing Lagos",
+  ],
   manifest: "/manifest.json",
   icons: {
     icon: "/icons/icon-192.png",
@@ -26,6 +34,20 @@ export const metadata: Metadata = {
     capable: true,
     title: "WashSMART",
     statusBarStyle: "default",
+  },
+  openGraph: {
+    type: "website",
+    title: "WashSMART — One Subscription. Multiple Washes.",
+    description:
+      "Subscribe. Get credits. Get washed. Wash credits redeemable at approved car-wash partners across Lagos.",
+    images: [{ url: "/images/hero-1.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WashSMART — One Subscription. Multiple Washes.",
+    description:
+      "Subscribe. Get credits. Get washed. Wash credits redeemable at approved car-wash partners across Lagos.",
+    images: ["/images/hero-1.jpg"],
   },
 };
 
@@ -43,6 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <SwRegister />
+        <Analytics />
         {children}
       </body>
     </html>
