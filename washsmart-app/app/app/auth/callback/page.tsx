@@ -16,6 +16,7 @@ import {
   getVehicles,
   takeStashedReferralCode,
 } from "@/lib/db/store";
+import { getSupabase } from "@/lib/db/supabase";
 
 export default function AuthCallbackPage() {
   return (
@@ -41,8 +42,22 @@ function CallbackInner() {
     (async () => {
       try {
         const code = search.get("code");
-        if (!code) throw new Error("Missing verification code.");
-        await exchangeCodeForSession(code);
+        if (code) {
+          // PKCE path: exchange the code for a session.
+          await exchangeCodeForSession(code);
+        } else {
+          // Cookie path: Supabase's /verify sometimes establishes the
+          // session directly via cookies without issuing a ?code=.
+          // Accept it when present instead of erroring out.
+          const {
+            data: { session },
+          } = await getSupabase().auth.getSession();
+          if (!session) {
+            throw new Error(
+              "This link has expired or was already used. Please request a new one."
+            );
+          }
+        }
         // The inbox hop is done — no more pending-verification reminder.
         clearVerifyPending();
         // Attribute a friend's referral link (stashed on /app/signup before

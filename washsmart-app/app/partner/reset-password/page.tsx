@@ -40,12 +40,20 @@ function ResetInner() {
     (async () => {
       try {
         const code = search.get("code");
-        if (!code) {
-          throw new Error(
-            "This reset link is invalid or has expired. Request a new one."
-          );
+        if (code) {
+          await exchangeCodeForSession(code);
+        } else {
+          // Supabase's /verify sometimes establishes the recovery session
+          // via cookies without issuing a ?code=. Accept it when present.
+          const {
+            data: { session },
+          } = await getSupabase().auth.getSession();
+          if (!session) {
+            throw new Error(
+              "This reset link is invalid or has expired. Request a new one."
+            );
+          }
         }
-        await exchangeCodeForSession(code);
         setReady(true);
       } catch (e) {
         setFatal(
