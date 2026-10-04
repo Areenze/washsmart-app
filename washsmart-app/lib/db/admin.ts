@@ -3,6 +3,7 @@
  * public.is_admin()). Sensitive mutations write to admin_audit_log. */
 
 import { getSupabase } from "./supabase";
+import { notifySoon } from "./notifications";
 
 export const ngn = (n: number) => `₦${Math.round(n).toLocaleString("en-NG")}`;
 
@@ -878,7 +879,7 @@ export async function adminApproveSettlement(id: string): Promise<void> {
   const db = getSupabase();
   const { data: s } = await db
     .from("settlements")
-    .select("id,partner_id,payable,period,status,partner:partners(name)")
+    .select("id,partner_id,payable,period,status,partner:partners(name,user_id)")
     .eq("id", id)
     .maybeSingle();
   if (!s) throw new Error("Settlement not found");
@@ -895,6 +896,17 @@ export async function adminApproveSettlement(id: string): Promise<void> {
     id,
     `Approved ${(s as any).partner?.name ?? s.partner_id} ${s.period} — ${ngn(s.payable)} payable`
   );
+  const partnerUserId = (s as any).partner?.user_id as string | null;
+  if (partnerUserId) {
+    notifySoon(
+      partnerUserId,
+      "settlement_approved",
+      "Settlement approved",
+      `Your ${s.period} settlement of ${ngn(s.payable)} was approved and is being processed.`,
+      `/partner/earnings`,
+      "partner"
+    );
+  }
 }
 
 export async function adminMarkSettlementPaid(
@@ -904,7 +916,7 @@ export async function adminMarkSettlementPaid(
   const db = getSupabase();
   const { data: s } = await db
     .from("settlements")
-    .select("id,partner_id,payable,period,status,period_start,period_end,partner:partners(name)")
+    .select("id,partner_id,payable,period,status,period_start,period_end,partner:partners(name,user_id)")
     .eq("id", id)
     .maybeSingle();
   if (!s) throw new Error("Settlement not found");
@@ -930,6 +942,17 @@ export async function adminMarkSettlementPaid(
     id,
     `Paid ${(s as any).partner?.name ?? s.partner_id} ${s.period} — ${ngn(s.payable)}. Ref: ${reference}`
   );
+  const partnerUserId = (s as any).partner?.user_id as string | null;
+  if (partnerUserId) {
+    notifySoon(
+      partnerUserId,
+      "settlement_paid",
+      "Settlement paid 💸",
+      `Your ${s.period} settlement of ${ngn(s.payable)} has been paid. Ref: ${reference}`,
+      `/partner/earnings`,
+      "partner"
+    );
+  }
 }
 
 /* ---------------- inspections ---------------- */

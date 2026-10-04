@@ -294,7 +294,10 @@ export default function EarningsPage() {
 
       <p className="mt-6 text-xs text-gray-500">
         Demo figures — production settlements are calculated by WashSMART and
-        paid via Paystack transfers to your registered bank account.
+        paid via Paystack transfers to your registered bank account.{" "}
+        <Link href="/partner/ledger" className="font-bold text-[#48d87c]">
+          View full ledger →
+        </Link>
       </p>
     </section>
   );

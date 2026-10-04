@@ -149,9 +149,14 @@ export default function PartnerProfilePage() {
       </Link>
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Business Profile</h1>
-        <Badge tone={partner.status === "Open" ? "green" : "gray"}>
-          {partner.status === "Open" ? "OPEN NOW" : "CLOSED"}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#20a957]/15 px-3 py-1 text-xs font-bold text-[#48d87c]">
+            ✓ WashSMART Approved Partner
+          </span>
+          <Badge tone={partner.status === "Open" ? "green" : "gray"}>
+            {partner.status === "Open" ? "OPEN NOW" : "CLOSED"}
+          </Badge>
+        </div>
       </div>
 
       <Card className="mt-6">

@@ -10,11 +10,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   currentPartnerSession,
+  currentUserId,
   inspectToken,
   redeemWash,
   type PartnerStats,
   partnerStats,
 } from "@/lib/db/store";
+import { notifySoon } from "@/lib/db/notifications";
 import type { RedeemFailure, Subscription, WashTransaction } from "@/lib/db/types";
 
 const FAILURE_COPY: Record<RedeemFailure, string> = {
@@ -81,6 +83,17 @@ function VerifyInner() {
         setWashesLeft(res.washesRemaining);
         setStats(await partnerStats(partner.id));
         setPhase("approved");
+        const uid = await currentUserId().catch(() => null);
+        if (uid) {
+          notifySoon(
+            uid,
+            "wash_redeemed",
+            "Wash confirmed ✓",
+            `1 wash redeemed at ${partner.name}. ${res.washesRemaining} credit${res.washesRemaining === 1 ? "" : "s"} left on the subscriber's plan.`,
+            "/partner/history",
+            "partner"
+          );
+        }
       } else {
         setFailure(res.reason);
         setPhase("rejected");

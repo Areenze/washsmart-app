@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
+import NotificationBell from "@/components/notification-bell";
 import {
   currentPartnerSession,
   partnerLogout,
@@ -17,6 +18,9 @@ const tabs = [
   { href: "/partner/scan", label: "Scan" },
   { href: "/partner/history", label: "History" },
   { href: "/partner/earnings", label: "Earnings" },
+  { href: "/partner/ledger", label: "Ledger" },
+  { href: "/partner/reviews", label: "Reviews" },
+  { href: "/partner/support", label: "Support" },
   { href: "/partner/profile", label: "Profile" },
 ];
 
@@ -71,6 +75,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
               <p className="text-sm font-bold">{partner?.name ?? "Partner"}</p>
               <p className="text-xs text-gray-400">Partner App</p>
             </div>
+            <NotificationBell audience="partner" href="/partner/notifications" />
             <button
               onClick={logout}
               className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-gray-400"

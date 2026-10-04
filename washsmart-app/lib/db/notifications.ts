@@ -25,13 +25,15 @@ function mapN(r: any): Notification {
   };
 }
 
-/** Queue a notification for any user (uses the SECURITY DEFINER RPC). */
+/** Queue a notification for any user (uses the SECURITY DEFINER RPC).
+ * audience routes it: 'subscriber' (default) or 'partner'. */
 export async function notify(
   userId: string,
   kind: string,
   title: string,
   body = "",
-  link: string | null = null
+  link: string | null = null,
+  audience: "subscriber" | "partner" = "subscriber"
 ): Promise<void> {
   const { error } = await getSupabase().rpc("notify_user", {
     p_user_id: userId,
@@ -39,6 +41,7 @@ export async function notify(
     p_title: title,
     p_body: body,
     p_link: link,
+    p_audience: audience,
   });
   if (error) throw error;
 }
@@ -49,40 +52,51 @@ export function notifySoon(
   kind: string,
   title: string,
   body = "",
-  link: string | null = null
+  link: string | null = null,
+  audience: "subscriber" | "partner" = "subscriber"
 ): void {
-  notify(userId, kind, title, body, link).catch(() => {});
+  notify(userId, kind, title, body, link, audience).catch(() => {});
 }
 
 export async function listNotifications(
   userId: string,
-  limit = 30
+  limit = 30,
+  audience: "subscriber" | "partner" = "subscriber"
 ): Promise<Notification[]> {
   const { data, error } = await getSupabase()
     .from("notifications")
     .select("*")
     .eq("user_id", userId)
+    .eq("audience", audience)
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
   return ((data ?? []) as any[]).map(mapN);
 }
 
-export async function unreadCount(userId: string): Promise<number> {
+export async function unreadCount(
+  userId: string,
+  audience: "subscriber" | "partner" = "subscriber"
+): Promise<number> {
   const { count, error } = await getSupabase()
     .from("notifications")
     .select("id", { count: "exact", head: true })
     .eq("user_id", userId)
+    .eq("audience", audience)
     .eq("read", false);
   if (error) return 0;
   return count ?? 0;
 }
 
-export async function markAllRead(userId: string): Promise<void> {
+export async function markAllRead(
+  userId: string,
+  audience: "subscriber" | "partner" = "subscriber"
+): Promise<void> {
   await getSupabase()
     .from("notifications")
     .update({ read: true })
     .eq("user_id", userId)
+    .eq("audience", audience)
     .eq("read", false);
 }
 

@@ -1197,26 +1197,85 @@ export async function listPartnerTransactions(
 
 export interface PartnerStats {
   todayWashes: number;
+  monthWashes: number;
   totalWashes: number;
   todayEarnings: number;
+  monthEarnings: number;
   totalEarnings: number;
   subscribersServed: number;
 }
 
 export async function partnerStats(partnerId: string): Promise<PartnerStats> {
   const txs = await listPartnerTransactions(partnerId);
-  const today = new Date().toDateString();
+  const now = new Date();
+  const today = now.toDateString();
   const todayTxs = txs.filter((t) => new Date(t.at).toDateString() === today);
+  const monthTxs = txs.filter((t) => {
+    const d = new Date(t.at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
   return {
     todayWashes: todayTxs.length,
+    monthWashes: monthTxs.length,
     totalWashes: txs.length,
     todayEarnings: todayTxs.reduce((s, t) => s + t.payout, 0),
+    monthEarnings: monthTxs.reduce((s, t) => s + t.payout, 0),
     totalEarnings: txs.reduce((s, t) => s + t.payout, 0),
     subscribersServed: new Set(txs.map((t) => t.subscriptionId)).size,
   };
 }
 
 /* ---------------- settlements & ledger queries ---------------- */
+
+/** Partner's own ledger lines (per-wash earnings, fees, adjustments,
+ * settlement payouts), newest first. RLS: partners read their own. */
+export interface PartnerLedgerEntry {
+  id: string;
+  kind: string;
+  label: string;
+  amount: number; // signed ₦: + earning, − fee/payout
+  ref: string;
+  status: string;
+  createdAt: string;
+}
+
+export async function listPartnerLedger(
+  partnerId: string
+): Promise<PartnerLedgerEntry[]> {
+  const { data, error } = await getSupabase()
+    .from("ledger_entries")
+    .select("id,kind,label,amount,ref,status,created_at")
+    .eq("partner_id", partnerId)
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  return ((data ?? []) as any[]).map((r) => ({
+    id: r.id,
+    kind: r.kind,
+    label: r.label,
+    amount: Number(r.amount),
+    ref: r.ref,
+    status: r.status,
+    createdAt: r.created_at,
+  }));
+}
+
+/** Single wash transaction for the partner's history detail view. */
+export async function getPartnerTransaction(
+  partnerId: string,
+  txId: string
+): Promise<WashTransaction | null> {
+  const { data, error } = await getSupabase()
+    .from("wash_transactions")
+    .select(
+      "id,subscription_id,subscriber_id,partner_id,token_hash,type,payout,redeemed_at,subscriber:profiles(name),partner:partners(name)"
+    )
+    .eq("id", txId)
+    .eq("partner_id", partnerId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapWashTx(data) : null;
+}
 
 /** Past (closed) settlements for a partner, newest first. */
 export async function listSettlements(partnerId: string): Promise<Settlement[]> {

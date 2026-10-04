@@ -86,12 +86,18 @@ export default function AdminSupportPage() {
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-gray-400">
-                    <Link
-                      href={`/admin/subscribers/${t.subscriberId}`}
-                      className="hover:underline"
-                    >
-                      {t.subscriberName}
-                    </Link>
+                    {t.partnerName ? (
+                      <span className="text-[#48d87c]">
+                        🏪 {t.partnerName} <span className="text-xs">(partner)</span>
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/admin/subscribers/${t.subscriberId}`}
+                        className="hover:underline"
+                      >
+                        {t.subscriberName}
+                      </Link>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-gray-400">
                     {categoryLabel(t.category)}
