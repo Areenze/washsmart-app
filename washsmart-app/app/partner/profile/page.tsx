@@ -143,14 +143,14 @@ export default function PartnerProfilePage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#2dd4bf]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Business Profile</h1>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#14b8a6]/15 px-3 py-1 text-xs font-bold text-[#2dd4bf]">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#20a957]/15 px-3 py-1 text-xs font-bold text-[#48d87c]">
             ✓ WashSMART Approved Partner
           </span>
           <Badge tone={partner.status === "Open" ? "green" : "gray"}>
@@ -195,7 +195,7 @@ export default function PartnerProfilePage() {
         <button
           onClick={toggleOpen}
           className={`mt-5 w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
-            partner.status === "Open" ? "bg-gray-500" : "bg-[#14b8a6] hover:bg-[#0d9488]"
+            partner.status === "Open" ? "bg-gray-500" : "bg-[#20a957] hover:bg-[#1a8a47]"
           }`}
         >
           {partner.status === "Open" ? "Mark as Closed" : "Mark as Open"}
@@ -212,10 +212,10 @@ export default function PartnerProfilePage() {
           type="button"
           onClick={() => photoInputRef.current?.click()}
           disabled={uploadingPhoto}
-          className="mt-4 block w-full rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#14b8a6] disabled:opacity-50"
+          className="mt-4 block w-full rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957] disabled:opacity-50"
         >
           <div className="text-3xl">📷</div>
-          <p className="mt-1 text-sm font-semibold text-[#2dd4bf]">
+          <p className="mt-1 text-sm font-semibold text-[#48d87c]">
             {uploadingPhoto ? "Uploading…" : "Add photos"}
           </p>
         </button>
@@ -305,8 +305,8 @@ export default function PartnerProfilePage() {
                   onClick={() => toggleService(s)}
                   className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
                     services.includes(s)
-                      ? "bg-[#14b8a6] text-white"
-                      : "bg-[#14b8a6]/10 text-[#2dd4bf]"
+                      ? "bg-[#20a957] text-white"
+                      : "bg-[#20a957]/10 text-[#48d87c]"
                   }`}
                 >
                   {s}

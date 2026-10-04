@@ -67,11 +67,8 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
       <header className="border-b bg-[#111a14] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/partner/dashboard" className="flex items-center gap-2">
-            <Logo tone="teal" />
+            <Logo />
             <Brand />
-            <span className="ml-1 rounded-md bg-[#14b8a6]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#2dd4bf]">
-              PARTNER PORTAL
-            </span>
           </Link>
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
@@ -97,7 +94,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
               href={t.href}
               className={
                 pathname === t.href
-                  ? "border-b-2 border-[#2dd4bf] px-3 py-3 text-sm font-bold text-[#2dd4bf]"
+                  ? "border-b-2 border-[#48d87c] px-3 py-3 text-sm font-bold text-[#48d87c]"
                   : "border-b-2 border-transparent px-3 py-3 text-sm font-semibold text-gray-400 hover:text-[#e9f2ec]"
               }
             >

@@ -34,7 +34,7 @@ export default function PartnerHistoryPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#2dd4bf]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -51,7 +51,7 @@ export default function PartnerHistoryPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={`rounded-full px-4 py-1.5 ${
-                filter === f ? "bg-[#14b8a6] text-white" : "text-gray-400"
+                filter === f ? "bg-[#20a957] text-white" : "text-gray-400"
               }`}
             >
               {f === "today" ? "Today" : "All"}
@@ -69,7 +69,7 @@ export default function PartnerHistoryPage() {
             action={
               <Link
                 href="/partner/scan"
-                className="inline-block rounded-full bg-[#14b8a6] px-6 py-3 transition-all duration-200 hover:bg-[#0d9488] font-bold text-white"
+                className="inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
               >
                 Scan Customer QR
               </Link>
@@ -92,7 +92,7 @@ export default function PartnerHistoryPage() {
               </div>
               <div className="flex shrink-0 items-center gap-3 text-right">
                 <div>
-                  <p className="text-sm font-bold text-[#2dd4bf]">
+                  <p className="text-sm font-bold text-[#48d87c]">
                     {fmtNaira(t.payout)}
                   </p>
                   <p className="text-xs text-gray-500">View →</p>
