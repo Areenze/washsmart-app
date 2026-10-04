@@ -72,6 +72,12 @@ export default function AdminPage() {
             <p className="mt-2 text-sm text-gray-400">
               Sign in with a WashSMART staff account to view this page.
             </p>
+            <Link
+              href="/app/login?next=/admin"
+              className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+            >
+              Log in →
+            </Link>
           </div>
         )}
         {authorized === true && (

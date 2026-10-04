@@ -20,8 +20,7 @@ type Step = "form" | "checking" | "sent" | "unknown" | "verify";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState(false);
   const [step, setStep] = useState<Step>("form");
@@ -30,18 +29,31 @@ export default function LoginPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resent, setResent] = useState(false);
 
+  // Where to land after sign-in. Callers (e.g. /admin) pass ?next=/admin.
+  // Only same-origin paths are honored — never an external URL.
+  const nextPath = () => {
+    try {
+      const n = new URLSearchParams(window.location.search).get("next");
+      return n && n.startsWith("/") && !n.startsWith("//") ? n : "/app";
+    } catch {
+      return "/app";
+    }
+  };
+
   useEffect(() => {
     (async () => {
-      if (await getProfile()) router.replace("/app");
+      if (await getProfile()) router.replace(nextPath());
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   // Notify, then automatically continue to the app (the inbox link finishes
   // sign-in whenever they click it).
   useEffect(() => {
     if (step !== "sent") return;
-    const t = window.setTimeout(() => router.push("/app"), 4500);
+    const t = window.setTimeout(() => router.push(nextPath()), 4500);
     return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, router]);
 
   useEffect(() => {
@@ -60,7 +72,7 @@ export default function LoginPage() {
     setError(null);
     const res = await signInWithPassword(email, password);
     if (res.ok) {
-      router.replace("/app");
+      router.replace(nextPath());
       return;
     }
     if (res.reason === "not-confirmed") {
@@ -100,7 +112,10 @@ export default function LoginPage() {
         setStep("unknown");
         return;
       }
-      const redirectTo = `${window.location.origin}/app/auth/callback?mode=login`;
+      const next = nextPath();
+      const redirectTo =
+        `${window.location.origin}/app/auth/callback?mode=login` +
+        (next !== "/app" ? `&next=${encodeURIComponent(next)}` : "");
       const res = await sendSignInLink(email, "", "", redirectTo);
       if (!res.ok) {
         setError(res.error ?? "Could not send the sign-in link.");

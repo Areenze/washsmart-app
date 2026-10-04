@@ -103,7 +103,12 @@ function CallbackInner() {
           router.replace(vs.length > 0 ? "/app" : "/app/onboarding?next=/app");
           return;
         }
-        router.replace("/app");
+        const rawNext = search.get("next");
+        const safeNext =
+          rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//")
+            ? rawNext
+            : "/app";
+        router.replace(safeNext);
       } catch (e) {
         setError(
           e instanceof Error ? e.message : "Verification failed. Please try again."
