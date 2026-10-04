@@ -4,10 +4,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import PartnerCard from "@/components/partner-card";
 import InstallPrompt from "@/components/install-prompt";
 import ReferralCard from "@/components/referral-card";
 import QRCode from "@/components/qrcode";
+import { PartnersSection } from "@/components/partners-section";
+import { SubscriptionSection } from "@/components/subscription-section";
 import { EmptyState, IconChip, Reveal, SectionTitle } from "@/components/ui";
 import {
   TOKEN_TTL_MS,
@@ -70,6 +71,17 @@ export default function UserHome() {
 
   useEffect(() => {
     setGreet(greeting());
+    // Deep links like /app#partners (from tab nav on other pages): make
+    // sure the browser lands on the right section even if Next skips it.
+    try {
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        const el = document.getElementById(hash);
+        if (el) window.setTimeout(() => el.scrollIntoView(), 100);
+      }
+    } catch {
+      /* ignore */
+    }
     (async () => {
       const p = await getProfile();
       setProfile(p);
@@ -134,7 +146,7 @@ export default function UserHome() {
   const qrPartner = partners.find((p) => p.id === qrPartnerId) ?? null;
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-8">
+    <section id="home" className="mx-auto max-w-7xl scroll-mt-28 px-5 py-8">
       <p className="text-lg text-gray-300">
         {greet} 👋
         {firstName ? (
@@ -230,7 +242,7 @@ export default function UserHome() {
                 Top up to keep washing smarter.
               </p>
               <Link
-                href="/app/subscription"
+                href="#subscription"
                 className="mt-4 inline-block rounded-full bg-[#2ed06a] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#25b856]"
               >
                 View Plans
@@ -302,7 +314,7 @@ export default function UserHome() {
               </Link>
             )}
             <Link
-              href="/app/partners"
+              href="#partners"
               className="rounded-full border border-white/40 px-6 py-3 font-semibold tracking-wide transition-all duration-200 hover:border-white/70 hover:bg-white/5 active:scale-[0.98]"
             >
               Find a Partner
@@ -367,7 +379,7 @@ export default function UserHome() {
               </Link>
               {outOfWashes && (
                 <Link
-                  href="/app/subscription"
+                  href="#subscription"
                   className="mt-3 block w-full rounded-full border border-[#20a957] py-3 transition-all duration-200 hover:bg-[#20a957]/10 text-center text-sm font-bold text-[#48d87c]"
                 >
                   Renew Subscription
@@ -382,7 +394,7 @@ export default function UserHome() {
                 Choose a plan to start washing smarter today.
               </p>
               <Link
-                href="/app/subscription"
+                href="#subscription"
                 className="mt-5 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
               >
                 View Plans
@@ -395,34 +407,14 @@ export default function UserHome() {
         </Reveal>
       </div>
 
-      <section className="mt-10">
-        <SectionTitle
-          action={
-            <Link
-              href="/app/partners"
-              className="text-sm font-semibold text-[#48d87c]"
-            >
-              View all →
-            </Link>
-          }
-        >
-          Nearby Partners
-        </SectionTitle>
-        {partners.length === 0 ? (
-          <EmptyState
-            icon="📍"
-            title="No partners yet"
-            body="Approved partners will appear here."
-          />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-3">
-            {partners.slice(0, 3).map((p, i) => (
-              <Reveal key={p.id} delay={i * 150}>
-                <PartnerCard partner={p} />
-              </Reveal>
-            ))}
-          </div>
-        )}
+      {/* Full partner finder + plans live below as continuous scroll. */}
+
+      <section id="partners" className="mt-16 scroll-mt-28">
+        <PartnersSection />
+      </section>
+
+      <section id="subscription" className="mt-16 scroll-mt-28">
+        <SubscriptionSection />
       </section>
 
       <section className="mt-10">

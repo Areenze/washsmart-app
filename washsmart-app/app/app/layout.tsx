@@ -1,6 +1,8 @@
 "use client";
 
-/* /app shell — header + mobile bottom nav for the subscriber experience. */
+/* /app shell — header + mobile bottom nav for the subscriber experience.
+ * /app is one continuous page (home → partners → subscription); the tabs
+ * smooth-scroll to each section, with scroll-spy highlighting. */
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -10,15 +12,16 @@ import { Brand, Logo } from "@/components/ui";
 import { getProfile, signOut } from "@/lib/db/store";
 
 const tabs = [
-  { href: "/app", label: "Home" },
-  { href: "/app/partners", label: "Partners" },
-  { href: "/app/subscription", label: "Subscription" },
+  { id: "home", label: "Home" },
+  { id: "partners", label: "Partners" },
+  { id: "subscription", label: "Subscription" },
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+  const [activeId, setActiveId] = useState("home");
 
   useEffect(() => {
     (async () => {
@@ -30,8 +33,38 @@ export default function AppShell({ children }: { children: ReactNode }) {
     })();
   }, [pathname]);
 
-  const isActive = (href: string) =>
-    href === "/app" ? pathname === "/app" : pathname.startsWith(href);
+  // Scroll-spy: highlight the tab for the section currently in view.
+  useEffect(() => {
+    if (pathname !== "/app") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) setActiveId(e.target.id);
+        }
+      },
+      { rootMargin: "-35% 0px -55% 0px" }
+    );
+    const els: Element[] = [];
+    for (const t of tabs) {
+      const el = document.getElementById(t.id);
+      if (el) {
+        observer.observe(el);
+        els.push(el);
+      }
+    }
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  const goSection = (id: string) => {
+    setActiveId(id);
+    if (pathname === "/app") {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      router.push(`/app#${id}`);
+    }
+  };
+
+  const isActive = (id: string) => pathname === "/app" && activeId === id;
 
   const logout = async () => {
     await signOut();
@@ -48,11 +81,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
             {tabs.map((t) => (
-              <Link
-                key={t.href}
-                href={t.href}
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => goSection(t.id)}
                 className={`group relative transition-colors ${
-                  isActive(t.href)
+                  isActive(t.id)
                     ? "text-[#48d87c]"
                     : "text-gray-400 hover:text-white"
                 }`}
@@ -61,10 +95,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 <span
                   aria-hidden
                   className={`absolute -bottom-1.5 left-0 h-[3px] w-full origin-left rounded-full bg-[#20a957] transition-transform duration-300 ${
-                    isActive(t.href) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    isActive(t.id) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
-              </Link>
+              </button>
             ))}
           </nav>
           {loggedIn === false ? (
@@ -107,17 +141,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <nav className="sticky bottom-0 border-t border-white/5 bg-[#111a14]/95 px-4 py-3 backdrop-blur-md md:hidden">
         <div className="flex justify-around text-xs">
           {tabs.map((t) => (
-            <Link
-              key={t.href}
-              href={t.href}
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => goSection(t.id)}
               className={
-                isActive(t.href)
+                isActive(t.id)
                   ? "rounded-full bg-[#20a957]/15 px-4 py-1.5 font-bold text-[#48d87c]"
                   : "px-4 py-1.5 text-gray-400"
               }
             >
               {t.label}
-            </Link>
+            </button>
           ))}
         </div>
       </nav>
