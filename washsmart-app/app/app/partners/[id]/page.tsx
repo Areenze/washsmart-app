@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Badge, EmptyState } from "@/components/ui";
+import { PartnerReviews } from "@/components/partner-reviews";
 import { getPartner } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
 
@@ -141,6 +142,8 @@ export default function PartnerDetailPage() {
           </a>
         </div>
       </div>
+
+      <PartnerReviews partnerId={partner.id} />
     </section>
   );
 }

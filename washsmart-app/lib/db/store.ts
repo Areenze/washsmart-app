@@ -445,6 +445,86 @@ export async function getPartner(id: string): Promise<Partner | undefined> {
   return data ? mapPartner(data) : undefined;
 }
 
+/* ---------------- partner reviews ---------------- */
+
+export interface Review {
+  id: string;
+  partnerId: string;
+  subscriberId: string;
+  subscriberName: string;
+  rating: number;
+  body: string;
+  createdAt: string;
+}
+
+function mapReview(r: any): Review {
+  return {
+    id: r.id,
+    partnerId: r.partner_id,
+    subscriberId: r.subscriber_id,
+    subscriberName: r.subscriber?.name ?? "WashSMART subscriber",
+    rating: r.rating,
+    body: r.body ?? "",
+    createdAt: r.created_at,
+  };
+}
+
+export async function listPartnerReviews(
+  partnerId: string
+): Promise<Review[]> {
+  const { data, error } = await getSupabase()
+    .from("reviews")
+    .select("id,partner_id,subscriber_id,rating,body,created_at,subscriber:profiles(name)")
+    .eq("partner_id", partnerId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapReview);
+}
+
+/** True when the signed-in subscriber has a completed wash at this partner. */
+export async function hasWashedAt(partnerId: string): Promise<boolean> {
+  const user = await currentUser();
+  if (!user) return false;
+  const { count, error } = await getSupabase()
+    .from("wash_transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("subscriber_id", user.id)
+    .eq("partner_id", partnerId);
+  if (error) return false;
+  return (count ?? 0) > 0;
+}
+
+/** The signed-in subscriber's own review for this partner, if any. */
+export async function getMyReview(
+  partnerId: string
+): Promise<Review | null> {
+  const user = await currentUser();
+  if (!user) return null;
+  const { data, error } = await getSupabase()
+    .from("reviews")
+    .select("id,partner_id,subscriber_id,rating,body,created_at,subscriber:profiles(name)")
+    .eq("partner_id", partnerId)
+    .eq("subscriber_id", user.id)
+    .maybeSingle();
+  if (error) return null;
+  return data ? mapReview(data) : null;
+}
+
+/** Create or update the signed-in subscriber's review.
+ *  The RPC enforces "wash here first" and refreshes the partner aggregate. */
+export async function submitReview(
+  partnerId: string,
+  rating: number,
+  body: string
+): Promise<void> {
+  const { error } = await getSupabase().rpc("submit_review", {
+    p_partner_id: partnerId,
+    p_rating: rating,
+    p_body: body,
+  });
+  if (error) throw error;
+}
+
 const PARTNER_PATCH_COLS: Record<string, string> = {
   ownerName: "owner_name",
   phone: "phone",
