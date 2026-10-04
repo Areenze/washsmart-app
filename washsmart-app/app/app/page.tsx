@@ -47,17 +47,9 @@ export default function UserHome() {
   // then swap to the real greeting after mount so server and client agree.
   const [greet, setGreet] = useState("Welcome");
 
-  // Dashboard wash QR: partner-specific code minted right here, so the
-  // subscriber never needs the separate Scan tab. The last-used partner
-  // is remembered between visits.
-  const [qrPartnerId, setQrPartnerId] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      return window.localStorage.getItem("washsmart.lastPartner");
-    } catch {
-      return null;
-    }
-  });
+  // Dashboard wash QR: minted right here, so the subscriber never needs a
+  // separate Scan tab. The token is partner-agnostic — whichever partner
+  // scans it is recorded at redemption time.
   const [qrToken, setQrToken] = useState<string | null>(null);
   const [qrIssuedAt, setQrIssuedAt] = useState(0);
   const [now, setNow] = useState(() => Date.now());
@@ -97,37 +89,19 @@ export default function UserHome() {
     })();
   }, []);
 
-  // Drop a remembered partner that is no longer listed.
+  // Mint (and auto-refresh) the QR token once the profile is loaded.
   useEffect(() => {
-    if (qrPartnerId && partners.length > 0 && !partners.some((p) => p.id === qrPartnerId)) {
-      setQrPartnerId(null);
-      try {
-        window.localStorage.removeItem("washsmart.lastPartner");
-      } catch {
-        /* ignore */
-      }
-    }
-  }, [partners, qrPartnerId]);
-
-  // Mint (and auto-refresh) the QR token while a partner is selected.
-  useEffect(() => {
-    if (!profile || !qrPartnerId) {
+    if (!profile) {
       setQrToken(null);
       return;
     }
-    try {
-      window.localStorage.setItem("washsmart.lastPartner", qrPartnerId);
-    } catch {
-      /* ignore */
-    }
     mintQr();
-  }, [profile, qrPartnerId, mintQr]);
+  }, [profile, mintQr]);
 
   useEffect(() => {
-    if (!qrPartnerId) return;
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
-  }, [qrPartnerId]);
+  }, []);
 
   const qrRemainingMs = Math.max(0, TOKEN_TTL_MS - (now - qrIssuedAt));
   const qrRemainingSec = Math.ceil(qrRemainingMs / 1000);
@@ -142,7 +116,6 @@ export default function UserHome() {
   const bonusWashes = summary?.bonusRemaining ?? 0;
   const outOfWashes = totalWashes <= 0;
   const firstName = profile?.name?.trim().split(" ")[0] || "";
-  const openPartners = partners.filter((p) => p.status === "Open");
 
   // Lazy "subscription expiring" nudge: once per pack, when ≤3 days remain.
   useEffect(() => {
@@ -174,7 +147,6 @@ export default function UserHome() {
       }
     })();
   }, [profile, subscription]);
-  const qrPartner = partners.find((p) => p.id === qrPartnerId) ?? null;
 
   return (
     <section className="mx-auto max-w-7xl px-5 py-8">
@@ -225,31 +197,13 @@ export default function UserHome() {
           aria-label="My Wash QR"
           className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-6 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] md:p-8"
         >
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
             <div>
               <p className="text-sm font-semibold tracking-wide text-[#65e28e]">
                 WASHSMART VERIFICATION
               </p>
               <h2 className="mt-1 text-2xl font-bold">My Wash QR</h2>
             </div>
-            {profile && openPartners.length > 0 && (
-              <label className="flex items-center gap-2 text-sm">
-                <span className="font-semibold text-white/70">Washing at</span>
-                <select
-                  value={qrPartnerId ?? ""}
-                  onChange={(e) => setQrPartnerId(e.target.value || null)}
-                  aria-label="Choose the partner you're visiting"
-                  className="max-w-[220px] rounded-full border border-white/20 bg-[#0a0f0c] px-4 py-2.5 text-sm font-semibold text-[#e9f2ec] outline-none focus:border-[#20a957]"
-                >
-                  <option value="">Choose a partner…</option>
-                  {openPartners.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
           </div>
 
           {!profile ? (
@@ -264,11 +218,6 @@ export default function UserHome() {
                 Log in →
               </Link>
             </div>
-          ) : !qrPartner ? (
-            <p className="mt-6 rounded-2xl bg-white/5 p-5 text-sm text-white/70">
-              Pick the car wash you&rsquo;re visiting above to generate your
-              wash QR.
-            </p>
           ) : outOfWashes ? (
             <div className="mt-6 text-center">
               <p className="text-xl font-bold">No washes left</p>
@@ -294,8 +243,6 @@ export default function UserHome() {
                 )}
               </div>
               <div className="text-center md:text-left">
-                <p className="font-bold">{qrPartner.name}</p>
-                <p className="mt-1 text-sm text-white/60">{qrPartner.location}</p>
                 <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-[#111a14]/40 px-4 py-2 text-sm">
                   <span className="text-white/70">Refreshes in</span>
                   <span className="font-mono font-bold text-[#65e28e]">
@@ -304,7 +251,7 @@ export default function UserHome() {
                   </span>
                 </div>
                 <p className="mt-4 text-sm text-white/70">
-                  Present this QR at {qrPartner.name}. The partner scans it to
+                  Present this QR at any WashSMART partner. They scan it to
                   verify and deduct one wash.
                 </p>
                 <p className="mt-2 text-sm font-semibold text-[#65e28e]">
