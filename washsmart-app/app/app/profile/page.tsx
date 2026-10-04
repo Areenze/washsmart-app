@@ -17,6 +17,7 @@ import {
   getMySubscription,
   getProfile,
   getVehicles,
+  isAdmin,
   saveProfile,
   saveVehicles,
   signOut,
@@ -30,12 +31,14 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [newVehicle, setNewVehicle] = useState({ label: "", plate: "", color: "" });
   const [touched, setTouched] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   useEffect(() => {
     (async () => {
       setProfile((await getProfile()) ?? { name: "", email: "", phone: "" });
       setVehicles(await getVehicles());
       setSubscription(await getMySubscription());
+      setShowAdmin(await isAdmin().catch(() => false));
     })();
   }, []);
 
@@ -261,6 +264,15 @@ export default function ProfilePage() {
       <Card className="mt-6">
         <h2 className="text-lg font-bold">About WashSMART</h2>
         <div className="mt-3 space-y-1 text-sm">
+          {showAdmin && (
+            <Link href="/admin" className="flex items-center justify-between rounded-xl bg-[#f5b942]/10 px-3 py-2.5 font-semibold text-[#f5b942] transition-colors hover:bg-[#f5b942]/15">
+              <span className="flex items-center gap-2">
+                Admin dashboard
+                <span className="rounded-md bg-[#f5b942]/20 px-1.5 py-0.5 text-[10px] font-bold tracking-[0.12em]">ADMIN</span>
+              </span>
+              <span>→</span>
+            </Link>
+          )}
           <Link href="/" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
             WashSMART website <span className="text-gray-500">→</span>
           </Link>
