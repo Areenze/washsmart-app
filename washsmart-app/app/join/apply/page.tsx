@@ -268,10 +268,25 @@ export default function ApplyWizard() {
     deletePhoto(url).catch(() => {});
   };
 
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
   const submit = async () => {
-    const app = await submitApplication(draft);
-    setDone(app);
-    window.scrollTo({ top: 0 });
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const app = await submitApplication(draft);
+      setDone(app);
+      window.scrollTo({ top: 0 });
+    } catch (err: any) {
+      setSubmitError(
+        err?.message || "Could not submit your application. Please try again."
+      );
+      window.scrollTo({ top: 0 });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const toggleService = (s: string) =>
@@ -661,7 +676,19 @@ export default function ApplyWizard() {
               )}
 
               {step === 5 && (
-                <ReviewScreen draft={draft} onSubmit={submit} onEdit={() => { setStep(4); window.scrollTo({ top: 0 }); }} />
+                <>
+                  {submitError && (
+                    <p className="mb-4 rounded-2xl bg-red-500/10 px-5 py-4 text-sm font-semibold text-red-300">
+                      {submitError}
+                    </p>
+                  )}
+                  <ReviewScreen
+                    draft={draft}
+                    submitting={submitting}
+                    onSubmit={submit}
+                    onEdit={() => { setStep(4); window.scrollTo({ top: 0 }); }}
+                  />
+                </>
               )}
 
               {step < 5 && (
@@ -689,10 +716,12 @@ export default function ApplyWizard() {
 
 function ReviewScreen({
   draft,
+  submitting,
   onSubmit,
   onEdit,
 }: {
   draft: Draft;
+  submitting: boolean;
   onSubmit: () => void;
   onEdit: () => void;
 }) {
@@ -740,16 +769,21 @@ function ReviewScreen({
       <div className="mt-8 flex gap-3">
         <button
           onClick={onEdit}
-          className="rounded-xl border border-white/10 px-6 py-3 font-bold text-gray-400"
+          disabled={submitting}
+          className="rounded-xl border border-white/10 px-6 py-3 font-bold text-gray-400 disabled:opacity-50"
         >
           ← Edit
         </button>
-        <PrimaryButton onClick={onSubmit} className="flex-1">
-          Submit Application
+        <PrimaryButton onClick={onSubmit} disabled={submitting} className="flex-1">
+          {submitting ? "Submitting…" : "Submit Application"}
         </PrimaryButton>
       </div>
       <p className="mt-3 text-center text-xs text-gray-500">
-        By submitting you agree to the WashSMART partner terms (demo).
+        By submitting you agree to the{" "}
+        <Link href="/terms" className="underline hover:text-gray-300">
+          WashSMART partner terms
+        </Link>
+        .
       </p>
     </div>
   );

@@ -617,37 +617,72 @@ export async function submitApplication(
   input: ApplicationInput
 ): Promise<PartnerApplication> {
   const sb = getSupabase();
+  // NOTE: no `.select()` after the insert — anonymous applicants have an
+  // INSERT policy but no SELECT policy on partner_applications, and
+  // INSERT...RETURNING is denied without it. We already know the ref
+  // (generated client-side), so build the result locally on success.
   for (let attempt = 0; attempt < 3; attempt++) {
     const ref = newAppRef();
-    const { data, error } = await sb
-      .from("partner_applications")
-      .insert({
+    const { error } = await sb.from("partner_applications").insert({
+      ref,
+      status: "pending",
+      car_wash_name: input.business.carWashName,
+      owner_name: input.business.ownerName,
+      phone: input.business.phone,
+      whatsapp: input.business.whatsapp || null,
+      email: input.business.email,
+      address: input.location.address,
+      area: input.location.area,
+      lga: input.location.lga,
+      state: input.location.state,
+      gps: input.location.gps || null,
+      opening_hours: input.operations.openingHours || null,
+      wash_bays: Number(input.operations.washBays) || null,
+      daily_capacity: Number(input.operations.dailyCapacity) || null,
+      years_operating: Number(input.operations.yearsOperating) || null,
+      staff_count: Number(input.operations.staffCount) || null,
+      services: input.services,
+      other_service: input.otherService || null,
+      business_photos: input.photos.business,
+      location_photos: input.photos.location,
+    });
+    if (!error) {
+      return {
         ref,
         status: "pending",
-        car_wash_name: input.business.carWashName,
-        owner_name: input.business.ownerName,
-        phone: input.business.phone,
-        whatsapp: input.business.whatsapp || null,
-        email: input.business.email,
-        address: input.location.address,
-        area: input.location.area,
-        lga: input.location.lga,
-        state: input.location.state,
-        gps: input.location.gps || null,
-        opening_hours: input.operations.openingHours || null,
-        wash_bays: Number(input.operations.washBays) || null,
-        daily_capacity: Number(input.operations.dailyCapacity) || null,
-        years_operating: Number(input.operations.yearsOperating) || null,
-        staff_count: Number(input.operations.staffCount) || null,
+        submittedAt: new Date().toISOString(),
+        business: {
+          carWashName: input.business.carWashName,
+          ownerName: input.business.ownerName,
+          phone: input.business.phone,
+          whatsapp: input.business.whatsapp || "",
+          email: input.business.email,
+        },
+        location: {
+          address: input.location.address,
+          area: input.location.area,
+          lga: input.location.lga,
+          state: input.location.state,
+          gps: input.location.gps || "",
+        },
+        operations: {
+          openingHours: input.operations.openingHours || "",
+          openingTime: "",
+          closingTime: "",
+          washBays: input.operations.washBays || "",
+          dailyCapacity: input.operations.dailyCapacity || "",
+          yearsOperating: input.operations.yearsOperating || "",
+          staffCount: input.operations.staffCount || "",
+        },
         services: input.services,
-        other_service: input.otherService || null,
-        business_photos: input.photos.business,
-        location_photos: input.photos.location,
-      })
-      .select()
-      .maybeSingle();
-    if (!error && data) return mapApplication(data);
-    if (error && !String(error.message).includes("duplicate")) throw error;
+        otherService: input.otherService || "",
+        photos: {
+          business: input.photos.business,
+          location: input.photos.location,
+        },
+      };
+    }
+    if (!String(error.message).includes("duplicate")) throw error;
     // ref collision — retry with a fresh ref
   }
   throw new Error("Could not create application reference. Please try again.");
