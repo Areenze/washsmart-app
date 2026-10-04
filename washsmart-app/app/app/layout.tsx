@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
 import NotificationBell from "@/components/notification-bell";
-import { getProfile, signOut } from "@/lib/db/store";
+import { getProfile, isAdmin, signOut } from "@/lib/db/store";
 
 const tabs = [
   { id: "home", label: "Home" },
@@ -32,6 +32,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [activeId, setActiveId] = useState("home");
+  const [showAdmin, setShowAdmin] = useState(false);
   // Clean chrome on auth/callback pages: no Home/Partners/Subscription tabs.
   const hideTabs = HIDE_TABS_PATHS.includes(pathname);
 
@@ -50,6 +51,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
       }
       if (cancelled) return;
       setLoggedIn(authed);
+      // Admin entry point: visible in the header only for admins.
+      setShowAdmin(authed && (await isAdmin().catch(() => false)));
+      if (cancelled) return;
       // The subscriber home (/app) is for logged-in subscribers only.
       // Logged-out visitors go to the landing page — so the browser back
       // button from the login page returns to / instead of a logged-out
@@ -158,6 +162,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </div>
           ) : loggedIn === true ? (
             <div className="flex items-center gap-3">
+              {showAdmin && (
+                <Link
+                  href="/admin"
+                  className="rounded-full bg-[#f5b942]/15 px-4 py-2 text-xs font-bold text-[#f5b942] transition-colors hover:bg-[#f5b942]/25"
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 onClick={logout}
                 className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-gray-400"
