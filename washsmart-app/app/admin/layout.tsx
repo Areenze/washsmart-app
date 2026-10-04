@@ -29,9 +29,10 @@ const NAV: { href: string; label: string; icon: string; badge?: string }[] = [
   { href: "/admin/support", label: "Support", icon: "🎧", badge: "tickets" },
   { href: "/admin/fraud", label: "Fraud", icon: "🚨" },
   { href: "/admin/reports", label: "Reports", icon: "📈" },
+  { href: "/admin/settings", label: "Settings", icon: "⚙️" },
 ];
 
-const SOON = [{ label: "Settings", icon: "⚙️" }];
+const SOON: { label: string; icon: string }[] = [];
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();

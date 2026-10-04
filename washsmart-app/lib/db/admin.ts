@@ -1398,6 +1398,159 @@ export async function adminReportData(): Promise<ReportData> {
   };
 }
 
+/* ---------------- settings ---------------- */
+
+export interface AuditEntry {
+  id: string;
+  adminId: string | null;
+  adminName: string;
+  adminEmail: string;
+  action: string;
+  entity: string;
+  entityId: string;
+  detail: string;
+  createdAt: string;
+}
+
+export async function adminListAuditLog(limit = 100): Promise<AuditEntry[]> {
+  const { data, error } = await getSupabase()
+    .from("admin_audit_log")
+    .select("*,admin:profiles!admin_audit_log_admin_id_fkey(name,email)")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return ((data ?? []) as any[]).map((r) => ({
+    id: r.id,
+    adminId: r.admin_id,
+    adminName: r.admin?.name ?? "—",
+    adminEmail: r.admin?.email ?? "",
+    action: r.action,
+    entity: r.entity,
+    entityId: r.entity_id,
+    detail: r.detail ?? "",
+    createdAt: r.created_at,
+  }));
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+export async function adminListAdmins(): Promise<AdminUser[]> {
+  const { data, error } = await getSupabase()
+    .from("profiles")
+    .select("id,name,email,created_at")
+    .eq("is_admin", true)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return ((data ?? []) as any[]).map((r) => ({
+    id: r.id,
+    name: r.name ?? "—",
+    email: r.email ?? "",
+    createdAt: r.created_at,
+  }));
+}
+
+/** Grant admin to the account with this email. Audit-logged. */
+export async function adminGrantAdmin(email: string): Promise<void> {
+  const db = getSupabase();
+  const { data, error } = await db
+    .from("profiles")
+    .select("id,name,email,is_admin")
+    .ilike("email", email.trim())
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("No account found with that email.");
+  if ((data as any).is_admin) throw new Error("That account is already an admin.");
+  const { error: upError } = await db
+    .from("profiles")
+    .update({ is_admin: true })
+    .eq("id", (data as any).id);
+  if (upError) throw upError;
+  await logAdminAction(
+    "admin.grant",
+    "profile",
+    (data as any).id,
+    `Granted admin to ${(data as any).email}`
+  ).catch(() => {});
+}
+
+/** Revoke admin. Refuses to revoke yourself or the last admin. Audit-logged. */
+export async function adminRevokeAdmin(profileId: string): Promise<void> {
+  const db = getSupabase();
+  const me = await adminId();
+  if (me === profileId) throw new Error("You can't revoke your own admin access.");
+  const admins = await adminListAdmins();
+  if (admins.length <= 1) throw new Error("You can't remove the last admin.");
+  const target = admins.find((a) => a.id === profileId);
+  const { error } = await db
+    .from("profiles")
+    .update({ is_admin: false })
+    .eq("id", profileId);
+  if (error) throw error;
+  await logAdminAction(
+    "admin.revoke",
+    "profile",
+    profileId,
+    `Revoked admin from ${target?.email ?? profileId}`
+  ).catch(() => {});
+}
+
+export interface PlanRow {
+  id: string;
+  name: string;
+  amount: number;
+  washes: number;
+  popular: boolean;
+}
+
+export async function adminListPlans(): Promise<PlanRow[]> {
+  const { data, error } = await getSupabase()
+    .from("plans")
+    .select("id,name,amount,washes,popular")
+    .neq("id", "referral")
+    .order("amount");
+  if (error) throw error;
+  return ((data ?? []) as any[]).map((r) => ({
+    id: r.id,
+    name: r.name,
+    amount: Number(r.amount),
+    washes: Number(r.washes),
+    popular: !!r.popular,
+  }));
+}
+
+/** Update a plan's price/wash allowance. Applies to NEW purchases only —
+ *  existing subscriptions keep the values they were sold with. */
+export async function adminUpdatePlan(
+  id: string,
+  patch: { amount: number; washes: number; popular: boolean }
+): Promise<void> {
+  const db = getSupabase();
+  const { data: before } = await db
+    .from("plans")
+    .select("name,amount,washes")
+    .eq("id", id)
+    .maybeSingle();
+  if (patch.amount <= 0 || patch.washes <= 0)
+    throw new Error("Amount and washes must be positive.");
+  const { error } = await db
+    .from("plans")
+    .update({ amount: Math.round(patch.amount), washes: Math.round(patch.washes), popular: patch.popular })
+    .eq("id", id);
+  if (error) throw error;
+  const b = before as any;
+  await logAdminAction(
+    "plan.update",
+    "plan",
+    id,
+    `${b?.name ?? id}: ₦${Number(b?.amount).toLocaleString("en-NG")}/${b?.washes} washes → ₦${patch.amount.toLocaleString("en-NG")}/${patch.washes} washes`
+  ).catch(() => {});
+}
+
 /* ---------------- reviews / locations ---------------- */
 
 export interface AdminReviewRow {
