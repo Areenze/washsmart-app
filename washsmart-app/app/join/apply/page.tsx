@@ -44,6 +44,8 @@ const emptyDraft: Draft = {
   location: { address: "", area: "", lga: "", state: "Lagos", gps: "" },
   operations: {
     openingHours: "",
+    openingTime: "",
+    closingTime: "",
     washBays: "",
     dailyCapacity: "",
     yearsOperating: "",
@@ -56,6 +58,20 @@ const emptyDraft: Draft = {
 
 const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const digitsOk = (v: string) => v.trim().replace(/\D/g, "").length >= 7;
+
+// Opening-hour picker options: 5:00am – 11:00pm, hourly.
+const HOURS: { value: string; label: string }[] = Array.from(
+  { length: 19 },
+  (_, i) => {
+    const h24 = i + 5;
+    const suffix = h24 < 12 ? "am" : "pm";
+    const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+    return { value: `${h12}:00${suffix}`, label: `${h12}:00 ${suffix}` };
+  }
+);
+
+const composeHours = (open: string, close: string) =>
+  open && close ? `${open} – ${close}` : "";
 
 export default function ApplyWizard() {
   const [step, setStep] = useState(0);
@@ -70,6 +86,19 @@ export default function ApplyWizard() {
     setDraft((d) => ({ ...d, location: { ...d.location, [k]: v } }));
   const setOps = (k: keyof Draft["operations"], v: string) =>
     setDraft((d) => ({ ...d, operations: { ...d.operations, [k]: v } }));
+
+  // Opening/closing time pickers keep the composed openingHours string in sync.
+  const setHours = (which: "openingTime" | "closingTime", v: string) =>
+    setDraft((d) => {
+      const ops = { ...d.operations, [which]: v };
+      return {
+        ...d,
+        operations: {
+          ...ops,
+          openingHours: composeHours(ops.openingTime, ops.closingTime),
+        },
+      };
+    });
 
   const stepValid = (): boolean => {
     const b = draft.business;
@@ -90,8 +119,11 @@ export default function ApplyWizard() {
           l.lga.trim().length > 1 &&
           l.state.trim().length > 1
         );
-      case 2:
-        return o.openingHours.trim().length > 3;
+      case 2: {
+        const oi = HOURS.findIndex((h) => h.value === o.openingTime);
+        const ci = HOURS.findIndex((h) => h.value === o.closingTime);
+        return oi >= 0 && ci > oi;
+      }
       case 3:
         return draft.services.length > 0 || draft.otherService.trim().length > 1;
       case 4:
@@ -100,6 +132,20 @@ export default function ApplyWizard() {
         return true;
     }
   };
+
+  // Opening-hours picker state for the step-2 Field (error text + red ring).
+  const hoursState = (): { error?: string; bad: boolean } => {
+    const o = draft.operations;
+    const oi = HOURS.findIndex((h) => h.value === o.openingTime);
+    const ci = HOURS.findIndex((h) => h.value === o.closingTime);
+    if (!touched) return { bad: false };
+    if (oi < 0 || ci < 0)
+      return { error: "Select your opening and closing hours.", bad: true };
+    if (ci <= oi)
+      return { error: "Closing time must be after opening time.", bad: true };
+    return { bad: false };
+  };
+  const hs = hoursState();
 
   const next = () => {
     setTouched(true);
@@ -381,23 +427,35 @@ export default function ApplyWizard() {
 
               {step === 2 && (
                 <div className="space-y-4">
-                  <Field
-                    label="Opening hours"
-                    required
-                    error={
-                      touched && draft.operations.openingHours.trim().length <= 3
-                        ? "Please enter your opening hours."
-                        : undefined
-                    }
-                  >
-                    <input
-                      value={draft.operations.openingHours}
-                      onChange={(e) => setOps("openingHours", e.target.value)}
-                      placeholder="e.g. Mon–Sat · 8:00am – 6:00pm"
-                      className={inputClass(
-                        touched && draft.operations.openingHours.trim().length <= 3
-                      )}
-                    />
+                  <Field label="Opening hours" required error={hs.error}>
+                    <div className="grid grid-cols-2 gap-4">
+                      <select
+                        aria-label="Opening time"
+                        value={draft.operations.openingTime}
+                        onChange={(e) => setHours("openingTime", e.target.value)}
+                        className={inputClass(hs.bad)}
+                      >
+                        <option value="">Opening…</option>
+                        {HOURS.map((h) => (
+                          <option key={h.value} value={h.value}>
+                            {h.label}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        aria-label="Closing time"
+                        value={draft.operations.closingTime}
+                        onChange={(e) => setHours("closingTime", e.target.value)}
+                        className={inputClass(hs.bad)}
+                      >
+                        <option value="">Closing…</option>
+                        {HOURS.map((h) => (
+                          <option key={h.value} value={h.value}>
+                            {h.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </Field>
                   <div className="grid grid-cols-2 gap-4">
                     <Field label="Number of wash bays">

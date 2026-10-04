@@ -62,6 +62,8 @@ export interface PartnerApplication {
   };
   operations: {
     openingHours: string;
+    openingTime: string;
+    closingTime: string;
     washBays: string;
     dailyCapacity: string;
     yearsOperating: string;

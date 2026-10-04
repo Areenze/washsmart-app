@@ -142,6 +142,8 @@ function mapApplication(r: any): PartnerApplication {
     },
     operations: {
       openingHours: r.opening_hours ?? "",
+      openingTime: "",
+      closingTime: "",
       washBays: String(r.wash_bays ?? ""),
       dailyCapacity: String(r.daily_capacity ?? ""),
       yearsOperating: String(r.years_operating ?? ""),
@@ -477,7 +479,7 @@ export async function getApplication(
     submittedAt: s.submitted_at,
     business: { carWashName: s.car_wash_name, ownerName: "", phone: "", whatsapp: "", email: "" },
     location: { address: "", area: "", lga: "", state: "Lagos", gps: "" },
-    operations: { openingHours: "", washBays: "", dailyCapacity: "", yearsOperating: "", staffCount: "" },
+    operations: { openingHours: "", openingTime: "", closingTime: "", washBays: "", dailyCapacity: "", yearsOperating: "", staffCount: "" },
     services: [],
     otherService: "",
     photos: { business: [], location: [] },
