@@ -11,6 +11,7 @@ import {
   applyReferralCode,
   clearVerifyPending,
   createSubscription,
+  currentUserId,
   exchangeCodeForSession,
   getMySubscription,
   getVehicles,
@@ -97,6 +98,23 @@ function CallbackInner() {
             return;
           }
           await createSubscription({ planId });
+          // In-app confirmation for the demo-mint path (the Paystack route
+          // sends its own payment-success notification).
+          (async () => {
+            const { notify } = await import("@/lib/db/notifications");
+            const uid = await currentUserId().catch(() => null);
+            if (!uid) return;
+            const sub = await getMySubscription().catch(() => null);
+            await notify(
+              uid,
+              "subscription_activated",
+              `Subscription activated — ${sub?.planName ?? "your plan"}`,
+              sub
+                ? `${sub.washesTotal} washes, valid until ${new Date(sub.expiresAt).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}.`
+                : "",
+              "/app"
+            ).catch(() => {});
+          })();
           // Checkout-first arrivals never registered vehicles: send them to
           // onboarding before the dashboard (unless they already have cars).
           const vs = await getVehicles().catch(() => []);

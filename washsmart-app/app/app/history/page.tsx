@@ -58,6 +58,12 @@ export default function HistoryPage() {
               <div className="text-right">
                 <p className="text-sm font-semibold">{w.type}</p>
                 <p className="text-xs text-gray-500">{fmtDate(w.at)}</p>
+                <Link
+                  href={`/app/support/new?wash=${w.id}`}
+                  className="mt-1 inline-block text-xs font-bold text-[#48d87c]"
+                >
+                  Report a problem
+                </Link>
               </div>
             </div>
           ))}

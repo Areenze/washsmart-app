@@ -1089,6 +1089,169 @@ export async function listInspections(): Promise<InspectionListRow[]> {
   }));
 }
 
+/* ---------------- fraud & risk ---------------- */
+
+export interface FraudFlag {
+  rule: string;
+  ruleLabel: string;
+  entityId: string;
+  entityName: string;
+  entityKind: "partner" | "subscriber";
+  severity: "high" | "medium";
+  description: string;
+  href: string;
+  at: string;
+}
+
+/**
+ * Rule-based anomaly detection over recent wash redemptions.
+ * Flags are stateless (recomputed); dismissals persist in fraud_dismissals.
+ */
+export async function adminFraudFlags(): Promise<FraudFlag[]> {
+  const db = getSupabase();
+  const since = new Date(Date.now() - 30 * 864e5).toISOString();
+  const { data, error } = await db
+    .from("wash_transactions")
+    .select(
+      "id,redeemed_at,partner_id,subscriber_id,partner:partners(name),subscriber:profiles(name,created_at)"
+    )
+    .gte("redeemed_at", since)
+    .order("redeemed_at", { ascending: true })
+    .limit(2000);
+  if (error) throw error;
+  const rows = (data ?? []) as any[];
+  const flags: FraudFlag[] = [];
+
+  // Rule 1: partner velocity burst — ≥8 washes in any rolling 2h window.
+  const byPartner = new Map<string, any[]>();
+  for (const w of rows) {
+    if (!byPartner.has(w.partner_id)) byPartner.set(w.partner_id, []);
+    byPartner.get(w.partner_id)!.push(w);
+  }
+  for (const [pid, ws] of byPartner) {
+    const times = ws.map((w) => new Date(w.redeemed_at).getTime()).sort((a, b) => a - b);
+    let burst = 0;
+    for (let i = 0; i < times.length; i++) {
+      let j = i;
+      while (j < times.length && times[j] - times[i] <= 2 * 3600e3) j++;
+      burst = Math.max(burst, j - i);
+    }
+    if (burst >= 8) {
+      flags.push({
+        rule: "partner_burst",
+        ruleLabel: "Redemption burst",
+        entityId: pid,
+        entityName: ws[0].partner?.name ?? pid,
+        entityKind: "partner",
+        severity: "high",
+        description: `${burst} washes within 2 hours — far above a normal pace. Possible QR sharing or batch scanning.`,
+        href: `/admin/partners/${pid}`,
+        at: ws[ws.length - 1].redeemed_at,
+      });
+    }
+  }
+
+  // Rule 2: subscriber rapid repeat — 2+ washes within 30 minutes.
+  const bySub = new Map<string, any[]>();
+  for (const w of rows) {
+    if (!bySub.has(w.subscriber_id)) bySub.set(w.subscriber_id, []);
+    bySub.get(w.subscriber_id)!.push(w);
+  }
+  for (const [sid, ws] of bySub) {
+    const times = ws.map((w) => new Date(w.redeemed_at).getTime()).sort((a, b) => a - b);
+    let rapid = false;
+    for (let i = 1; i < times.length; i++) {
+      if (times[i] - times[i - 1] <= 30 * 60e3) {
+        rapid = true;
+        break;
+      }
+    }
+    if (rapid) {
+      flags.push({
+        rule: "rapid_repeat",
+        ruleLabel: "Rapid repeat wash",
+        entityId: sid,
+        entityName: ws[0].subscriber?.name ?? sid.slice(0, 8),
+        entityKind: "subscriber",
+        severity: "medium",
+        description: `${ws.length} washes in 30 days with at least two less than 30 minutes apart. Two cars back-to-back is plausible — worth a glance.`,
+        href: `/admin/subscribers/${sid}`,
+        at: ws[ws.length - 1].redeemed_at,
+      });
+    }
+  }
+
+  // Rule 3: single-partner concentration — ≥5 washes, all at one partner.
+  for (const [sid, ws] of bySub) {
+    if (ws.length >= 5) {
+      const partners = new Set(ws.map((w) => w.partner_id));
+      if (partners.size === 1) {
+        const pid = [...partners][0];
+        flags.push({
+          rule: "single_partner",
+          ruleLabel: "Single-partner concentration",
+          entityId: sid,
+          entityName: ws[0].subscriber?.name ?? sid.slice(0, 8),
+          entityKind: "subscriber",
+          severity: "medium",
+          description: `All ${ws.length} washes at one partner (${ws[0].partner?.name ?? pid}). Could be loyalty — or a collusion pattern.`,
+          href: `/admin/subscribers/${sid}`,
+          at: ws[ws.length - 1].redeemed_at,
+        });
+      }
+    }
+  }
+
+  // Rule 4: new-account burst — account < 7 days old with ≥3 washes.
+  const weekAgo = Date.now() - 7 * 864e5;
+  for (const [sid, ws] of bySub) {
+    const created = ws[0].subscriber?.created_at
+      ? new Date(ws[0].subscriber.created_at).getTime()
+      : 0;
+    if (created > weekAgo && ws.length >= 3) {
+      flags.push({
+        rule: "new_account_burst",
+        ruleLabel: "New-account burst",
+        entityId: sid,
+        entityName: ws[0].subscriber?.name ?? sid.slice(0, 8),
+        entityKind: "subscriber",
+        severity: "medium",
+        description: `Account created within the last 7 days with ${ws.length} washes already.`,
+        href: `/admin/subscribers/${sid}`,
+        at: ws[ws.length - 1].redeemed_at,
+      });
+    }
+  }
+
+  // Hide dismissed.
+  const { data: dismissed } = await db
+    .from("fraud_dismissals")
+    .select("rule,entity_id");
+  const dismissedSet = new Set(
+    ((dismissed ?? []) as any[]).map((d) => `${d.rule}:${d.entity_id}`)
+  );
+  return flags
+    .filter((f) => !dismissedSet.has(`${f.rule}:${f.entityId}`))
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+}
+
+export async function adminDismissFraudFlag(
+  rule: string,
+  entityId: string,
+  reason: string
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from("fraud_dismissals")
+    .upsert({ rule, entity_id: entityId, reason }, { onConflict: "rule,entity_id" });
+  if (error) throw error;
+  await logAdminAction(
+    "fraud.dismiss",
+    "fraud_flag",
+    `${rule}:${entityId}`,
+    `Dismissed ${rule} flag. Reason: ${reason}`
+  ).catch(() => {});
+}
+
 /* ---------------- reviews / locations ---------------- */
 
 export interface AdminReviewRow {

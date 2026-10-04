@@ -143,6 +143,37 @@ export default function UserHome() {
   const outOfWashes = totalWashes <= 0;
   const firstName = profile?.name?.trim().split(" ")[0] || "";
   const openPartners = partners.filter((p) => p.status === "Open");
+
+  // Lazy "subscription expiring" nudge: once per pack, when ≤3 days remain.
+  useEffect(() => {
+    if (!profile || !subscription) return;
+    const msLeft = new Date(subscription.expiresAt).getTime() - Date.now();
+    if (msLeft < 0 || msLeft > 3 * 864e5) return;
+    (async () => {
+      const { listNotifications, notify } = await import(
+        "@/lib/db/notifications"
+      );
+      const { currentUserId } = await import("@/lib/db/store");
+      const uid = await currentUserId().catch(() => null);
+      if (!uid) return;
+      const recent = await listNotifications(uid, 30).catch(() => []);
+      const already = recent.some(
+        (n) =>
+          n.kind === "subscription_expiring" &&
+          Date.now() - new Date(n.createdAt).getTime() < 3 * 864e5
+      );
+      if (!already) {
+        const days = Math.max(1, Math.ceil(msLeft / 864e5));
+        await notify(
+          uid,
+          "subscription_expiring",
+          "Your subscription expires soon",
+          `Your ${subscription.planName} pack expires in ${days} day${days === 1 ? "" : "s"}. Unused washes don't roll over — book your washes or renew.`,
+          "/app/subscription"
+        ).catch(() => {});
+      }
+    })();
+  }, [profile, subscription]);
   const qrPartner = partners.find((p) => p.id === qrPartnerId) ?? null;
 
   return (

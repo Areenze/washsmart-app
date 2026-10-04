@@ -103,7 +103,7 @@ export async function POST(request: Request) {
   // Amount guard: Paystack reports kobo; plans store whole naira.
   const { data: plan } = await sb
     .from("plans")
-    .select("id,amount")
+    .select("id,name,amount,washes")
     .eq("id", planId)
     .maybeSingle();
   if (!plan) {
@@ -132,6 +132,26 @@ export async function POST(request: Request) {
       },
       { status: 500 }
     );
+  }
+
+  // Notify the buyer in-app (best-effort; never blocks the purchase).
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
+  if (user) {
+    void (async () => {
+      try {
+        await sb.rpc("notify_user", {
+          p_user_id: user.id,
+          p_kind: "payment_success",
+          p_title: `Payment successful — ${plan.name}`,
+          p_body: `₦${Number(plan.amount).toLocaleString("en-NG")} received. Your subscription is active with ${plan.washes} washes.`,
+          p_link: "/app",
+        });
+      } catch {
+        /* notifications are best-effort */
+      }
+    })();
   }
   return Response.json({ ok: true, subscriptionId: subId });
 }

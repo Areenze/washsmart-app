@@ -25,10 +25,11 @@ const NAV: { href: string; label: string; icon: string; badge?: string }[] = [
   { href: "/admin/reviews", label: "Reviews", icon: "⭐" },
   { href: "/admin/locations", label: "Locations", icon: "📍" },
   { href: "/admin/requests", label: "Requests", icon: "📬", badge: "requests" },
+  { href: "/admin/support", label: "Support", icon: "🎧", badge: "tickets" },
+  { href: "/admin/fraud", label: "Fraud", icon: "🚨" },
 ];
 
 const SOON = [
-  { label: "Support", icon: "🎧" },
   { label: "Reports", icon: "📈" },
   { label: "Settings", icon: "⚙️" },
 ];
@@ -58,10 +59,15 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             .from("settlements")
             .select("id", { count: "exact", head: true })
             .eq("status", "pending");
+          const { count: ticketCount } = await getSupabase()
+            .from("tickets")
+            .select("id", { count: "exact", head: true })
+            .in("status", ["open", "investigating"]);
           setBadges({
             apps: stats.pendingApplications,
             requests: reqCount ?? 0,
             settlements: settleCount ?? 0,
+            tickets: ticketCount ?? 0,
           });
         } catch {
           /* badges are best-effort */

@@ -7,9 +7,11 @@ import Link from "next/link";
 import {
   adminActivity,
   adminDashboardStats,
+  adminFraudFlags,
   ngn,
   type ActivityItem,
   type DashboardStats,
+  type FraudFlag,
 } from "@/lib/db/admin";
 
 function Card({
@@ -46,15 +48,18 @@ const KIND_ICON: Record<ActivityItem["kind"], string> = {
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [feed, setFeed] = useState<ActivityItem[]>([]);
+  const [fraud, setFraud] = useState<FraudFlag[] | null>(null);
 
   useEffect(() => {
     (async () => {
-      const [s, a] = await Promise.all([
+      const [s, a, f] = await Promise.all([
         adminDashboardStats().catch(() => null),
         adminActivity().catch(() => [] as ActivityItem[]),
+        adminFraudFlags().catch(() => [] as FraudFlag[]),
       ]);
       setStats(s);
       setFeed(a);
+      setFraud(f);
     })();
   }, []);
 
@@ -97,6 +102,27 @@ export default function AdminDashboardPage() {
         <Card label="Active Partners" value={String(stats.activePartners)} href="/admin/partners" />
         <Card label="Pending Applications" value={String(stats.pendingApplications)} href="/admin/applications" />
       </div>
+
+      {fraud !== null && fraud.length > 0 && (
+        <>
+          <h2 className="mb-3 mt-8 text-sm font-bold uppercase tracking-widest text-gray-500">
+            🚨 Fraud watch
+          </h2>
+          <Link
+            href="/admin/fraud"
+            className="block rounded-3xl border border-red-500/30 bg-red-500/10 p-5 transition-colors hover:bg-red-500/15"
+          >
+            <p className="text-3xl font-bold text-red-400">{fraud.length}</p>
+            <p className="mt-1 text-sm font-bold">
+              {fraud.length === 1 ? "pattern flagged" : "patterns flagged"}
+            </p>
+            <p className="mt-1 text-xs text-gray-400">
+              {fraud.slice(0, 3).map((f) => f.ruleLabel).join(" · ")}
+              {fraud.length > 3 ? "…" : ""} — review →
+            </p>
+          </Link>
+        </>
+      )}
 
       <h2 className="mb-3 mt-8 text-sm font-bold uppercase tracking-widest text-gray-500">
         Recent Activity

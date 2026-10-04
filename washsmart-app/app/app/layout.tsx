@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
+import NotificationBell from "@/components/notification-bell";
 import { getProfile, signOut } from "@/lib/db/store";
 
 const tabs = [
@@ -134,6 +135,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               >
                 Log out
               </button>
+              <NotificationBell />
               <Link
                 href="/app/profile"
                 aria-label="Profile"

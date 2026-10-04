@@ -18,6 +18,7 @@
  */
 
 import { getSupabase } from "./supabase";
+import { notifySoon } from "./notifications";
 import type {
   LedgerEntry,
   LocationRequest,
@@ -253,6 +254,12 @@ function mapLedger(r: any): LedgerEntry {
 async function currentUser() {
   const { data } = await getSupabase().auth.getUser();
   return data.user;
+}
+
+/** The signed-in auth user id (null when logged out). */
+export async function currentUserId(): Promise<string | null> {
+  const u = await currentUser();
+  return u?.id ?? null;
 }
 
 /** Create a subscriber account with email + password. Sends the one-time
@@ -1109,7 +1116,7 @@ export async function redeemWash(
   const { data: tx } = await sb
     .from("wash_transactions")
     .select(
-      "id,subscription_id,partner_id,type,payout,redeemed_at,subscriber:profiles(name),partner:partners(name,area)"
+      "id,subscription_id,subscriber_id,partner_id,type,payout,redeemed_at,subscriber:profiles(name),partner:partners(name,area)"
     )
     .eq("id", row.wash_id)
     .maybeSingle();
@@ -1126,7 +1133,37 @@ export async function redeemWash(
         at: new Date().toISOString(),
         payout: 0,
       };
-  return { ok: true, transaction, washesRemaining: row.washes_remaining };
+  const result: RedeemResult = {
+    ok: true,
+    transaction,
+    washesRemaining: Number(row.washes_remaining),
+  };
+
+  // In-app notifications for the subscriber (best-effort, partner-triggered).
+  const subscriberId = (tx as any)?.subscriber_id as string | undefined;
+  if (subscriberId) {
+    const pName = transaction.partnerName;
+    const left = result.washesRemaining;
+    notifySoon(
+      subscriberId,
+      "credit_redeemed",
+      `1 wash credit used at ${pName}`,
+      left > 0
+        ? `${left} wash${left === 1 ? "" : "es"} left on your subscription.`
+        : "That was your last wash — top up to keep washing.",
+      "/app/history"
+    );
+    if (left === 2 || left === 1) {
+      notifySoon(
+        subscriberId,
+        "credits_low",
+        "Running low on washes",
+        `Only ${left} wash${left === 1 ? "" : "es"} left. Top up before your credits run out.`,
+        "/app/subscription"
+      );
+    }
+  }
+  return result;
 }
 
 /* ---------------- history & stats ---------------- */
