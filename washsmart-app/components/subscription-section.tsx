@@ -55,19 +55,28 @@ export function SubscriptionSection() {
       <div className="mt-10 grid gap-5 md:grid-cols-3">
         {plans.map((plan, i) => {
           const isCurrent = subscription?.planId === plan.id;
+          const dimmed = !!subscription && !isCurrent;
           return (
             <Reveal key={plan.id} delay={i * 150}>
             <div
-              className={`relative rounded-3xl bg-[#111a14] p-7 ${
-                plan.popular
-                  ? "border-2 border-[#20a957] shadow-[0_0_40px_8px_rgb(32_169_87/0.22)]"
-                  : "border border-white/10 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]"
-              }`}
+              className={`relative rounded-3xl bg-[#111a14] p-7 transition-opacity ${
+                isCurrent
+                  ? "border-2 border-[#20a957] shadow-[0_0_40px_8px_rgb(32_169_87/0.28)]"
+                  : plan.popular
+                    ? "border-2 border-[#20a957]/50 shadow-[0_0_40px_8px_rgb(32_169_87/0.12)]"
+                    : "border border-white/10 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]"
+              } ${dimmed ? "opacity-60" : ""}`}
             >
-              {plan.popular && (
+              {isCurrent ? (
                 <div className="absolute right-5 top-5 rounded-full bg-[#20a957] px-3 py-1 text-xs font-bold text-white">
-                  MOST POPULAR
+                  CURRENT PLAN
                 </div>
+              ) : (
+                plan.popular && (
+                  <div className="absolute right-5 top-5 rounded-full bg-[#20a957]/80 px-3 py-1 text-xs font-bold text-white">
+                    MOST POPULAR
+                  </div>
+                )
               )}
               <h3 className="text-xl font-bold">{plan.name}</h3>
               <div className="mt-5 text-4xl font-bold">
