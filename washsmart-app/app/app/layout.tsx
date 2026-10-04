@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
 import NotificationBell from "@/components/notification-bell";
-import { getProfile, signOut } from "@/lib/db/store";
+import { getProfile, getWashSummary, signOut } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
 
 const tabs = [
@@ -34,6 +34,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
   const [activeId, setActiveId] = useState("home");
   const [showAdmin, setShowAdmin] = useState(false);
+  // Wash balance pill in the header: null = unknown (hidden, never flashes a
+  // wrong number); kept on transient failure like the rest of auth state.
+  const [washBalance, setWashBalance] = useState<number | null>(null);
   // Clean chrome on auth/callback pages: no Home/Partners/Subscription tabs.
   const hideTabs = HIDE_TABS_PATHS.includes(pathname);
 
@@ -61,8 +64,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
         } catch {
           /* keep previous showAdmin on network failure */
         }
+        try {
+          const s = await getWashSummary();
+          if (!cancelled) setWashBalance(s?.totalRemaining ?? 0);
+        } catch {
+          /* keep previous washBalance on network failure */
+        }
       } else {
         setShowAdmin(false);
+        setWashBalance(null);
       }
       if (cancelled) return;
       // The subscriber home (/app) is for logged-in subscribers only.
@@ -173,6 +183,20 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </div>
           ) : loggedIn === true ? (
             <div className="flex items-center gap-3">
+              {washBalance !== null && (
+                <Link
+                  href="/app#subscription"
+                  title={`${washBalance} ${washBalance === 1 ? "wash" : "washes"} remaining`}
+                  aria-label={`${washBalance} ${washBalance === 1 ? "wash" : "washes"} remaining`}
+                  className="rounded-full bg-[#20a957]/15 px-3 py-2 text-xs font-bold text-[#48d87c] transition-colors hover:bg-[#20a957]/25"
+                >
+                  🧽 {washBalance}
+                  <span className="hidden sm:inline">
+                    {" "}
+                    {washBalance === 1 ? "wash" : "washes"}
+                  </span>
+                </Link>
+              )}
               {showAdmin && (
                 <Link
                   href="/admin"

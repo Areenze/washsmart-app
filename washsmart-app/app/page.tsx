@@ -704,6 +704,8 @@ export default function EntryPage() {
             </div>
             <Link
               href="/join"
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-8 inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
             >
               Become a Partner &rarr;
@@ -774,6 +776,8 @@ export default function EntryPage() {
               </Link>
               <Link
                 href="/join"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block rounded-full border-2 border-white/30 px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:border-white/60 hover:bg-white/5 active:scale-[0.98]"
               >
                 Become a Partner
