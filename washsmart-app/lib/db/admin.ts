@@ -748,6 +748,107 @@ export interface AdminSettlementRow {
   paidAt: string | null;
 }
 
+export interface PendingAccrual {
+  partnerId: string;
+  partnerName: string;
+  washes: number;
+  gross: number;
+  fee: number;
+  payable: number;
+}
+
+/** Partners with wash earnings accrued but not yet in any settlement. */
+export async function adminPendingAccruals(): Promise<PendingAccrual[]> {
+  const db = getSupabase();
+  const { data, error } = await db
+    .from("ledger_entries")
+    .select("partner_id,amount,partner:partners(name)")
+    .eq("kind", "wash_earning")
+    .eq("status", "pending_settlement");
+  if (error) throw error;
+  const m = new Map<string, PendingAccrual>();
+  for (const l of (data ?? []) as any[]) {
+    const a = m.get(l.partner_id) ?? {
+      partnerId: l.partner_id,
+      partnerName: l.partner?.name ?? l.partner_id,
+      washes: 0,
+      gross: 0,
+      fee: 0,
+      payable: 0,
+    };
+    a.washes += 1;
+    a.gross += l.amount ?? 0;
+    m.set(l.partner_id, a);
+  }
+  return [...m.values()].map((a) => {
+    const fee = Math.round(a.gross * 0.1); // 10% WashSMART fee (configurable in Settings, phase 2)
+    return { ...a, fee, payable: a.gross - fee };
+  });
+}
+
+/**
+ * Close the current accrual window for a partner: create a pending
+ * settlement from their pending_settlement ledger entries and move those
+ * entries to 'settled' (tied to this settlement's period window).
+ */
+export async function adminGenerateSettlement(
+  partnerId: string
+): Promise<string> {
+  const db = getSupabase();
+  const accruals = await adminPendingAccruals();
+  const a = accruals.find((x) => x.partnerId === partnerId);
+  if (!a || a.washes === 0)
+    throw new Error("No pending wash earnings for this partner.");
+
+  const now = new Date();
+  const periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const periodEnd = now;
+  const period = now.toLocaleString("en-NG", {
+    month: "long",
+    year: "numeric",
+  });
+  const settleDate = new Date(now.getFullYear(), now.getMonth() + 1, 5);
+
+  const { count } = await db
+    .from("settlements")
+    .select("id", { count: "exact", head: true });
+  const id = `WS-SET-${String((count ?? 0) + 1).padStart(6, "0")}`;
+
+  const { error } = await db.from("settlements").insert({
+    id,
+    partner_id: partnerId,
+    period,
+    period_start: periodStart.toISOString(),
+    period_end: periodEnd.toISOString(),
+    washes: a.washes,
+    gross: a.gross,
+    washsmart_fee: a.fee,
+    adjustments: 0,
+    payable: a.payable,
+    status: "pending",
+    settlement_date: settleDate.toISOString(),
+  });
+  if (error) throw error;
+
+  // Move the accrued entries into this settlement (no double-counting).
+  const { error: ledgerError } = await db
+    .from("ledger_entries")
+    .update({ status: "settled" })
+    .eq("partner_id", partnerId)
+    .eq("kind", "wash_earning")
+    .eq("status", "pending_settlement")
+    .lte("created_at", periodEnd.toISOString());
+  if (ledgerError) throw ledgerError;
+
+  await logAdminAction(
+    "settlement.generate",
+    "settlement",
+    id,
+    `Generated ${a.partnerName} ${period} — ${a.washes} washes, ${ngn(a.gross)} gross, ${ngn(a.fee)} fee, ${ngn(a.payable)} payable`
+  );
+  return id;
+}
+
 export async function adminListSettlements(
   status: string
 ): Promise<AdminSettlementRow[]> {
@@ -777,7 +878,7 @@ export async function adminApproveSettlement(id: string): Promise<void> {
   const db = getSupabase();
   const { data: s } = await db
     .from("settlements")
-    .select("id,partner_id,payable,period,partner:partners(name)")
+    .select("id,partner_id,payable,period,status,partner:partners(name)")
     .eq("id", id)
     .maybeSingle();
   if (!s) throw new Error("Settlement not found");
@@ -787,11 +888,7 @@ export async function adminApproveSettlement(id: string): Promise<void> {
     .update({ status: "approved" })
     .eq("id", id);
   if (error) throw error;
-  await db
-    .from("ledger_entries")
-    .update({ status: "settled" })
-    .eq("ref", id)
-    .eq("status", "pending_settlement");
+  // Ledger entries were moved pending_settlement → settled at generation time.
   await logAdminAction(
     "settlement.approve",
     "settlement",
@@ -807,7 +904,7 @@ export async function adminMarkSettlementPaid(
   const db = getSupabase();
   const { data: s } = await db
     .from("settlements")
-    .select("id,partner_id,payable,period,status,partner:partners(name)")
+    .select("id,partner_id,payable,period,status,period_start,period_end,partner:partners(name)")
     .eq("id", id)
     .maybeSingle();
   if (!s) throw new Error("Settlement not found");
@@ -818,11 +915,15 @@ export async function adminMarkSettlementPaid(
     .update({ status: "paid", paid_at: new Date().toISOString(), note: reference })
     .eq("id", id);
   if (error) throw error;
+  // Close out this settlement's ledger entries via its period window.
   await db
     .from("ledger_entries")
     .update({ status: "paid" })
-    .eq("ref", id)
-    .eq("status", "settled");
+    .eq("partner_id", (s as any).partner_id)
+    .eq("kind", "wash_earning")
+    .eq("status", "settled")
+    .gte("created_at", (s as any).period_start)
+    .lte("created_at", (s as any).period_end);
   await logAdminAction(
     "settlement.paid",
     "settlement",

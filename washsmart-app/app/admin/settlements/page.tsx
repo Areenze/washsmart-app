@@ -9,10 +9,13 @@ import { Badge, EmptyState } from "@/components/ui";
 import { fmtDate } from "@/lib/db/store";
 import {
   adminApproveSettlement,
+  adminGenerateSettlement,
   adminListSettlements,
   adminMarkSettlementPaid,
+  adminPendingAccruals,
   ngn,
   type AdminSettlementRow,
+  type PendingAccrual,
 } from "@/lib/db/admin";
 
 const tone = (s: string) =>
@@ -20,6 +23,7 @@ const tone = (s: string) =>
 
 export default function AdminSettlementsPage() {
   const [rows, setRows] = useState<AdminSettlementRow[]>([]);
+  const [accruals, setAccruals] = useState<PendingAccrual[]>([]);
   const [status, setStatus] = useState("pending");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
@@ -27,7 +31,12 @@ export default function AdminSettlementsPage() {
   const load = async (s: string) => {
     setLoading(true);
     try {
-      setRows(await adminListSettlements(s));
+      const [r, a] = await Promise.all([
+        adminListSettlements(s),
+        adminPendingAccruals().catch(() => [] as PendingAccrual[]),
+      ]);
+      setRows(r);
+      setAccruals(a);
     } finally {
       setLoading(false);
     }
@@ -37,6 +46,25 @@ export default function AdminSettlementsPage() {
     load(status);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
+
+  const generate = async (a: PendingAccrual) => {
+    if (
+      !window.confirm(
+        `Generate settlement for ${a.partnerName}?\n\n${a.washes} washes · ${ngn(a.gross)} gross − ${ngn(a.fee)} fee (10%) = ${ngn(a.payable)} payable.\n\nThis is recorded in the audit log.`
+      )
+    )
+      return;
+    setBusy(a.partnerId);
+    try {
+      const id = await adminGenerateSettlement(a.partnerId);
+      window.alert(`Settlement ${id} created — now pending approval.`);
+      await load(status);
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Could not generate.");
+    } finally {
+      setBusy(null);
+    }
+  };
 
   const approve = async (r: AdminSettlementRow) => {
     if (
@@ -100,15 +128,57 @@ export default function AdminSettlementsPage() {
 
       {loading ? (
         <p className="mt-6 text-gray-400">Loading…</p>
-      ) : rows.length === 0 ? (
-        <div className="mt-6">
-          <EmptyState
-            icon="🏦"
-            title={`No ${status} settlements`}
-            body="Partner settlements accrue from verified washes."
-          />
-        </div>
       ) : (
+        <>
+          {accruals.length > 0 && (
+            <div className="mb-6 rounded-3xl border border-[#f5b301]/20 bg-[#f5b301]/[0.04] p-5">
+              <h2 className="font-bold">⚠️ Ready to settle</h2>
+              <p className="mt-1 text-sm text-gray-400">
+                Verified washes accrued but not yet in a settlement. Generating
+                creates a pending settlement for your approval.
+              </p>
+              <div className="mt-4 space-y-2">
+                {accruals.map((a) => (
+                  <div
+                    key={a.partnerId}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#111a14] px-4 py-3"
+                  >
+                    <div className="text-sm">
+                      <Link
+                        href={`/admin/partners/${a.partnerId}`}
+                        className="font-bold text-[#48d87c]"
+                      >
+                        {a.partnerName}
+                      </Link>
+                      <p className="text-gray-400">
+                        {a.washes} wash{a.washes === 1 ? "" : "es"} ·{" "}
+                        {ngn(a.gross)} − {ngn(a.fee)} fee ={" "}
+                        <span className="font-bold text-[#e9f2ec]">
+                          {ngn(a.payable)}
+                        </span>{" "}
+                        payable
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => generate(a)}
+                      disabled={busy === a.partnerId}
+                      className="rounded-full bg-[#f5b301] px-5 py-2 text-sm font-bold text-black transition-all hover:brightness-110 disabled:opacity-50"
+                    >
+                      {busy === a.partnerId ? "…" : "Generate settlement"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {rows.length === 0 ? (
+            <EmptyState
+              icon="🏦"
+              title={`No ${status} settlements`}
+              body="Generate a settlement above to start the approval flow."
+            />
+          ) : (
         <div className="mt-6 space-y-3">
           {rows.map((r) => (
             <div
@@ -158,6 +228,8 @@ export default function AdminSettlementsPage() {
             </div>
           ))}
         </div>
+          )}
+        </>
       )}
     </div>
   );
