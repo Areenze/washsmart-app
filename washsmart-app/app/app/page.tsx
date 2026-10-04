@@ -146,7 +146,10 @@ export default function UserHome() {
   const qrPartner = partners.find((p) => p.id === qrPartnerId) ?? null;
 
   return (
-    <section id="home" className="mx-auto max-w-7xl scroll-mt-28 px-5 py-8">
+    <section className="mx-auto max-w-7xl px-5 py-8">
+      {/* Dedicated top anchor for the Home tab + scroll-spy. (The section
+          itself used to carry id="home", but it wraps the whole page.) */}
+      <span id="home" className="block scroll-mt-28" aria-hidden />
       <p className="text-lg text-gray-300">
         {greet} 👋
         {firstName ? (

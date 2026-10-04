@@ -57,11 +57,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   const goSection = (id: string) => {
     setActiveId(id);
-    if (pathname === "/app") {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    } else {
+    if (pathname !== "/app") {
       router.push(`/app#${id}`);
+      return;
     }
+    if (id === "home") {
+      // Unambiguous: the top of the document (id="home" is a marker span).
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   const isActive = (id: string) => pathname === "/app" && activeId === id;
