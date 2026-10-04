@@ -129,7 +129,6 @@ function NavLink({ href, children }: { href: string; children: string }) {
 const MOBILE_LINKS = [
   { href: "#how-it-works", label: "How It Works" },
   { href: "#plans", label: "Plans" },
-  { href: "/find-a-wash", label: "Find a Wash" },
   { href: "#support", label: "FAQ" },
   { href: "/app/signup", label: "Subscribe" },
   { href: "/app/login", label: "Log in" },
@@ -174,7 +173,6 @@ export default function EntryPage() {
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
             <NavLink href="#how-it-works">How It Works</NavLink>
             <NavLink href="#plans">Plans</NavLink>
-            <NavLink href="/find-a-wash">Find a Wash</NavLink>
             <NavLink href="#support">FAQ</NavLink>
             <NavLink href="/app/login">Log in</NavLink>
             <Link
