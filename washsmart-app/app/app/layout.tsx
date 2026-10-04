@@ -33,26 +33,31 @@ export default function AppShell({ children }: { children: ReactNode }) {
     })();
   }, [pathname]);
 
-  // Scroll-spy: highlight the tab for the section currently in view.
+  // Scroll-spy: highlight the tab for the section nearest the top of the
+  // viewport (just below the sticky header). Position-based, so it can't
+  // get stuck the way an IntersectionObserver on a full-page wrapper can.
   useEffect(() => {
     if (pathname !== "/app") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) setActiveId(e.target.id);
-        }
-      },
-      { rootMargin: "-35% 0px -55% 0px" }
-    );
-    const els: Element[] = [];
-    for (const t of tabs) {
-      const el = document.getElementById(t.id);
-      if (el) {
-        observer.observe(el);
-        els.push(el);
-      }
-    }
-    return () => observer.disconnect();
+    const sectionTop = (id: string) => {
+      const el = document.getElementById(id);
+      return el
+        ? el.getBoundingClientRect().top + window.scrollY
+        : Number.POSITIVE_INFINITY;
+    };
+    const onScroll = () => {
+      const probe = window.scrollY + 140; // below the sticky header
+      let id = "home";
+      if (sectionTop("partners") <= probe) id = "partners";
+      if (sectionTop("subscription") <= probe) id = "subscription";
+      setActiveId((prev) => (prev === id ? prev : id));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [pathname]);
 
   const goSection = (id: string) => {
