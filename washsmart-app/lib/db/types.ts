@@ -229,3 +229,10 @@ export type RedeemFailure =
   | "inactive-subscription"
   | "no-washes-left"
   | "already-used";
+
+export interface LocationRequest {
+  id: string;
+  email: string;
+  area: string;
+  createdAt: string;
+}

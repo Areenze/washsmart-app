@@ -1,19 +1,34 @@
 "use client";
 
-/* /admin — pending partner applications queue. */
+/* /admin — staff inbox: partner applications queue + coverage requests. */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge, Brand, EmptyState, Logo } from "@/components/ui";
-import { fmtDate, isAdmin, listApplications } from "@/lib/db/store";
-import type { PartnerApplication } from "@/lib/db/types";
+import {
+  deleteLocationRequest,
+  fmtDate,
+  isAdmin,
+  listApplications,
+  listLocationRequests,
+} from "@/lib/db/store";
+import type { LocationRequest, PartnerApplication } from "@/lib/db/types";
 
 export default function AdminPage() {
+  const [tab, setTab] = useState<"applications" | "requests">("applications");
   const [apps, setApps] = useState<PartnerApplication[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [requests, setRequests] = useState<LocationRequest[]>([]);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
 
-  const reload = async () => setApps(await listApplications());
+  const reload = async () => {
+    const [a, r] = await Promise.all([
+      listApplications().catch(() => [] as PartnerApplication[]),
+      listLocationRequests().catch(() => [] as LocationRequest[]),
+    ]);
+    setApps(a);
+    setRequests(r);
+  };
 
   useEffect(() => {
     (async () => {
@@ -21,6 +36,12 @@ export default function AdminPage() {
       reload();
     })();
   }, []);
+
+  const removeRequest = async (id: string) => {
+    if (!window.confirm("Delete this coverage request?")) return;
+    await deleteLocationRequest(id);
+    setRequests((prev) => prev.filter((r) => r.id !== id));
+  };
 
   const visible = filter === "all" ? apps : apps.filter((a) => a.status === filter);
   const pendingCount = apps.filter((a) => a.status === "pending").length;
@@ -37,7 +58,7 @@ export default function AdminPage() {
             <Brand />
           </Link>
           <span className="text-sm font-semibold text-gray-400">
-            Admin · Partner Applications
+            Admin
           </span>
         </div>
       </header>
@@ -49,78 +70,147 @@ export default function AdminPage() {
             <p className="text-4xl">🔒</p>
             <h1 className="mt-3 text-2xl font-bold">Admin access required</h1>
             <p className="mt-2 text-sm text-gray-400">
-              Sign in with a WashSMART staff account to review partner
-              applications.
+              Sign in with a WashSMART staff account to view this page.
             </p>
           </div>
         )}
         {authorized === true && (
           <>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold">Partner Applications</h1>
-            <p className="mt-1 text-gray-400">
-              {pendingCount} application{pendingCount === 1 ? "" : "s"} awaiting
-              review. Approving adds the car wash to the user app immediately.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {(["pending", "approved", "rejected", "all"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
-                  filter === f
-                    ? "bg-[#20a957] text-white"
-                    : "bg-[#111a14] text-gray-400"
-                }`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {(
+                [
+                  { id: "applications", label: `Applications${pendingCount > 0 ? ` (${pendingCount})` : ""}` },
+                  { id: "requests", label: `Coverage Requests${requests.length > 0 ? ` (${requests.length})` : ""}` },
+                ] as const
+              ).map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`rounded-full px-5 py-2.5 text-sm font-bold transition-colors ${
+                    tab === t.id
+                      ? "bg-[#20a957] text-white"
+                      : "bg-[#111a14] text-gray-400 hover:text-white"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-        {visible.length === 0 ? (
-          <div className="mt-6">
-            <EmptyState
-              icon="📋"
-              title={`No ${filter} applications`}
-              body={
-                filter === "pending"
-                  ? "New applications from the /join funnel will appear here."
-                  : `No applications with status “${filter}”.`
-              }
-            />
-          </div>
-        ) : (
-          <div className="mt-6 space-y-3">
-            {visible.map((a) => (
-              <Link
-                key={a.ref}
-                href={`/admin/applications/${a.ref}`}
-                className="block rounded-2xl bg-[#111a14] p-5 shadow-sm hover:border hover:border-[#20a957]"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
+            {tab === "applications" && (
+              <>
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="font-bold">{a.business.carWashName}</p>
-                    <p className="text-sm text-gray-400">
-                      {a.business.ownerName} · {a.location.area},{" "}
-                      {a.location.lga} · {a.business.phone}
-                    </p>
-                    <p className="mt-1 font-mono text-xs text-gray-500">
-                      {a.ref} · submitted {fmtDate(a.submittedAt)}
+                    <h1 className="text-3xl font-bold">Partner Applications</h1>
+                    <p className="mt-1 text-gray-400">
+                      {pendingCount} application{pendingCount === 1 ? "" : "s"} awaiting
+                      review. Approving adds the car wash to the user app immediately.
                     </p>
                   </div>
-                  <Badge tone={tone(a.status) as "green" | "amber" | "red"}>
-                    {a.status.toUpperCase()}
-                  </Badge>
+                  <div className="flex gap-2">
+                    {(["pending", "approved", "rejected", "all"] as const).map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => setFilter(f)}
+                        className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
+                          filter === f
+                            ? "bg-[#20a957] text-white"
+                            : "bg-[#111a14] text-gray-400"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
-        </>
+
+                {visible.length === 0 ? (
+                  <div className="mt-6">
+                    <EmptyState
+                      icon="📋"
+                      title={`No ${filter} applications`}
+                      body={
+                        filter === "pending"
+                          ? "New applications from the /join funnel will appear here."
+                          : `No applications with status “${filter}”.`
+                      }
+                    />
+                  </div>
+                ) : (
+                  <div className="mt-6 space-y-3">
+                    {visible.map((a) => (
+                      <Link
+                        key={a.ref}
+                        href={`/admin/applications/${a.ref}`}
+                        className="block rounded-2xl bg-[#111a14] p-5 shadow-sm hover:border hover:border-[#20a957]"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <p className="font-bold">{a.business.carWashName}</p>
+                            <p className="text-sm text-gray-400">
+                              {a.business.ownerName} · {a.location.area},{" "}
+                              {a.location.lga} · {a.business.phone}
+                            </p>
+                            <p className="mt-1 font-mono text-xs text-gray-500">
+                              {a.ref} · submitted {fmtDate(a.submittedAt)}
+                            </p>
+                          </div>
+                          <Badge tone={tone(a.status) as "green" | "amber" | "red"}>
+                            {a.status.toUpperCase()}
+                          </Badge>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === "requests" && (
+              <>
+                <div className="mt-6">
+                  <h1 className="text-3xl font-bold">Coverage Requests</h1>
+                  <p className="mt-1 text-gray-400">
+                    Subscribers asking for WashSMART in their neighborhood — expand
+                    where they ask you to.
+                  </p>
+                </div>
+
+                {requests.length === 0 ? (
+                  <div className="mt-6">
+                    <EmptyState
+                      icon="📍"
+                      title="No coverage requests"
+                      body="Requests from the “Don't see a WashSMART location in your area?” form will appear here."
+                    />
+                  </div>
+                ) : (
+                  <div className="mt-6 space-y-3">
+                    {requests.map((r) => (
+                      <div
+                        key={r.id}
+                        className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-[#111a14] p-5 shadow-sm"
+                      >
+                        <div>
+                          <p className="font-bold">{r.area}</p>
+                          <p className="text-sm text-gray-400">{r.email}</p>
+                          <p className="mt-1 text-xs text-gray-500">
+                            requested {fmtDate(r.createdAt)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeRequest(r.id)}
+                          className="rounded-full border border-white/10 px-4 py-2 text-sm font-bold text-gray-400 transition-colors hover:border-red-400/50 hover:text-red-400"
+                        >
+                          Dismiss
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </>
         )}
       </section>
     </main>

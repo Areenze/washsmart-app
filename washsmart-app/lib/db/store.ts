@@ -20,6 +20,7 @@
 import { getSupabase } from "./supabase";
 import type {
   LedgerEntry,
+  LocationRequest,
   Partner,
   PartnerApplication,
   PartnerLoginResult,
@@ -404,8 +405,7 @@ export async function isAdmin(): Promise<boolean> {
 
 /* Subscriber asks for coverage in their neighborhood/city.
  * Public insert (RLS); only admins can read the requests. */
-export async function submitLocationRequest(
-  email: string,
+export async function submitLocationRequest(  email: string,
   area: string
 ): Promise<{ ok: boolean; error?: string }> {
   try {
@@ -420,6 +420,30 @@ export async function submitLocationRequest(
       error: e instanceof Error ? e.message : "Could not send your request.",
     };
   }
+}
+
+/* ---------------- admin: coverage requests inbox ---------------- */
+
+export async function listLocationRequests(): Promise<LocationRequest[]> {
+  const { data, error } = await getSupabase()
+    .from("location_requests")
+    .select("id,email,area,created_at")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    email: r.email,
+    area: r.area,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function deleteLocationRequest(id: string): Promise<void> {
+  const { error } = await getSupabase()
+    .from("location_requests")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
 }
 
 const PARTNER_COLS =
