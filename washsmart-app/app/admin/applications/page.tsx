@@ -6,22 +6,31 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge, EmptyState } from "@/components/ui";
 import { fmtDate, listApplications } from "@/lib/db/store";
+import { listInspections, type InspectionListRow } from "@/lib/db/admin";
 import type { PartnerApplication } from "@/lib/db/types";
 
 export default function AdminApplicationsPage() {
   const [apps, setApps] = useState<PartnerApplication[]>([]);
+  const [inspections, setInspections] = useState<InspectionListRow[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        setApps(await listApplications());
+        const [a, i] = await Promise.all([
+          listApplications(),
+          listInspections().catch(() => [] as InspectionListRow[]),
+        ]);
+        setApps(a);
+        setInspections(i);
       } finally {
         setLoading(false);
       }
     })();
   }, []);
+
+  const inspectionByRef = new Map(inspections.map((i) => [i.applicationRef, i]));
 
   const visible = filter === "all" ? apps : apps.filter((a) => a.status === filter);
   const pendingCount = apps.filter((a) => a.status === "pending").length;
@@ -72,7 +81,9 @@ export default function AdminApplicationsPage() {
         </div>
       ) : (
         <div className="mt-6 space-y-3">
-          {visible.map((a) => (
+          {visible.map((a) => {
+            const insp = inspectionByRef.get(a.ref);
+            return (
             <Link
               key={a.ref}
               href={`/admin/applications/${a.ref}`}
@@ -89,12 +100,30 @@ export default function AdminApplicationsPage() {
                     {a.ref} · submitted {fmtDate(a.submittedAt)}
                   </p>
                 </div>
-                <Badge tone={tone(a.status) as "green" | "amber" | "red"}>
-                  {a.status.toUpperCase()}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  {insp ? (
+                    <Badge
+                      tone={
+                        insp.status === "passed"
+                          ? "green"
+                          : insp.status === "failed"
+                            ? "red"
+                            : "amber"
+                      }
+                    >
+                      🔍 {insp.status.replace("_", " ").toUpperCase()} {insp.score}%
+                    </Badge>
+                  ) : a.status === "pending" ? (
+                    <Badge tone="gray">🔍 NO INSPECTION</Badge>
+                  ) : null}
+                  <Badge tone={tone(a.status) as "green" | "amber" | "red"}>
+                    {a.status.toUpperCase()}
+                  </Badge>
+                </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

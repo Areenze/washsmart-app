@@ -932,6 +932,163 @@ export async function adminMarkSettlementPaid(
   );
 }
 
+/* ---------------- inspections ---------------- */
+
+export const INSPECTION_ITEMS: { key: string; label: string }[] = [
+  { key: "washing_area", label: "Washing area" },
+  { key: "water", label: "Water availability" },
+  { key: "drainage", label: "Drainage" },
+  { key: "waiting_area", label: "Customer waiting area" },
+  { key: "safety", label: "Safety" },
+  { key: "cleanliness", label: "Cleanliness" },
+  { key: "equipment", label: "Equipment" },
+  { key: "service_quality", label: "Service quality" },
+  { key: "hours", label: "Operating hours" },
+  { key: "location", label: "Location verified" },
+];
+
+export interface ChecklistEntry {
+  pass: boolean | null;
+  note: string;
+}
+
+export interface Inspection {
+  id: string;
+  applicationRef: string;
+  partnerId: string | null;
+  checklist: Record<string, ChecklistEntry>;
+  score: number;
+  inspectorName: string;
+  notes: string;
+  status: "in_progress" | "passed" | "failed";
+  inspectedAt: string | null;
+  updatedAt: string;
+}
+
+export function emptyChecklist(): Record<string, ChecklistEntry> {
+  const c: Record<string, ChecklistEntry> = {};
+  for (const item of INSPECTION_ITEMS) c[item.key] = { pass: null, note: "" };
+  return c;
+}
+
+export function inspectionScore(
+  checklist: Record<string, ChecklistEntry>
+): number {
+  const answered = INSPECTION_ITEMS.filter(
+    (i) => checklist[i.key]?.pass !== null && checklist[i.key]?.pass !== undefined
+  );
+  if (answered.length === 0) return 0;
+  const passed = answered.filter((i) => checklist[i.key]?.pass === true).length;
+  return Math.round((passed / INSPECTION_ITEMS.length) * 100);
+}
+
+function mapInspection(r: any): Inspection {
+  return {
+    id: r.id,
+    applicationRef: r.application_ref,
+    partnerId: r.partner_id,
+    checklist: { ...emptyChecklist(), ...(r.checklist ?? {}) },
+    score: r.score ?? 0,
+    inspectorName: r.inspector_name ?? "",
+    notes: r.notes ?? "",
+    status: r.status,
+    inspectedAt: r.inspected_at,
+    updatedAt: r.updated_at,
+  };
+}
+
+export async function getInspection(
+  applicationRef: string
+): Promise<Inspection | null> {
+  const { data, error } = await getSupabase()
+    .from("inspections")
+    .select("*")
+    .eq("application_ref", applicationRef)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapInspection(data) : null;
+}
+
+export async function saveInspection(input: {
+  applicationRef: string;
+  checklist: Record<string, ChecklistEntry>;
+  inspectorName: string;
+  notes: string;
+  status: "in_progress" | "passed" | "failed";
+}): Promise<Inspection> {
+  const db = getSupabase();
+  const score = inspectionScore(input.checklist);
+  const payload = {
+    application_ref: input.applicationRef,
+    checklist: input.checklist,
+    score,
+    inspector_name: input.inspectorName.trim(),
+    notes: input.notes.trim(),
+    status: input.status,
+    inspected_at:
+      input.status === "in_progress" ? null : new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+  const { data, error } = await db
+    .from("inspections")
+    .upsert(payload, { onConflict: "application_ref" })
+    .select()
+    .single();
+  if (error) throw error;
+  await logAdminAction(
+    "inspection.save",
+    "inspection",
+    input.applicationRef,
+    `Inspection ${input.status} — score ${score}% — by ${input.inspectorName.trim() || "staff"}`
+  );
+  return mapInspection(data);
+}
+
+export interface InspectionListRow {
+  id: string;
+  applicationRef: string;
+  businessName: string;
+  area: string;
+  status: "in_progress" | "passed" | "failed";
+  score: number;
+  inspectorName: string;
+  updatedAt: string;
+}
+
+export async function listInspections(): Promise<InspectionListRow[]> {
+  const { data, error } = await getSupabase()
+    .from("inspections")
+    .select("id,application_ref,status,score,inspector_name,updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  const rows = (data ?? []) as any[];
+  if (rows.length === 0) return [];
+  const refs = rows.map((r) => r.application_ref);
+  const { data: apps } = await getSupabase()
+    .from("partner_applications")
+    .select("ref,payload")
+    .in("ref", refs);
+  const nameByRef = new Map<string, { name: string; area: string }>();
+  for (const a of (apps ?? []) as any[]) {
+    const p = a.payload ?? {};
+    nameByRef.set(a.ref, {
+      name: p.business?.carWashName ?? p.carWashName ?? a.ref,
+      area: p.location?.area ?? "",
+    });
+  }
+  return rows.map((r) => ({
+    id: r.id,
+    applicationRef: r.application_ref,
+    businessName: nameByRef.get(r.application_ref)?.name ?? r.application_ref,
+    area: nameByRef.get(r.application_ref)?.area ?? "",
+    status: r.status,
+    score: r.score ?? 0,
+    inspectorName: r.inspector_name ?? "",
+    updatedAt: r.updated_at,
+  }));
+}
+
 /* ---------------- reviews / locations ---------------- */
 
 export interface AdminReviewRow {

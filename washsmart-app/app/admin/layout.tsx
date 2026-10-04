@@ -17,6 +17,7 @@ const NAV: { href: string; label: string; icon: string; badge?: string }[] = [
   { href: "/admin/subscribers", label: "Subscribers", icon: "👥" },
   { href: "/admin/partners", label: "Partners", icon: "🏪" },
   { href: "/admin/applications", label: "Applications", icon: "📝", badge: "apps" },
+  { href: "/admin/inspections", label: "Inspections", icon: "🔍" },
   { href: "/admin/washes", label: "Washes", icon: "🚗" },
   { href: "/admin/credits", label: "Credits", icon: "🎟️" },
   { href: "/admin/payments", label: "Payments", icon: "💳" },
