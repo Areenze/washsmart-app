@@ -17,11 +17,11 @@ import {
   getMySubscription,
   getProfile,
   getVehicles,
-  isAdmin,
   saveProfile,
   saveVehicles,
   signOut,
 } from "@/lib/db/store";
+import { getSupabase } from "@/lib/db/supabase";
 import type { Profile, Subscription, Vehicle } from "@/lib/db/types";
 
 export default function ProfilePage() {
@@ -38,7 +38,14 @@ export default function ProfilePage() {
       setProfile((await getProfile()) ?? { name: "", email: "", phone: "" });
       setVehicles(await getVehicles());
       setSubscription(await getMySubscription());
-      setShowAdmin(await isAdmin().catch(() => false));
+      // Error-aware admin check: a failed check keeps the previous value so
+      // a network blip never hides the admin entry point.
+      try {
+        const { data, error } = await getSupabase().rpc("is_admin");
+        if (!error) setShowAdmin(data === true);
+      } catch {
+        /* keep previous */
+      }
     })();
   }, []);
 

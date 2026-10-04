@@ -1469,6 +1469,26 @@ export async function currentPartnerSession(): Promise<Partner | undefined> {
   }
 }
 
+/* Strict variant for shell gates: returns undefined only when there is
+ * genuinely no session (or the session key is stale); THROWS on DB/network
+ * errors so the caller can distinguish a transient failure from logged-out
+ * and avoid bouncing a logged-in partner to the login page on a blip. */
+export async function currentPartnerSessionStrict(): Promise<
+  Partner | undefined
+> {
+  if (!isBrowser()) return undefined;
+  const id = window.localStorage.getItem(PARTNER_SESSION_KEY);
+  if (!id) return undefined;
+  const {
+    data: { session },
+  } = await getSupabase().auth.getSession();
+  if (!session) {
+    window.localStorage.removeItem(PARTNER_SESSION_KEY);
+    return undefined;
+  }
+  return getPartner(id);
+}
+
 /* ---------------- refer-a-friend ----------------
  * Share a link; when a friend buys their first plan the referrer instantly
  * gets a 1-wash credit valid 30 days (minted by topup_subscription). */

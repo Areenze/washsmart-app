@@ -49,7 +49,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     (async () => {
-      if (await getProfile()) router.replace(nextPath());
+      try {
+        if (await getProfile()) router.replace(nextPath());
+      } catch {
+        /* stay on the login page on transient failure */
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);

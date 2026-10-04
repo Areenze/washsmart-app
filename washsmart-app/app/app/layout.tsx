@@ -10,7 +10,8 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
 import NotificationBell from "@/components/notification-bell";
-import { getProfile, isAdmin, signOut } from "@/lib/db/store";
+import { getProfile, signOut } from "@/lib/db/store";
+import { getSupabase } from "@/lib/db/supabase";
 
 const tabs = [
   { id: "home", label: "Home" },
@@ -36,23 +37,33 @@ export default function AppShell({ children }: { children: ReactNode }) {
   // Clean chrome on auth/callback pages: no Home/Partners/Subscription tabs.
   const hideTabs = HIDE_TABS_PATHS.includes(pathname);
 
-  // Single auth check per route change — the source of truth for both the
-  // header chrome and the login gate below. The redirect decision uses the
-  // FRESH profile (never the previous render's loggedIn), so a just-completed
-  // sign-in navigating to /app is never bounced to / by stale state.
+  // Auth state is tri-state per check: true (authed), false (definitely
+  // logged out), null (check failed — keep previous state). A transient
+  // network failure must never flip a logged-in user to logged-out, hide the
+  // admin pill, or bounce /app to /. The redirect decision always uses the
+  // FRESH profile, so a just-completed sign-in navigating to /app is never
+  // bounced by stale state.
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      let authed = false;
+      let authed: boolean | null;
       try {
         authed = !!(await getProfile());
       } catch {
-        authed = false;
+        authed = null;
       }
-      if (cancelled) return;
+      if (cancelled || authed === null) return;
       setLoggedIn(authed);
-      // Admin entry point: visible in the header only for admins.
-      setShowAdmin(authed && (await isAdmin().catch(() => false)));
+      if (authed) {
+        try {
+          const { data, error } = await getSupabase().rpc("is_admin");
+          if (!cancelled && !error) setShowAdmin(data === true);
+        } catch {
+          /* keep previous showAdmin on network failure */
+        }
+      } else {
+        setShowAdmin(false);
+      }
       if (cancelled) return;
       // The subscriber home (/app) is for logged-in subscribers only.
       // Logged-out visitors go to the landing page — so the browser back

@@ -8,7 +8,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Brand, Logo } from "@/components/ui";
 import NotificationBell from "@/components/notification-bell";
 import {
-  currentPartnerSession,
+  currentPartnerSessionStrict,
   partnerLogout,
 } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
@@ -36,13 +36,26 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [partner, setPartner] = useState<Partner | null | undefined>(undefined);
 
+  // Tri-state per check: Partner (authed), null (definitely no session),
+  // undefined (transient failure — keep previous state). A network blip must
+  // never bounce a logged-in partner to the login page mid-shift.
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      const p = await currentPartnerSession();
-      setPartner(p ?? null);
-      if (!p && !PUBLIC_PARTNER_PATHS.includes(pathname))
+      let p: Partner | null | undefined;
+      try {
+        p = (await currentPartnerSessionStrict()) ?? null;
+      } catch {
+        p = undefined;
+      }
+      if (cancelled || p === undefined) return;
+      setPartner(p);
+      if (p === null && !PUBLIC_PARTNER_PATHS.includes(pathname))
         router.replace("/partner");
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [pathname, router]);
 
   if (PUBLIC_PARTNER_PATHS.includes(pathname)) {

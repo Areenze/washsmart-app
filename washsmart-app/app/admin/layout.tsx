@@ -44,7 +44,9 @@ export default function AdminShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       const [admin, profile] = await Promise.all([
-        isAdmin(),
+        // Fail closed on network error: a failed check must show the lock
+        // screen (reloadable), never hang on "Loading…" forever.
+        isAdmin().catch(() => false),
         getProfile().catch(() => null),
       ]);
       setAuthorized(admin);
