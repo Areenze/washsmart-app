@@ -57,10 +57,10 @@ export default function PartnerHistoryPage() {
           {txs.map((t) => (
             <div
               key={t.id}
-              className="flex items-center justify-between border-b p-5 last:border-0"
+              className="flex items-center justify-between gap-3 border-b p-5 last:border-0"
             >
-              <div>
-                <p className="font-bold">{t.subscriberName}</p>
+              <div className="min-w-0">
+                <p className="truncate font-bold">{t.subscriberName}</p>
                 <p className="text-sm text-gray-400">{t.type}</p>
               </div>
               <div className="text-right">

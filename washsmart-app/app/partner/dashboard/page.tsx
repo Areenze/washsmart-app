@@ -68,7 +68,7 @@ export default function PartnerDashboard() {
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
         <div className="rounded-2xl bg-[#111a14] p-6">
           <h2 className="text-xl font-bold">All-time totals</h2>
           <div className="mt-4 grid grid-cols-2 gap-4">
@@ -105,7 +105,7 @@ export default function PartnerDashboard() {
                   className="flex items-center gap-3 border-b pb-3 last:border-0"
                 >
                   <div className="h-3 w-3 shrink-0 rounded-full bg-[#20a957]" />
-                  <div className="flex-1">
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold">
                       Wash confirmed — {t.subscriberName}
                     </p>

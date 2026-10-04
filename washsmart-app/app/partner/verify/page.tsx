@@ -127,15 +127,17 @@ function VerifyInner() {
           </div>
 
           <div className="mt-6 rounded-2xl bg-[#0a0f0c] p-5">
-            <div className="flex justify-between py-1 text-sm">
-              <span className="text-gray-400">Plan</span>
-              <span className="font-bold">
+            <div className="flex items-center justify-between gap-3 py-1 text-sm">
+              <span className="shrink-0 text-gray-400">Plan</span>
+              <span className="min-w-0 truncate text-right font-bold">
                 {subscription.planName} · {subscription.washesTotal} washes / 30 days
               </span>
             </div>
-            <div className="flex justify-between py-1 text-sm">
-              <span className="text-gray-400">Subscriber</span>
-              <span className="font-bold">{subscription.email}</span>
+            <div className="flex items-center justify-between gap-3 py-1 text-sm">
+              <span className="shrink-0 text-gray-400">Subscriber</span>
+              <span className="min-w-0 truncate text-right font-bold" title={subscription.email}>
+                {subscription.email}
+              </span>
             </div>
           </div>
 
