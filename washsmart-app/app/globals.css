@@ -90,3 +90,9 @@ textarea {
     transition: none;
   }
 }
+
+/* Buttons show the clickable hand cursor on hover (Tailwind v4 defaults
+ * buttons to cursor: default). Disabled buttons keep the default cursor. */
+button:not(:disabled) {
+  cursor: pointer;
+}
