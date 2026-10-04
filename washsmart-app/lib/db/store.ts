@@ -253,6 +253,102 @@ async function currentUser() {
   return data.user;
 }
 
+/** Create a subscriber account with email + password. Sends the one-time
+ *  confirmation email; the user clicks it once to verify, then signs in
+ *  with their password from then on. The handle_new_user trigger creates
+ *  their profile row. */
+export async function signUpWithPassword(
+  email: string,
+  password: string,
+  name: string,
+  phone: string,
+  redirectTo: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await getSupabase().auth.signUp({
+    email: email.trim().toLowerCase(),
+    password,
+    options: {
+      data: { name: name.trim(), phone: phone.trim() },
+      emailRedirectTo: redirectTo,
+    },
+  });
+  if (!error) return { ok: true };
+  if (/rate limit/i.test(error.message)) {
+    return {
+      ok: false,
+      error:
+        "Too many emails sent recently — please wait a little while and try again. " +
+        "Any link already in your inbox still works.",
+    };
+  }
+  return { ok: false, error: error.message };
+}
+
+export type PasswordSignInResult =
+  | { ok: true }
+  | {
+      ok: false;
+      reason: "wrong-credentials" | "not-confirmed" | "error";
+      error?: string;
+    };
+
+/** Sign in with email + password. Verified users never need another email link. */
+export async function signInWithPassword(
+  email: string,
+  password: string
+): Promise<PasswordSignInResult> {
+  const { error } = await getSupabase().auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  });
+  if (!error) return { ok: true };
+  const msg = error.message.toLowerCase();
+  if (msg.includes("email not confirmed"))
+    return { ok: false, reason: "not-confirmed" };
+  if (msg.includes("invalid login credentials"))
+    return { ok: false, reason: "wrong-credentials" };
+  return { ok: false, reason: "error", error: error.message };
+}
+
+/** Resend the one-time signup confirmation email. */
+export async function resendConfirmationEmail(
+  email: string,
+  redirectTo: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await getSupabase().auth.resend({
+    type: "signup",
+    email: email.trim().toLowerCase(),
+    options: { emailRedirectTo: redirectTo },
+  });
+  if (!error) return { ok: true };
+  if (/rate limit/i.test(error.message)) {
+    return {
+      ok: false,
+      error: "Too many emails sent recently — please wait a little while and try again.",
+    };
+  }
+  return { ok: false, error: error.message };
+}
+
+/** Send the subscriber a password-reset email (forgot-password flow). */
+export async function sendPasswordResetEmail(
+  email: string,
+  redirectTo: string
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await getSupabase().auth.resetPasswordForEmail(
+    email.trim().toLowerCase(),
+    { redirectTo }
+  );
+  if (!error) return { ok: true };
+  if (/rate limit/i.test(error.message)) {
+    return {
+      ok: false,
+      error: "Too many emails sent recently — please wait a little while and try again.",
+    };
+  }
+  return { ok: false, error: error.message };
+}
+
 /** Send the subscriber a sign-in (magic link) email. Creates the auth user
  *  on first use; the handle_new_user trigger creates their profile row. */
 export async function sendSignInLink(

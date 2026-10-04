@@ -1,23 +1,34 @@
 "use client";
 
 /* /app/login — returning subscriber sign-in.
- * Passwordless: enter your email, get a magic link, click it to sign in.
- * New here? The page points to /app/subscription (plans = sign-up step 1).
- */
+ * Email + password (email is verified once, at sign-up). A magic-link
+ * alternative remains for accounts created before passwords existed. */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getProfile, isEmailRegistered, sendSignInLink, setVerifyPending } from "@/lib/db/store";
+import {
+  getProfile,
+  isEmailRegistered,
+  resendConfirmationEmail,
+  sendSignInLink,
+  setVerifyPending,
+  signInWithPassword,
+} from "@/lib/db/store";
+
+type Step = "form" | "checking" | "sent" | "unknown" | "verify";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState(false);
-  const [step, setStep] = useState<"form" | "checking" | "sent" | "unknown">(
-    "form"
-  );
+  const [step, setStep] = useState<Step>("form");
   const [error, setError] = useState<string | null>(null);
+  const [showMagicLink, setShowMagicLink] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resent, setResent] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -33,9 +44,51 @@ export default function LoginPage() {
     return () => window.clearTimeout(t);
   }, [step, router]);
 
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = window.setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => window.clearTimeout(t);
+  }, [resendCooldown]);
+
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
-  const submit = async (e: React.FormEvent) => {
+  const submitPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTouched(true);
+    if (!emailOk || !password) return;
+    setStep("checking");
+    setError(null);
+    const res = await signInWithPassword(email, password);
+    if (res.ok) {
+      router.replace("/app");
+      return;
+    }
+    if (res.reason === "not-confirmed") {
+      setStep("verify");
+      return;
+    }
+    setError(
+      res.reason === "wrong-credentials"
+        ? "Incorrect email or password. Try again."
+        : (res.error ?? "Could not sign you in. Please try again.")
+    );
+    setStep("form");
+  };
+
+  const resendVerification = async () => {
+    if (resendCooldown > 0) return;
+    const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
+    const res = await resendConfirmationEmail(email, redirectTo);
+    setResendCooldown(60);
+    if (res.ok) {
+      setResent(true);
+      window.setTimeout(() => setResent(false), 3000);
+    } else {
+      setError(res.error ?? "Could not resend the verification email.");
+    }
+  };
+
+  const submitMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
     if (!emailOk) return;
@@ -54,8 +107,6 @@ export default function LoginPage() {
         setStep("form");
         return;
       }
-      // Don't park the user here: notify, remember the pending sign-in,
-      // and hand them on to the app — the email link completes sign-in.
       setVerifyPending(email.trim());
       setStep("sent");
     } catch {
@@ -63,6 +114,11 @@ export default function LoginPage() {
       setStep("form");
     }
   };
+
+  const inputClass = (bad: boolean) =>
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
+      bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
+    }`;
 
   return (
     <section className="mx-auto max-w-md px-5 py-12">
@@ -121,12 +177,52 @@ export default function LoginPage() {
               Try a different email address
             </button>
           </div>
+        ) : step === "verify" ? (
+          <div className="text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-3xl">
+              ✉️
+            </div>
+            <h1 className="mt-4 text-2xl font-bold">Verify your email</h1>
+            <p className="mt-2 text-sm text-gray-400">
+              This email address hasn&apos;t been verified yet. Click the
+              one-time link we sent to{" "}
+              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>{" "}
+              — after that, you&apos;ll log in with your password.
+            </p>
+            {error && (
+              <p className="mt-3 rounded-xl bg-red-500/10 p-3 text-xs font-semibold text-red-400">
+                {error}
+              </p>
+            )}
+            <button
+              onClick={resendVerification}
+              disabled={resendCooldown > 0}
+              className="mt-5 w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white disabled:opacity-50"
+            >
+              {resendCooldown > 0
+                ? `Resend available in ${resendCooldown}s`
+                : "Resend verification link"}
+            </button>
+            {resent && (
+              <p className="mt-2 text-xs font-semibold text-[#48d87c]">
+                A new verification link was sent to {email.trim()}.
+              </p>
+            )}
+            <button
+              onClick={() => {
+                setStep("form");
+                setError(null);
+              }}
+              className="mt-2 w-full py-2 text-center text-xs font-semibold text-gray-500"
+            >
+              Back to login
+            </button>
+          </div>
         ) : (
           <>
             <h1 className="text-2xl font-bold">Welcome back</h1>
             <p className="mt-1 text-sm text-gray-400">
-              Log in with your email — we&apos;ll send you a secure sign-in
-              link. No password needed.
+              Log in with your email and password.
             </p>
 
             {error && (
@@ -135,7 +231,7 @@ export default function LoginPage() {
               </p>
             )}
 
-            <form onSubmit={submit} className="mt-6 space-y-4">
+            <form onSubmit={submitPassword} className="mt-6 space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-semibold">
                   Email address
@@ -147,11 +243,7 @@ export default function LoginPage() {
                   placeholder="e.g. adaeze@example.com"
                   inputMode="email"
                   autoComplete="email"
-                  className={`w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
-                    touched && !emailOk
-                      ? "border-red-400 bg-red-500/10"
-                      : "border-white/10 bg-white/5"
-                  }`}
+                  className={inputClass(touched && !emailOk)}
                 />
                 {touched && !emailOk && (
                   <p className="mt-1 text-xs text-red-400">
@@ -159,25 +251,79 @@ export default function LoginPage() {
                   </p>
                 )}
               </div>
+              <div>
+                <label className="mb-1 block text-sm font-semibold">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Your password"
+                    autoComplete="current-password"
+                    className={`${inputClass(false)} pr-16`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#48d87c]"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
               <button
                 type="submit"
-                disabled={step === "checking" || (touched && !emailOk)}
+                disabled={step === "checking"}
                 className={`w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
                   step === "checking"
                     ? "cursor-wait bg-white/15"
                     : "bg-[#20a957] hover:bg-[#1a8a47]"
                 }`}
               >
-                {step === "checking" ? "Checking…" : "Email me a sign-in link"}
+                {step === "checking" ? "Signing in…" : "Sign In"}
               </button>
             </form>
 
+            <div className="mt-4 flex items-center justify-between text-sm">
+              <Link
+                href="/app/forgot-password"
+                className="font-semibold text-[#48d87c]"
+              >
+                Forgot password?
+              </Link>
+              <button
+                type="button"
+                onClick={() => setShowMagicLink((s) => !s)}
+                className="font-semibold text-gray-400"
+              >
+                {showMagicLink ? "Hide magic link" : "Use a magic link instead"}
+              </button>
+            </div>
+
+            {showMagicLink && (
+              <form
+                onSubmit={submitMagicLink}
+                className="mt-4 rounded-2xl border border-white/10 p-4"
+              >
+                <p className="text-xs text-gray-400">
+                  We&apos;ll email you a one-time sign-in link — handy if your
+                  account was created before passwords.
+                </p>
+                <button
+                  type="submit"
+                  disabled={step === "checking" || !emailOk}
+                  className="mt-3 w-full rounded-full border border-white/15 py-3 text-sm font-bold text-gray-200 transition-all duration-200 hover:border-white/30 disabled:opacity-50"
+                >
+                  {step === "checking" ? "Checking…" : "Email me a sign-in link"}
+                </button>
+              </form>
+            )}
+
             <p className="mt-5 text-center text-sm text-gray-400">
               New to WashSMART?{" "}
-              <Link
-                href="/app/signup"
-                className="font-bold text-[#48d87c]"
-              >
+              <Link href="/app/signup" className="font-bold text-[#48d87c]">
                 Create an account →
               </Link>
             </p>

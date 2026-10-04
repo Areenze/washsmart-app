@@ -1,10 +1,12 @@
 "use client";
 
 /* /app/signup — standalone new-subscriber sign-up, separate from plan
- * selection. Collects name + email + phone, then sends a Supabase magic
- * link; the handle_new_user trigger creates the profile from the link
- * metadata, and /app/auth/callback?mode=signup routes the fresh account
- * to /app/subscription to pick a plan (no plan is minted here). */
+ * selection. Collects name + email + phone + password, then sends a
+ * one-time Supabase confirmation email; the handle_new_user trigger
+ * creates the profile, and /app/auth/callback?mode=signup routes the
+ * fresh account to /app/subscription to pick a plan (no plan is minted
+ * here). After verifying once, the subscriber logs in with email +
+ * password — no more email links. */
 
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
@@ -12,8 +14,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   getProfile,
   isEmailRegistered,
+  resendConfirmationEmail,
   sendSignInLink,
   setVerifyPending,
+  signUpWithPassword,
   stashReferralCode,
 } from "@/lib/db/store";
 
@@ -38,6 +42,8 @@ function SignupInner() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   // Invite code: prefilled from a ?ref= link, or typed in by hand
   // (EverWash-style) — stashed so /app/auth/callback can attribute it.
   const [inviteCode, setInviteCode] = useState(referred);
@@ -45,6 +51,7 @@ function SignupInner() {
     name: false,
     email: false,
     phone: false,
+    password: false,
   });
   const [step, setStep] = useState<"form" | "processing" | "verify">("form");
   const [isDuplicate, setIsDuplicate] = useState(false);
@@ -70,7 +77,8 @@ function SignupInner() {
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const nameOk = name.trim().length > 1;
   const phoneOk = phone.trim().replace(/\D/g, "").length >= 7;
-  const valid = nameOk && emailOk && phoneOk;
+  const passwordOk = password.length >= 6;
+  const valid = nameOk && emailOk && phoneOk && passwordOk;
 
   const checkDuplicate = async () => {
     if (!emailOk) return;
@@ -86,7 +94,7 @@ function SignupInner() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched({ name: true, email: true, phone: true });
+    setTouched({ name: true, email: true, phone: true, password: true });
     if (!valid) return;
     if (await isEmailRegistered(email)) {
       setIsDuplicate(true);
@@ -97,9 +105,9 @@ function SignupInner() {
     setStep("processing");
     setSendError(null);
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
-    const res = await sendSignInLink(email, name, phone, redirectTo);
+    const res = await signUpWithPassword(email, password, name, phone, redirectTo);
     if (!res.ok) {
-      setSendError(res.error ?? "Could not send the verification email.");
+      setSendError(res.error ?? "Could not create your account.");
       setStep("form");
       return;
     }
@@ -128,7 +136,7 @@ function SignupInner() {
   const resendLink = async () => {
     if (resendCooldown > 0) return;
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
-    const res = await sendSignInLink(email, name, phone, redirectTo);
+    const res = await resendConfirmationEmail(email, redirectTo);
     setResendCooldown(60);
     if (res.ok) {
       setResent(true);
@@ -175,10 +183,10 @@ function SignupInner() {
             </div>
             <h1 className="mt-4 text-2xl font-bold">Verify your email</h1>
             <p className="mt-2 text-sm text-gray-400">
-              We sent a verification link to{" "}
+              We sent a one-time verification link to{" "}
               <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
-              Click the link in your inbox to create your account — then
-              you&apos;ll pick a plan.
+              Click it to verify your email — after that, you&apos;ll log in
+              with your password.
             </p>
             <p className="mt-2 text-xs text-gray-500">
               Taking you to the app now — no need to wait here.
@@ -340,6 +348,41 @@ function SignupInner() {
                     Please enter a valid phone number.
                   </p>
                 )}
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-semibold">
+                  Create a password <Req />
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onBlur={() =>
+                      setTouched((t) => ({ ...t, password: true }))
+                    }
+                    placeholder="At least 6 characters"
+                    autoComplete="new-password"
+                    className={`${fieldClass(touched.password && !passwordOk)} pr-16`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#48d87c]"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+                {touched.password && !passwordOk && (
+                  <p className="mt-1 text-xs text-red-400">
+                    Password must be at least 6 characters.
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  You&apos;ll use this with your email to log in — no more
+                  email links after verifying once.
+                </p>
               </div>
 
               <div>
