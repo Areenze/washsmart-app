@@ -5,7 +5,8 @@
 
 create table if not exists public.reviews (
   id            uuid primary key default gen_random_uuid(),
-  partner_id    uuid not null references public.partners(id) on delete cascade,
+  -- partners.id is TEXT (e.g. 'WS-2026-0001'), not uuid.
+  partner_id    text not null references public.partners(id) on delete cascade,
   subscriber_id uuid not null references public.profiles(id) on delete cascade,
   rating        smallint not null check (rating between 1 and 5),
   body          text not null default '',
@@ -30,7 +31,7 @@ create policy "reviews delete own" on public.reviews
   for delete using (auth.uid() = subscriber_id);
 
 create or replace function public.submit_review(
-  p_partner_id uuid,
+  p_partner_id text,
   p_rating     smallint,
   p_body       text
 )
@@ -68,4 +69,4 @@ begin
 end;
 $$;
 
-grant execute on function public.submit_review(uuid, smallint, text) to authenticated;
+grant execute on function public.submit_review(text, smallint, text) to authenticated;
