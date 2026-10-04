@@ -6,7 +6,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Badge, EmptyState } from "@/components/ui";
+import { Badge, ConfirmDialog, EmptyState } from "@/components/ui";
 import { fmtDate } from "@/lib/db/store";
 import {
   adminCancelSubscription,
@@ -32,6 +32,7 @@ export default function AdminSubscriberDetailPage() {
   const router = useRouter();
   const [d, setD] = useState<AdminSubscriberDetail | null | undefined>(undefined);
   const [cancelling, setCancelling] = useState(false);
+  const [cancelTarget, setCancelTarget] = useState<{ id: string; plan: string } | null>(null);
 
   const load = async () => {
     try {
@@ -46,14 +47,12 @@ export default function AdminSubscriberDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
-  const cancel = async (subId: string, planName: string) => {
-    const reason = window.prompt(
-      `Cancel ${d?.profile.name}'s ${planName} subscription? This is recorded in the audit log.\n\nReason:`
-    );
-    if (!reason) return;
+  const cancel = async (reason: string) => {
+    if (!cancelTarget) return;
     setCancelling(true);
     try {
-      await adminCancelSubscription(subId, reason);
+      await adminCancelSubscription(cancelTarget.id, reason);
+      setCancelTarget(null);
       await load();
     } catch (e) {
       window.alert(e instanceof Error ? e.message : "Could not cancel.");
@@ -146,7 +145,7 @@ export default function AdminSubscriberDetailPage() {
                   </p>
                   {s.status === "active" && (
                     <button
-                      onClick={() => cancel(s.id, s.planName)}
+                      onClick={() => setCancelTarget({ id: s.id, plan: s.planName })}
                       disabled={cancelling}
                       className="mt-2 text-xs font-bold text-red-400 hover:text-red-300"
                     >
@@ -220,6 +219,18 @@ export default function AdminSubscriberDetailPage() {
           </Section>
         </div>
       )}
+      <ConfirmDialog
+        open={cancelTarget !== null}
+        title="Cancel subscription"
+        body={`Cancel ${p.name}'s ${cancelTarget?.plan ?? ""} subscription?\n\nThis is recorded in the audit log.`}
+        confirmLabel="Cancel subscription"
+        danger
+        inputLabel="Reason"
+        inputPlaceholder="e.g. Subscriber requested cancellation"
+        requireInput
+        onConfirm={(reason) => cancel(reason)}
+        onCancel={() => setCancelTarget(null)}
+      />
     </div>
   );
 }

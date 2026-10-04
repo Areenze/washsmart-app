@@ -7,7 +7,7 @@
  */
 
 import type { ReactNode } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Logo({ size = 40 }: { size?: number }) {
   return (
@@ -300,6 +300,85 @@ export function StepDots({
           }`}
         />
       ))}
+    </div>
+  );
+}
+
+/* In-app confirmation dialog — replaces window.confirm/prompt/alert so
+ * confirmations work identically for real users and automated checks. */
+export function ConfirmDialog({
+  open,
+  title,
+  body,
+  confirmLabel = "Confirm",
+  danger = false,
+  inputLabel,
+  inputPlaceholder,
+  requireInput = false,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  title: string;
+  body: string;
+  confirmLabel?: string;
+  danger?: boolean;
+  inputLabel?: string;
+  inputPlaceholder?: string;
+  requireInput?: boolean;
+  onConfirm: (inputValue: string) => void;
+  onCancel: () => void;
+}) {
+  const [value, setValue] = useState("");
+  useEffect(() => {
+    if (open) setValue("");
+  }, [open ]);
+  if (!open) return null;
+  const canConfirm = !requireInput || value.trim().length > 0;
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      onClick={onCancel}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="w-full max-w-md rounded-3xl bg-[#111a14] p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-xl font-bold">{title}</h3>
+        <p className="mt-2 whitespace-pre-line text-sm text-gray-400">{body}</p>
+        {inputLabel && (
+          <div className="mt-4">
+            <label className="mb-1 block text-sm font-semibold">{inputLabel}</label>
+            <input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={inputPlaceholder}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#20a957]"
+            />
+          </div>
+        )}
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 rounded-full border border-white/10 py-3 text-sm font-bold text-gray-300 transition-colors hover:bg-white/5"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(value.trim())}
+            disabled={!canConfirm}
+            className={`flex-1 rounded-full py-3 text-sm font-bold text-white transition-all disabled:opacity-50 ${
+              danger
+                ? "bg-red-600 hover:bg-red-500"
+                : "bg-[#20a957] hover:bg-[#1a8a47]"
+            }`}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 /* /admin/requests — subscriber coverage requests inbox. */
 
 import { useEffect, useState } from "react";
-import { EmptyState } from "@/components/ui";
+import { ConfirmDialog, EmptyState } from "@/components/ui";
 import {
   deleteLocationRequest,
   fmtDate,
@@ -14,6 +14,7 @@ import type { LocationRequest } from "@/lib/db/types";
 export default function AdminRequestsPage() {
   const [requests, setRequests] = useState<LocationRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dismissTarget, setDismissTarget] = useState<LocationRequest | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -25,10 +26,11 @@ export default function AdminRequestsPage() {
     })();
   }, []);
 
-  const remove = async (id: string) => {
-    if (!window.confirm("Delete this coverage request?")) return;
-    await deleteLocationRequest(id);
-    setRequests((prev) => prev.filter((r) => r.id !== id));
+  const remove = async () => {
+    if (!dismissTarget) return;
+    await deleteLocationRequest(dismissTarget.id);
+    setRequests((prev) => prev.filter((r) => r.id !== dismissTarget.id));
+    setDismissTarget(null);
   };
 
   return (
@@ -64,7 +66,7 @@ export default function AdminRequestsPage() {
                 </p>
               </div>
               <button
-                onClick={() => remove(r.id)}
+                onClick={() => setDismissTarget(r)}
                 className="rounded-full border border-white/10 px-4 py-2 text-sm font-bold text-gray-400 transition-colors hover:border-red-400/50 hover:text-red-400"
               >
                 Dismiss
@@ -73,6 +75,15 @@ export default function AdminRequestsPage() {
           ))}
         </div>
       )}
+      <ConfirmDialog
+        open={dismissTarget !== null}
+        title="Dismiss request"
+        body={`Delete the coverage request for "${dismissTarget?.area ?? ""}" (${dismissTarget?.email ?? ""})?`}
+        confirmLabel="Dismiss"
+        danger
+        onConfirm={() => remove()}
+        onCancel={() => setDismissTarget(null)}
+      />
     </div>
   );
 }
