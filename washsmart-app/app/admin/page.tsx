@@ -4,22 +4,27 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge, Brand, EmptyState, Logo } from "@/components/ui";
 import {
   deleteLocationRequest,
   fmtDate,
+  getProfile,
   isAdmin,
   listApplications,
   listLocationRequests,
+  signOut,
 } from "@/lib/db/store";
 import type { LocationRequest, PartnerApplication } from "@/lib/db/types";
 
 export default function AdminPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<"applications" | "requests">("applications");
   const [apps, setApps] = useState<PartnerApplication[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [requests, setRequests] = useState<LocationRequest[]>([]);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
 
   const reload = async () => {
     const [a, r] = await Promise.all([
@@ -32,10 +37,20 @@ export default function AdminPage() {
 
   useEffect(() => {
     (async () => {
-      setAuthorized(await isAdmin());
-      reload();
+      const [admin, profile] = await Promise.all([
+        isAdmin(),
+        getProfile().catch(() => null),
+      ]);
+      setAuthorized(admin);
+      setSignedInEmail(profile?.email ?? null);
+      if (admin) reload();
     })();
   }, []);
+
+  const switchAccount = async () => {
+    await signOut();
+    router.push("/app/login?next=/admin");
+  };
 
   const removeRequest = async (id: string) => {
     if (!window.confirm("Delete this coverage request?")) return;
@@ -69,15 +84,33 @@ export default function AdminPage() {
           <div className="rounded-3xl bg-[#111a14] p-10 text-center shadow-sm">
             <p className="text-4xl">🔒</p>
             <h1 className="mt-3 text-2xl font-bold">Admin access required</h1>
-            <p className="mt-2 text-sm text-gray-400">
-              Sign in with a WashSMART staff account to view this page.
-            </p>
-            <Link
-              href="/app/login?next=/admin"
-              className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
-            >
-              Log in →
-            </Link>
+            {signedInEmail ? (
+              <>
+                <p className="mt-2 text-sm text-gray-400">
+                  You&rsquo;re signed in as{" "}
+                  <span className="font-bold text-[#e9f2ec]">{signedInEmail}</span>,
+                  which isn&rsquo;t a WashSMART staff account.
+                </p>
+                <button
+                  onClick={switchAccount}
+                  className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+                >
+                  Switch account →
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="mt-2 text-sm text-gray-400">
+                  Sign in with a WashSMART staff account to view this page.
+                </p>
+                <Link
+                  href="/app/login?next=/admin"
+                  className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+                >
+                  Log in →
+                </Link>
+              </>
+            )}
           </div>
         )}
         {authorized === true && (
