@@ -1252,6 +1252,152 @@ export async function adminDismissFraudFlag(
   ).catch(() => {});
 }
 
+/* ---------------- reports ---------------- */
+
+export interface MonthlyPoint {
+  month: string; // "Oct 2026"
+  key: string; // "2026-10"
+  value: number;
+}
+
+function last6Months(): { key: string; label: string }[] {
+  const out: { key: string; label: string }[] = [];
+  const d = new Date();
+  d.setDate(1);
+  for (let i = 5; i >= 0; i--) {
+    const t = new Date(d.getFullYear(), d.getMonth() - i, 1);
+    out.push({
+      key: `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}`,
+      label: t.toLocaleDateString("en-NG", { month: "short", year: "numeric" }),
+    });
+  }
+  return out;
+}
+
+function monthKey(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export interface ReportData {
+  revenueByMonth: MonthlyPoint[];
+  washesByMonth: MonthlyPoint[];
+  subsByMonth: MonthlyPoint[];
+  planMix: { plan: string; subs: number; revenue: number }[];
+  topPartners: { id: string; name: string; washes: number; gross: number }[];
+  credits: {
+    issued: number;
+    redeemed: number;
+    expiredUnused: number;
+    activeRemaining: number;
+  };
+  totals: {
+    revenue: number;
+    washes: number;
+    subscribers: number;
+    avgWashesPerSub: number;
+  };
+}
+
+export async function adminReportData(): Promise<ReportData> {
+  const db = getSupabase();
+  const months = last6Months();
+  const since = `${months[0].key}-01T00:00:00.000Z`;
+
+  const [payRes, washRes, subRes] = await Promise.all([
+    db.from("payments").select("amount,plan_name,created_at").gte("created_at", since).limit(5000),
+    db
+      .from("wash_transactions")
+      .select("id,redeemed_at,partner_id,payout,partner:partners(name)")
+      .gte("redeemed_at", since)
+      .limit(5000),
+    db.from("subscriptions").select("id,plan_id,plan_name,washes_total,washes_remaining,status,created_at,owner_id"),
+  ]);
+  if (payRes.error) throw payRes.error;
+  if (washRes.error) throw washRes.error;
+  if (subRes.error) throw subRes.error;
+
+  const payments = (payRes.data ?? []) as any[];
+  const washes = (washRes.data ?? []) as any[];
+  const subs = (subRes.data ?? []) as any[];
+
+  const revenueByMonth = months.map((m) => ({
+    month: m.label,
+    key: m.key,
+    value: payments
+      .filter((p) => monthKey(p.created_at) === m.key)
+      .reduce((s, p) => s + Number(p.amount ?? 0), 0),
+  }));
+  const washesByMonth = months.map((m) => ({
+    month: m.label,
+    key: m.key,
+    value: washes.filter((w) => monthKey(w.redeemed_at) === m.key).length,
+  }));
+  const subsByMonth = months.map((m) => ({
+    month: m.label,
+    key: m.key,
+    value: new Set(
+      subs.filter((s) => monthKey(s.created_at) === m.key).map((s) => s.owner_id)
+    ).size,
+  }));
+
+  const planMap = new Map<string, { subs: number; revenue: number }>();
+  for (const s of subs) {
+    const name = s.plan_name ?? s.plan_id ?? "Unknown";
+    if (!planMap.has(name)) planMap.set(name, { subs: 0, revenue: 0 });
+    planMap.get(name)!.subs++;
+  }
+  for (const p of payments) {
+    const name = p.plan_name ?? "Unknown";
+    if (!planMap.has(name)) planMap.set(name, { subs: 0, revenue: 0 });
+    planMap.get(name)!.revenue += Number(p.amount ?? 0);
+  }
+  const planMix = [...planMap.entries()]
+    .map(([plan, v]) => ({ plan, ...v }))
+    .sort((a, b) => b.revenue - a.revenue);
+
+  const partnerMap = new Map<string, { name: string; washes: number; gross: number }>();
+  for (const w of washes) {
+    const id = w.partner_id as string;
+    if (!partnerMap.has(id))
+      partnerMap.set(id, { name: w.partner?.name ?? id, washes: 0, gross: 0 });
+    const e = partnerMap.get(id)!;
+    e.washes++;
+    e.gross += Number(w.payout ?? 0);
+  }
+  const topPartners = [...partnerMap.entries()]
+    .map(([id, v]) => ({ id, ...v }))
+    .sort((a, b) => b.washes - a.washes)
+    .slice(0, 8);
+
+  const issued = subs.reduce((s, x) => s + Number(x.washes_total ?? 0), 0);
+  const redeemed = washes.length;
+  const expiredUnused = subs
+    .filter((x) => x.status === "expired")
+    .reduce((s, x) => s + Number(x.washes_remaining ?? 0), 0);
+  const activeRemaining = subs
+    .filter((x) => x.status === "active")
+    .reduce((s, x) => s + Number(x.washes_remaining ?? 0), 0);
+
+  const revenue = payments.reduce((s, p) => s + Number(p.amount ?? 0), 0);
+  const subCount = new Set(subs.map((s) => s.owner_id)).size;
+
+  return {
+    revenueByMonth,
+    washesByMonth,
+    subsByMonth,
+    planMix,
+    topPartners,
+    credits: { issued, redeemed, expiredUnused, activeRemaining },
+    totals: {
+      revenue,
+      washes: washes.length,
+      subscribers: subCount,
+      avgWashesPerSub: subCount > 0 ? washes.length / subCount : 0,
+    },
+  };
+}
+
 /* ---------------- reviews / locations ---------------- */
 
 export interface AdminReviewRow {

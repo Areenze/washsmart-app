@@ -21,18 +21,17 @@ const NAV: { href: string; label: string; icon: string; badge?: string }[] = [
   { href: "/admin/washes", label: "Washes", icon: "🚗" },
   { href: "/admin/credits", label: "Credits", icon: "🎟️" },
   { href: "/admin/payments", label: "Payments", icon: "💳" },
+  { href: "/admin/promotions", label: "Promotions", icon: "🏷️" },
   { href: "/admin/settlements", label: "Settlements", icon: "🏦", badge: "settlements" },
   { href: "/admin/reviews", label: "Reviews", icon: "⭐" },
   { href: "/admin/locations", label: "Locations", icon: "📍" },
   { href: "/admin/requests", label: "Requests", icon: "📬", badge: "requests" },
   { href: "/admin/support", label: "Support", icon: "🎧", badge: "tickets" },
   { href: "/admin/fraud", label: "Fraud", icon: "🚨" },
+  { href: "/admin/reports", label: "Reports", icon: "📈" },
 ];
 
-const SOON = [
-  { label: "Reports", icon: "📈" },
-  { label: "Settings", icon: "⚙️" },
-];
+const SOON = [{ label: "Settings", icon: "⚙️" }];
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();

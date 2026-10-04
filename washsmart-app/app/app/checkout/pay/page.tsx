@@ -9,8 +9,14 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getPlans, getProfile, getVehicles } from "@/lib/db/store";
+import { getPlans, getProfile, getVehicles, createSubscription } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
+import {
+  applyPromoBonus,
+  recordPromoRedemption,
+  validatePromo,
+  type ValidatedPromo,
+} from "@/lib/db/promos";
 import type { Plan } from "@/lib/db/types";
 
 const PAYSTACK_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ?? "";
@@ -57,6 +63,10 @@ function PayInner() {
   const [name, setName] = useState("");
   const [phase, setPhase] = useState<"loading" | "ready" | "opening" | "verifying" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<ValidatedPromo | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoChecking, setPromoChecking] = useState(false);
   // Tracks whether a payment callback is being verified, so closing the
   // Paystack window mid-verification isn't treated as a cancel.
   const verifyingRef = useRef(false);
@@ -88,6 +98,27 @@ function PayInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const finalAmount = plan ? Math.max(0, plan.amount - (promo?.discountNaira ?? 0)) : 0;
+
+  const applyPromo = async () => {
+    if (!plan || !promoInput.trim() || promoChecking) return;
+    setPromoChecking(true);
+    setPromoError(null);
+    try {
+      const v = await validatePromo(promoInput.trim(), plan.id);
+      if (!v) {
+        setPromo(null);
+        setPromoError("That code isn't valid for this plan.");
+      } else {
+        setPromo(v);
+      }
+    } catch {
+      setPromoError("Could not check that code. Try again.");
+    } finally {
+      setPromoChecking(false);
+    }
+  };
+
   const verifyPayment = async (reference: string) => {
     if (!plan) return;
     verifyingRef.current = true;
@@ -103,7 +134,11 @@ function PayInner() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ reference, planId: plan.id }),
+        body: JSON.stringify({
+          reference,
+          planId: plan.id,
+          promoCode: promo ? promoInput.trim().toUpperCase() : undefined,
+        }),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) {
@@ -116,6 +151,25 @@ function PayInner() {
       setPhase("error");
     } finally {
       verifyingRef.current = false;
+    }
+  };
+
+  // 100%-off codes: no Paystack charge — mint directly, then record the promo.
+  const redeemFree = async () => {
+    if (!plan || !promo) return;
+    setPhase("verifying");
+    setError(null);
+    try {
+      const sub = await createSubscription({ planId: plan.id });
+      await recordPromoRedemption(promo.promoId, null);
+      if (promo.kind === "bonus_washes") {
+        await applyPromoBonus(sub.id, Math.round(promo.value));
+      }
+      const vs = await getVehicles().catch(() => []);
+      router.replace(vs.length > 0 ? "/app" : "/app/onboarding?next=/app");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not redeem that code.");
+      setPhase("error");
     }
   };
 
@@ -135,7 +189,7 @@ function PayInner() {
       const handler = window.PaystackPop.setup({
         key: PAYSTACK_KEY,
         email,
-        amount: Math.round(plan.amount * 100), // Paystack expects kobo
+        amount: Math.round(finalAmount * 100), // Paystack expects kobo
         currency: "NGN",
         ref: reference,
         metadata: { plan_id: plan.id, customer_name: name },
@@ -187,10 +241,68 @@ function PayInner() {
             <span className="text-gray-400">{plan.name} Plan (30-day credits)</span>
             <span className="font-bold">{plan.price}</span>
           </div>
+          {promo && promo.kind !== "bonus_washes" && (
+            <div className="mt-2 flex justify-between text-sm">
+              <span className="text-gray-400">Promo ({promo.label})</span>
+              <span className="font-bold text-[#48d87c]">
+                −₦{promo.discountNaira.toLocaleString("en-NG")}
+              </span>
+            </div>
+          )}
+          {promo && promo.kind === "bonus_washes" && (
+            <div className="mt-2 flex justify-between text-sm">
+              <span className="text-gray-400">Promo applied</span>
+              <span className="font-bold text-[#48d87c]">{promo.label}</span>
+            </div>
+          )}
           <div className="mt-3 flex justify-between border-t border-[#20a957]/20 pt-3 font-bold">
             <span>Total due today</span>
-            <span className="text-[#48d87c]">{plan.price}</span>
+            <span className="text-[#48d87c]">
+              ₦{finalAmount.toLocaleString("en-NG")}
+            </span>
           </div>
+        </div>
+
+        <div className="mt-4">
+          {promo ? (
+            <div className="flex items-center justify-between rounded-xl bg-[#20a957]/10 px-4 py-3">
+              <p className="text-sm font-bold text-[#48d87c]">
+                ✓ {promoInput.trim().toUpperCase()} — {promo.label}
+              </p>
+              <button
+                onClick={() => {
+                  setPromo(null);
+                  setPromoInput("");
+                  setPromoError(null);
+                }}
+                className="text-xs font-bold text-gray-400 hover:text-white"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="flex gap-2">
+                <input
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => e.key === "Enter" && applyPromo()}
+                  placeholder="Promo code (optional)"
+                  className="flex-1 rounded-xl border border-white/10 bg-[#111a14] px-4 py-3 text-sm uppercase placeholder:normal-case placeholder:text-gray-500"
+                />
+                <button
+                  onClick={applyPromo}
+                  disabled={promoChecking || !promoInput.trim()}
+                  className="rounded-xl bg-white/10 px-5 text-sm font-bold disabled:opacity-40"
+                >
+                  {promoChecking ? "…" : "Apply"}
+                </button>
+              </div>
+              {promoError && (
+                <p className="mt-2 text-xs font-semibold text-red-400">{promoError}</p>
+              )}
+            </>
+          )}
         </div>
 
         {error && (
@@ -208,7 +320,7 @@ function PayInner() {
         ) : (
           <>
             <button
-              onClick={startPayment}
+              onClick={finalAmount <= 0 ? redeemFree : startPayment}
               disabled={phase === "opening"}
               className={`mt-6 w-full rounded-full py-3 font-bold text-white transition-all duration-200 ${
                 phase === "opening"
@@ -216,7 +328,11 @@ function PayInner() {
                   : "bg-[#20a957] hover:bg-[#1a8a47]"
               }`}
             >
-              {phase === "opening" ? "Opening secure payment…" : `Pay ${plan.price}`}
+              {phase === "opening"
+                ? "Opening secure payment…"
+                : finalAmount <= 0
+                  ? "Redeem — ₦0"
+                  : `Pay ₦${finalAmount.toLocaleString("en-NG")}`}
             </button>
             <p className="mt-3 text-center text-xs text-gray-500">
               Secured by Paystack · Card, bank transfer &amp; USSD accepted

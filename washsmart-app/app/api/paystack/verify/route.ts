@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: { reference?: string; planId?: string };
+  let body: { reference?: string; planId?: string; promoCode?: string };
   try {
     body = await request.json();
   } catch {
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
   }
   const reference = body.reference?.trim();
   const planId = body.planId?.trim();
+  const promoCode = body.promoCode?.trim().toUpperCase() || null;
   if (!reference || !planId) {
     return Response.json(
       { ok: false, error: "Missing payment reference or plan." },
@@ -101,6 +102,7 @@ export async function POST(request: Request) {
   }
 
   // Amount guard: Paystack reports kobo; plans store whole naira.
+  // A promo code is re-validated here server-side — the client can lie.
   const { data: plan } = await sb
     .from("plans")
     .select("id,name,amount,washes")
@@ -109,7 +111,24 @@ export async function POST(request: Request) {
   if (!plan) {
     return Response.json({ ok: false, error: "Unknown plan." }, { status: 400 });
   }
-  const expectedKobo = Math.round(Number(plan.amount) * 100);
+  let promo: {
+    promo_id: string;
+    kind: string;
+    value: number;
+    discount_naira: number;
+  } | null = null;
+  if (promoCode) {
+    const { data: v } = await sb.rpc("validate_promo_code", {
+      p_code: promoCode,
+      p_plan_id: planId,
+    });
+    promo = (v as any[])?.[0] ?? null;
+    // If the code died between checkout and verification, fall back to the
+    // full price rather than punishing the buyer — they paid what Paystack
+    // shows, and we validate against that.
+  }
+  const discountNaira = promo ? Number(promo.discount_naira ?? 0) : 0;
+  const expectedKobo = Math.round((Number(plan.amount) - discountNaira) * 100);
   if (tx.currency !== "NGN" || Number(tx.amount) !== expectedKobo) {
     return Response.json(
       { ok: false, error: "Paid amount does not match the plan." },
@@ -138,6 +157,30 @@ export async function POST(request: Request) {
   const {
     data: { user },
   } = await sb.auth.getUser();
+
+  // Record the promo redemption + grant bonus washes (best-effort).
+  if (promo && user) {
+    const { data: payRow } = await sb
+      .from("payments")
+      .select("id")
+      .eq("reference", reference)
+      .maybeSingle();
+    try {
+      await sb.rpc("record_promo_redemption", {
+        p_promo_id: promo.promo_id,
+        p_payment_id: (payRow as any)?.id ?? null,
+      });
+      if (promo.kind === "bonus_washes") {
+        await sb.rpc("apply_promo_bonus", {
+          p_subscription_id: subId,
+          p_washes: Math.round(Number(promo.value)),
+        });
+      }
+    } catch {
+      /* a failed promo must never block a paid subscription */
+    }
+  }
+
   if (user) {
     void (async () => {
       try {
@@ -145,7 +188,13 @@ export async function POST(request: Request) {
           p_user_id: user.id,
           p_kind: "payment_success",
           p_title: `Payment successful — ${plan.name}`,
-          p_body: `₦${Number(plan.amount).toLocaleString("en-NG")} received. Your subscription is active with ${plan.washes} washes.`,
+          p_body:
+            `₦${Number((tx.amount ?? 0) / 100).toLocaleString("en-NG")} received. ` +
+            `Your subscription is active with ${plan.washes}${
+              promo?.kind === "bonus_washes"
+                ? `+${Math.round(Number(promo.value))} bonus`
+                : ""
+            } washes.`,
           p_link: "/app",
         });
       } catch {
