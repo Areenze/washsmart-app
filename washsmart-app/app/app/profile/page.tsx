@@ -251,7 +251,7 @@ export default function ProfilePage() {
       <button
         onClick={async () => {
           await signOut();
-          window.location.replace("/app");
+          window.location.href = "/";
         }}
         className="mt-6 w-full rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-sm font-bold text-gray-400"
       >
