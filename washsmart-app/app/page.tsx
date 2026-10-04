@@ -1,22 +1,36 @@
 "use client";
 
-/* WashSMART landing — sliding hero carousel, subscriber-first entry.
- * [I'm a Car Owner] → /app/signup (standalone subscriber sign-up form)
- * Partner CTA lives in the footer → /join
+/* WashSMART landing — consumer car-care brand, not a SaaS dashboard.
+ * Hero: Subscribe. Get credits. Get washed.
+ * [I'm a Car Owner] → /app/signup · Partner CTA → /join
  */
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Brand, IconChip, Logo, Reveal } from "@/components/ui";
+import { getPlans } from "@/lib/db/store";
+import type { Plan } from "@/lib/db/types";
 
 const SLIDES = ["/images/hero-1.jpg", "/images/hero-2.jpg", "/images/hero-3.jpg"];
 const SLIDE_MS = 5000;
 
+const STEPS: [string, string, string][] = [
+  ["01", "Subscribe", "Choose the plan that fits how often you wash."],
+  ["02", "Get credits", "Your subscription loads wash credits to your account."],
+  ["03", "Find a partner", "Pick any approved WashSMART wash center near you."],
+  ["04", "Redeem", "Show your QR code — the partner scans it to verify."],
+  ["05", "Get washed", "One credit is deducted and your wash is recorded."],
+];
+
 const FAQS: [string, string][] = [
   [
     "How does WashSMART work?",
-    "Subscribe to a plan and you get a set number of wash credits. When you visit any approved partner, open the Scan tab in the app to generate your wash QR — the partner scans it and one wash is deducted from your balance. That's it.",
+    "Subscribe to a plan and you get a set number of wash credits. When you visit any approved partner, open your dashboard to show your wash QR — the partner scans it and one wash is deducted from your balance. That's it.",
+  ],
+  [
+    "What are wash credits?",
+    "Wash credits are the digital units included with your subscription. One credit pays for one wash at any approved WashSMART partner — no cash changes hands at the wash center.",
   ],
   [
     "How long are my washes valid?",
@@ -28,7 +42,7 @@ const FAQS: [string, string][] = [
   ],
   [
     "How do I get my wash QR?",
-    "Open the WashSMART app and tap Scan (or “Get My Wash QR” on your dashboard), choose the partner you're visiting, and show the QR code to the partner to scan.",
+    "Open your WashSMART dashboard and show your wash QR at any approved partner — they scan it to verify and deduct one wash from your balance. The code refreshes automatically.",
   ],
   [
     "What if my QR code won't scan?",
@@ -45,6 +59,10 @@ const FAQS: [string, string][] = [
   [
     "Can I change or cancel my plan?",
     "You can switch plans anytime from the Subscription tab in the app. To cancel, email support@washsmart.ng — any remaining washes stay valid until their expiry date.",
+  ],
+  [
+    "How do I become a partner?",
+    "Own a car wash? Apply through our partner registration — we'd love to have you in the network.",
   ],
 ];
 
@@ -108,11 +126,22 @@ function NavLink({ href, children }: { href: string; children: string }) {
   );
 }
 
+const MOBILE_LINKS = [
+  { href: "#how-it-works", label: "How It Works" },
+  { href: "#plans", label: "Plans" },
+  { href: "/app/partners", label: "Find a Wash" },
+  { href: "#support", label: "FAQ" },
+  { href: "/app/signup", label: "Subscribe" },
+  { href: "/app/login", label: "Log in" },
+  { href: "/partner", label: "Partner login" },
+];
+
 export default function EntryPage() {
   const [slide, setSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [washQuery, setWashQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [plans, setPlans] = useState<Plan[] | null>(null);
   const router = useRouter();
 
   const findWash = (e: React.FormEvent) => {
@@ -128,6 +157,12 @@ export default function EntryPage() {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    getPlans()
+      .then(setPlans)
+      .catch(() => setPlans([]));
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#111a14]/90 backdrop-blur-md px-5 py-4">
@@ -137,14 +172,16 @@ export default function EntryPage() {
             <Brand />
           </div>
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
-            <NavLink href="#support">Help & Support</NavLink>
+            <NavLink href="#how-it-works">How It Works</NavLink>
+            <NavLink href="#plans">Plans</NavLink>
+            <NavLink href="/app/partners">Find a Wash</NavLink>
+            <NavLink href="#support">FAQ</NavLink>
             <NavLink href="/app/login">Log in</NavLink>
-            <NavLink href="/partner">Partner login</NavLink>
             <Link
-              href="/admin"
-              className="text-gray-500 transition-colors hover:text-gray-300"
+              href="/app/signup"
+              className="rounded-full bg-[#20a957] px-5 py-2.5 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
             >
-              Admin
+              Subscribe
             </Link>
           </nav>
           <button
@@ -169,12 +206,7 @@ export default function EntryPage() {
         </div>
         {menuOpen && (
           <nav className="mt-3 flex flex-col gap-1 border-t border-white/5 pt-3 text-sm font-semibold md:hidden">
-            {[
-              { href: "#support", label: "Help & Support" },
-              { href: "/app/login", label: "Log in" },
-              { href: "/partner", label: "Partner login" },
-              { href: "/admin", label: "Admin" },
-            ].map((l) => (
+            {MOBILE_LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -190,7 +222,7 @@ export default function EntryPage() {
 
       {/* Hero — sliding, fading image carousel */}
       <section className="relative overflow-hidden bg-[#062b1e]">
-        <div className="relative h-[560px] md:h-[620px]">
+        <div className="relative h-[600px] md:h-[640px]">
           {SLIDES.map((src, i) => (
             <div
               key={src}
@@ -214,30 +246,36 @@ export default function EntryPage() {
 
           <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-5">
             <p className="mb-3 text-xs font-bold tracking-[0.2em] text-[#65e28e] md:text-sm">
-              LAGOS&rsquo; FIRST CAR-CARE NETWORK &middot; LAUNCHING SOON
+              LAUNCHING SOON ACROSS LAGOS
             </p>
             <h1 className="max-w-2xl text-4xl font-bold leading-tight text-white md:text-6xl">
-              One subscription.{" "}
-              <span className="text-gradient-brand">Multiple washes.</span>
+              Subscribe. Get credits.{" "}
+              <span className="text-gradient-brand">Get washed.</span>
             </h1>
-            <p className="mt-5 max-w-xl text-white/80">
-              WashSMART connects car owners to a growing network of approved
-              car-wash partners across Lagos.
+            <p className="mt-5 max-w-xl text-lg text-white/85">
+              One subscription. Multiple washes.
             </p>
-            <p className="mt-3 max-w-xl font-bold text-white">
-              Subscribe once. Wash at participating WashSMART partner
-              locations.
+            <p className="mt-2 max-w-xl text-white/75">
+              WashSMART gives you wash credits you can redeem at approved
+              car-wash centers across Lagos. No cash at the wash center — just
+              verify, redeem and wash.
             </p>
-            <div className="mt-8">
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                href="#plans"
+                className="inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] hover:shadow-xl hover:shadow-[#20a957]/30 active:scale-[0.98]"
+              >
+                View Plans
+              </Link>
               <Link
                 href="/app/signup"
-                className="inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] hover:shadow-xl hover:shadow-[#20a957]/30 active:scale-[0.98]"
+                className="inline-block rounded-full border-2 border-white/30 px-8 py-4 text-lg font-semibold tracking-wide text-white transition-all duration-200 hover:border-white/60 hover:bg-white/5 active:scale-[0.98]"
               >
                 🚗 I&rsquo;m a Car Owner &rarr;
               </Link>
             </div>
 
-            {/* EverWash-style location search pill → partner finder */}
+            {/* Location search pill → partner finder */}
             <form onSubmit={findWash} className="mt-6 max-w-xl">
               <div className="flex flex-col gap-2 rounded-3xl bg-white p-2 shadow-xl sm:flex-row sm:items-center sm:rounded-full sm:pl-5">
                 <div className="flex flex-1 items-center gap-2 px-3 sm:px-0">
@@ -276,28 +314,257 @@ export default function EntryPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-16 md:py-24">
-        <div className="grid gap-5 text-center md:grid-cols-3">
-          {[
-            ["📍", "green", "Growing network", "Approved partners across Lagos"],
-            ["✅", "teal", "Simple verification", "One QR scan per wash"],
-            ["💳", "amber", "One subscription", "Plans from ₦8,000/30 days"],
-          ].map(([icon, tone, title, body], i) => (
-            <Reveal key={title} delay={i * 150}>
-              <div className="rounded-3xl border border-white/5 bg-[#111a14] p-8 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] transition-shadow duration-300 hover:shadow-[0_0_40px_8px_rgb(0_0_0/0.35)]">
-                <div className="flex justify-center">
-                  <IconChip icon={icon} tone={tone as "green" | "teal" | "amber"} />
+      {/* The problem */}
+      <section className="mx-auto max-w-4xl px-5 py-16 md:py-24 text-center">
+        <Reveal>
+          <p className="text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+            WHY WASHSMART EXISTS
+          </p>
+          <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+            Car care shouldn&rsquo;t be complicated.
+          </h2>
+        </Reveal>
+        <Reveal delay={100}>
+          <p className="mx-auto mt-6 max-w-2xl text-gray-400">
+            Today, getting your car washed means finding a reliable wash center,
+            paying every single time, dealing with inconsistent service — and
+            repeating the whole process every week.
+          </p>
+          <p className="mt-6 text-xl font-bold text-white">
+            WashSMART changes that.{" "}
+            <span className="text-[#48d87c]">
+              One subscription. Wash credits. Any approved partner.
+            </span>
+          </p>
+        </Reveal>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className="scroll-mt-24 border-t border-white/5 bg-[#0d130f]">
+        <div className="mx-auto max-w-7xl px-5 py-16 md:py-24">
+          <Reveal>
+            <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              HOW IT WORKS
+            </p>
+            <h2 className="mt-3 text-center text-3xl font-bold md:text-4xl">
+              Five steps. Zero wahala.
+            </h2>
+          </Reveal>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {STEPS.map(([n, title, body], i) => (
+              <Reveal key={n} delay={i * 100}>
+                <div className="h-full rounded-3xl border border-white/5 bg-[#111a14] p-6">
+                  <p className="text-3xl font-bold text-[#20a957]/40">{n}</p>
+                  <p className="mt-3 font-bold">{title}</p>
+                  <p className="mt-1 text-sm text-gray-400">{body}</p>
                 </div>
-                <p className="mt-4 font-bold">{title}</p>
-                <p className="mt-1 text-sm text-gray-400">{body}</p>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Credits explainer */}
+      <section className="mx-auto max-w-7xl px-5 py-16 md:py-24">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <Reveal>
+            <p className="text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              WASH CREDITS
+            </p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+              Your subscription becomes wash credits.
+            </h2>
+            <p className="mt-4 text-gray-400">
+              Every plan comes with wash credits you redeem at participating
+              WashSMART partner locations. One credit, one wash — tracked
+              digitally from your account.
+            </p>
+            <p className="mt-4 font-bold text-white">
+              No cash exchange at the wash center. Just verify, redeem and wash.
+            </p>
+          </Reveal>
+          <Reveal delay={150}>
+            <div className="rounded-3xl border border-white/5 bg-[#111a14] p-8">
+              {[
+                ["💳", "Subscribe", "₦12,000 / 30 days"],
+                ["🎟️", "Get credits", "6 wash credits"],
+                ["📱", "Show QR", "Partner scans to verify"],
+                ["🚗", "Get washed", "1 credit deducted"],
+              ].map(([icon, title, body], i, arr) => (
+                <div key={title}>
+                  <div className="flex items-center gap-4">
+                    <div className="flex justify-center">
+                      <IconChip icon={icon} tone="green" />
+                    </div>
+                    <div>
+                      <p className="font-bold">{title}</p>
+                      <p className="text-sm text-gray-400">{body}</p>
+                    </div>
+                  </div>
+                  {i < arr.length - 1 && (
+                    <div aria-hidden className="ml-7 h-6 w-px bg-[#20a957]/40" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Plans */}
+      <section id="plans" className="scroll-mt-24 border-t border-white/5 bg-[#0d130f]">
+        <div className="mx-auto max-w-7xl px-5 py-16 md:py-24">
+          <Reveal>
+            <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              SUBSCRIPTION PLANS
+            </p>
+            <h2 className="mt-3 text-center text-3xl font-bold md:text-4xl">
+              Choose your plan.
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-center text-gray-400">
+              Every plan gives you wash credits valid for 30 days, redeemable at
+              any approved WashSMART partner.
+            </p>
+          </Reveal>
+          <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
+            {(plans ?? []).map((p, i) => (
+              <Reveal key={p.id} delay={i * 100}>
+                <div
+                  className={`relative flex h-full flex-col rounded-3xl border p-8 ${
+                    p.popular
+                      ? "border-[#20a957] bg-[#0e2a1c] shadow-[0_0_40px_8px_rgb(32_169_87/0.15)]"
+                      : "border-white/5 bg-[#111a14]"
+                  }`}
+                >
+                  {p.popular && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#20a957] px-4 py-1 text-xs font-bold text-white">
+                      MOST POPULAR
+                    </span>
+                  )}
+                  <p className="text-sm font-bold uppercase tracking-wide text-gray-400">
+                    {p.name}
+                  </p>
+                  <p className="mt-2 text-4xl font-bold">
+                    ₦{p.amount.toLocaleString("en-NG")}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-400">per 30 days</p>
+                  <p className="mt-4 text-2xl font-bold text-[#48d87c]">
+                    {p.washes} wash{p.washes === 1 ? "" : "es"}
+                  </p>
+                  <Link
+                    href="/app/signup"
+                    className={`mt-6 block rounded-full py-3 text-center font-bold text-white transition-all duration-200 active:scale-[0.98] ${
+                      p.popular
+                        ? "bg-[#20a957] hover:bg-[#1a8a47]"
+                        : "bg-white/10 hover:bg-white/15"
+                    }`}
+                  >
+                    Subscribe
+                  </Link>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-xs text-gray-500">
+            Credits valid 30 days from purchase. Unused credits expire — no
+            rollover.
+          </p>
+        </div>
+      </section>
+
+      {/* Trust — approved partners */}
+      <section className="mx-auto max-w-7xl px-5 py-16 md:py-24">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <Reveal>
+            <div className="rounded-3xl border border-[#20a957]/30 bg-[#0e2a1c] p-8 text-center">
+              <p className="inline-flex items-center gap-2 rounded-full bg-[#20a957]/15 px-5 py-2.5 font-bold text-[#48d87c]">
+                ✓ WASHSMART APPROVED PARTNER
+              </p>
+              <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3 text-left">
+                {[
+                  ["📍", "Location verified"],
+                  ["⭐", "Service standards"],
+                  ["📱", "Digital verification"],
+                  ["🧾", "Transaction tracking"],
+                ].map(([icon, label]) => (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 rounded-2xl bg-[#111a14] px-4 py-3 text-sm font-semibold"
+                  >
+                    <span>{icon}</span>
+                    {label}
+                  </div>
+                ))}
               </div>
-            </Reveal>
-          ))}
+            </div>
+          </Reveal>
+          <Reveal delay={150}>
+            <p className="text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              TRUSTED NETWORK
+            </p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+              Your wash. Our network.
+            </h2>
+            <p className="mt-4 text-gray-400">
+              WashSMART partners are independently operated car-wash businesses
+              that pass our approval standards — location verified, service
+              checked, and every wash digitally verified and tracked.
+            </p>
+            <p className="mt-4 text-gray-400">
+              You&rsquo;re never sent to a random car wash. Every partner in the
+              network earned the badge.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* For partners */}
+      <section className="border-t border-white/5 bg-[#0d130f]">
+        <div className="mx-auto max-w-4xl px-5 py-16 md:py-24 text-center">
+          <Reveal>
+            <p className="text-xs font-bold tracking-[0.2em] text-[#65e28e]">
+              FOR CAR-WASH BUSINESSES
+            </p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+              Own a car wash? Join the WashSMART network.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-gray-400">
+              WashSMART connects approved car-wash businesses with subscribers,
+              handles digital verification, and tracks your earnings — with
+              monthly settlements, never per-wash payouts.
+            </p>
+          </Reveal>
+          <Reveal delay={100}>
+            <div className="mx-auto mt-8 grid max-w-2xl grid-cols-2 gap-3 text-left sm:grid-cols-3">
+              {[
+                "Access to subscribers",
+                "Digital verification",
+                "More wash transactions",
+                "Transaction records",
+                "Earnings tracking",
+                "Settlement management",
+              ].map((b) => (
+                <div
+                  key={b}
+                  className="flex items-center gap-2 rounded-2xl bg-[#111a14] px-4 py-3 text-sm font-semibold"
+                >
+                  <span className="text-[#48d87c]">✓</span>
+                  {b}
+                </div>
+              ))}
+            </div>
+            <Link
+              href="/join"
+              className="mt-8 inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+            >
+              Become a Partner &rarr;
+            </Link>
+          </Reveal>
         </div>
       </section>
 
       {/* Help & Support — contact strip + FAQ accordion */}
-      <section id="support" className="scroll-mt-24 border-t border-white/5 bg-[#0d130f]">
+      <section id="support" className="scroll-mt-24 border-t border-white/5">
         <div className="mx-auto max-w-4xl px-5 py-16 md:py-24">
           <Reveal>
             <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
@@ -337,14 +604,78 @@ export default function EntryPage() {
         </div>
       </section>
 
-      <footer className="border-t bg-[#111a14] px-5 py-8 text-center">
-        <p className="text-sm font-semibold text-[#e9f2ec]">
-          Own a car wash?{" "}
-          <Link href="/join" className="text-[#48d87c] underline">
-            Earn today — become a partner &rarr;
-          </Link>
-        </p>
-        <p className="mt-3 text-xs text-gray-500">
+      {/* Final CTA */}
+      <section className="border-t border-white/5 bg-[#062b1e]">
+        <div className="mx-auto max-w-4xl px-5 py-16 md:py-24 text-center">
+          <Reveal>
+            <h2 className="text-3xl font-bold text-white md:text-5xl">
+              Your next wash is{" "}
+              <span className="text-gradient-brand">already waiting.</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-white/75">
+              Subscribe once. Get your wash credits. Redeem them at approved
+              WashSMART partner centers.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/app/signup"
+                className="inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+              >
+                Get Started &rarr;
+              </Link>
+              <Link
+                href="/join"
+                className="inline-block rounded-full border-2 border-white/30 px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:border-white/60 hover:bg-white/5 active:scale-[0.98]"
+              >
+                Become a Partner
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/5 bg-[#111a14] px-5 py-10">
+        <div className="mx-auto grid max-w-7xl gap-8 text-sm md:grid-cols-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Logo />
+              <Brand />
+            </div>
+            <p className="mt-3 text-gray-500">
+              One subscription. Multiple washes.
+            </p>
+          </div>
+          <div>
+            <p className="font-bold text-gray-300">Customers</p>
+            <ul className="mt-3 space-y-2 text-gray-500">
+              <li><Link href="#how-it-works" className="hover:text-white">How It Works</Link></li>
+              <li><Link href="#plans" className="hover:text-white">Plans</Link></li>
+              <li><Link href="/app/partners" className="hover:text-white">Find a Wash</Link></li>
+              <li><Link href="#support" className="hover:text-white">FAQ</Link></li>
+              <li><Link href="/app/login" className="hover:text-white">Log in</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-bold text-gray-300">Partners</p>
+            <ul className="mt-3 space-y-2 text-gray-500">
+              <li><Link href="/join" className="hover:text-white">Become a Partner</Link></li>
+              <li><Link href="/partner" className="hover:text-white">Partner Login</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-bold text-gray-300">Company</p>
+            <ul className="mt-3 space-y-2 text-gray-500">
+              <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
+              <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+              <li>
+                <a href="mailto:support@washsmart.ng" className="hover:text-white">
+                  support@washsmart.ng
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p className="mx-auto mt-8 max-w-7xl text-xs text-gray-600">
           WashSMART · Lagos, Nigeria · Demo build — no real payments are
           processed.
         </p>
