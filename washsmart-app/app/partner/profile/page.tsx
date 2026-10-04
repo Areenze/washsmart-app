@@ -2,7 +2,7 @@
 
 /* /partner/profile — business profile (view + edit basics + open toggle). */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge, Card, DAY_HOURS, Field, PrimaryButton, inputClass } from "@/components/ui";
 import {
@@ -45,6 +45,7 @@ export default function PartnerProfilePage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -202,23 +203,30 @@ export default function PartnerProfilePage() {
           Show subscribers your wash — shopfront, bays, finished cars. Photos
           appear on your listing in the subscriber app.
         </p>
-        <label className="mt-4 block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
+        <button
+          type="button"
+          onClick={() => photoInputRef.current?.click()}
+          disabled={uploadingPhoto}
+          className="mt-4 block w-full rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957] disabled:opacity-50"
+        >
           <div className="text-3xl">📷</div>
           <p className="mt-1 text-sm font-semibold text-[#48d87c]">
             {uploadingPhoto ? "Uploading…" : "Add photos"}
           </p>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            disabled={uploadingPhoto}
-            onChange={(e) => {
-              addPhotos(e.target.files);
-              e.target.value = "";
-            }}
-          />
-        </label>
+        </button>
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          aria-label="Add partner photos"
+          className="sr-only"
+          disabled={uploadingPhoto}
+          onChange={(e) => {
+            addPhotos(e.target.files);
+            e.target.value = "";
+          }}
+        />
         {photoError && (
           <p className="mt-2 text-sm font-semibold text-red-400">{photoError}</p>
         )}

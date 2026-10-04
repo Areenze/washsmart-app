@@ -83,27 +83,35 @@ function PhotoPicker({
   onFiles: (kind: "business" | "location", files: FileList | null) => void;
   onRemove: (kind: "business" | "location", url: string) => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div>
       <p className="mb-2 text-sm font-semibold">{title}</p>
       <p className="mb-3 text-xs text-gray-400">{hint}</p>
-      <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957]">
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        className="block w-full rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957] disabled:opacity-50"
+      >
         <div className="text-3xl">{icon}</div>
         <p className="mt-1 text-sm font-semibold text-[#48d87c]">
           {uploading ? "Uploading…" : "Choose photos"}
         </p>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          className="hidden"
-          disabled={uploading}
-          onChange={(e) => {
-            onFiles(kind, e.target.files);
-            e.target.value = "";
-          }}
-        />
-      </label>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        aria-label={title}
+        className="sr-only"
+        disabled={uploading}
+        onChange={(e) => {
+          onFiles(kind, e.target.files);
+          e.target.value = "";
+        }}
+      />
       {urls.length > 0 && (
         <div className="mt-3 grid grid-cols-3 gap-2">
           {urls.map((u) => (
