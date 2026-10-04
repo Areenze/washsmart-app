@@ -40,6 +40,13 @@ export default function LoginPage() {
     }
   };
 
+  // Time-of-day greeting (stable for SSR, swapped after mount).
+  const [greet, setGreet] = useState("Welcome");
+  useEffect(() => {
+    const h = new Date().getHours();
+    setGreet(h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening");
+  }, []);
+
   useEffect(() => {
     (async () => {
       if (await getProfile()) router.replace(nextPath());
@@ -235,7 +242,8 @@ export default function LoginPage() {
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-bold">Welcome back</h1>
+            <p className="text-sm font-semibold text-[#48d87c]">{greet} 👋</p>
+            <h1 className="mt-1 text-2xl font-bold">Welcome back</h1>
             <p className="mt-1 text-sm text-gray-400">
               Log in with your email and password.
             </p>

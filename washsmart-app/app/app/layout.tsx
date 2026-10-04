@@ -35,6 +35,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
   // Clean chrome on auth/callback pages: no Home/Partners/Subscription tabs.
   const hideTabs = HIDE_TABS_PATHS.includes(pathname);
 
+  // The subscriber home (/app) is for logged-in subscribers only. Logged-out
+  // visitors go to the landing page — so the browser back button from the
+  // login page returns to / instead of a logged-out subscriber home.
+  useEffect(() => {
+    if (loggedIn === false && pathname === "/app") router.replace("/");
+  }, [loggedIn, pathname, router]);
+
   useEffect(() => {
     (async () => {
       try {
