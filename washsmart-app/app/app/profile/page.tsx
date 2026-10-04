@@ -33,10 +33,13 @@ export default function ProfilePage() {
   const [newVehicle, setNewVehicle] = useState({ label: "", plate: "", color: "" });
   const [touched, setTouched] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [originalPhone, setOriginalPhone] = useState("");
 
   useEffect(() => {
     (async () => {
-      setProfile((await getProfile()) ?? { name: "", email: "", phone: "" });
+      const p = (await getProfile()) ?? { name: "", email: "", phone: "" };
+      setProfile(p);
+      setOriginalPhone(normalizePhone(p.phone) ?? p.phone);
       setVehicles(await getVehicles());
       setSubscription(await getMySubscription());
       // Error-aware admin check: a failed check keeps the previous value so
@@ -57,12 +60,18 @@ export default function ProfilePage() {
   const save = async () => {
     setTouched(true);
     if (!nameOk || !phoneOk || !emailOk) return;
+    const newPhone = normalizePhone(profile.phone) ?? profile.phone.trim();
+    // A changed number loses its verification.
+    const phoneChanged = newPhone !== originalPhone;
     await saveProfile({
       name: profile.name.trim(),
       email: profile.email.trim(),
-      phone: normalizePhone(profile.phone) ?? profile.phone.trim(),
+      phone: newPhone,
       area: profile.area?.trim() || undefined,
+      phone_verified: phoneChanged ? false : profile.phone_verified,
     });
+    setOriginalPhone(newPhone);
+    setProfile((p) => ({ ...p, phone: newPhone, phone_verified: phoneChanged ? false : p.phone_verified }));
     setSaved(true);
     window.setTimeout(() => setSaved(false), 2500);
   };
@@ -157,6 +166,16 @@ export default function ProfilePage() {
               autoComplete="tel"
               className={inputClass(touched && !phoneOk)}
             />
+            {profile.phone_verified ? (
+              <p className="mt-1 text-xs font-semibold text-[#48d87c]">✓ Verified</p>
+            ) : (
+              <Link
+                href="/app/verify-phone?next=/app/profile"
+                className="mt-1 inline-block text-xs font-semibold text-[#48d87c] hover:underline"
+              >
+                Verify this number →
+              </Link>
+            )}
           </Field>
           <Field label="Area in Lagos">
             <input

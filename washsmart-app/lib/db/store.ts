@@ -774,7 +774,7 @@ export async function getProfile(): Promise<Profile | null> {
   if (!user) return null;
   const { data, error } = await getSupabase()
     .from("profiles")
-    .select("name,email,phone,area")
+    .select("name,email,phone,area,phone_verified")
     .eq("id", user.id)
     .maybeSingle();
   if (error) throw error;
@@ -802,6 +802,8 @@ export async function saveProfile(p: Profile): Promise<void> {
         email: p.email,
         phone,
         area: p.area ?? null,
+        // Only touch verification when the caller says so (e.g. number changed).
+        ...(p.phone_verified !== undefined ? { phone_verified: p.phone_verified } : {}),
       },
       { onConflict: "id" }
     );

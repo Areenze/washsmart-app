@@ -46,6 +46,8 @@ export default function UserHome() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [history, setHistory] = useState<WashTransaction[]>([]);
   const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
+  // Phone verification nudge: dismissible, reappears next session until done.
+  const [showPhoneNudge, setShowPhoneNudge] = useState(false);
   // Greeting is time-of-day based: render a stable value for SSR/hydration,
   // then swap to the real greeting after mount so server and client agree.
   const [greet, setGreet] = useState("Welcome");
@@ -84,6 +86,10 @@ export default function UserHome() {
         // A verification link was sent but not yet clicked: remind, don't trap.
         if (p) {
           clearVerifyPending();
+          // Nudge phone verification until done (dismissible per session).
+          if (!p.phone_verified && !sessionStorage.getItem("phoneNudgeDismissed")) {
+            setShowPhoneNudge(true);
+          }
         } else {
           setVerifyEmail(getVerifyPending());
         }
@@ -196,6 +202,37 @@ export default function UserHome() {
       <div className="mt-4">
         <InstallPrompt />
       </div>
+
+      {showPhoneNudge && profile && !profile.phone_verified && (
+        <div className="mt-4 flex items-start justify-between gap-3 rounded-2xl border border-[#f5b942]/40 bg-[#2a2110] p-4">
+          <p className="text-sm text-gray-300">
+            📱{" "}
+            <span className="font-bold text-[#e9f2ec]">
+              Verify your phone number.
+            </span>
+            <br />
+            We&apos;ll send a 6-digit code by SMS to confirm it&apos;s yours.
+          </p>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/app/verify-phone?next=/app"
+              className="rounded-full bg-[#f5b942] px-4 py-1.5 text-xs font-bold text-black"
+            >
+              Verify
+            </Link>
+            <button
+              onClick={() => {
+                sessionStorage.setItem("phoneNudgeDismissed", "1");
+                setShowPhoneNudge(false);
+              }}
+              aria-label="Dismiss"
+              className="text-xl leading-none text-gray-500"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* My Wash QR — lives on the dashboard now (was the Scan tab). */}
       <Reveal className="mt-6">

@@ -93,6 +93,7 @@ export interface Profile {
   email: string;
   phone: string;
   area?: string;
+  phone_verified?: boolean;
 }
 
 export interface Vehicle {
