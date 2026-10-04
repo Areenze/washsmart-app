@@ -112,6 +112,7 @@ export default function EntryPage() {
   const [slide, setSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [washQuery, setWashQuery] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
   const findWash = (e: React.FormEvent) => {
@@ -135,7 +136,7 @@ export default function EntryPage() {
             <Logo />
             <Brand />
           </div>
-          <nav className="flex gap-6 text-sm font-semibold">
+          <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
             <NavLink href="#support">Help & Support</NavLink>
             <NavLink href="/app/login">Log in</NavLink>
             <NavLink href="/partner">Partner login</NavLink>
@@ -146,7 +147,45 @@ export default function EntryPage() {
               Admin
             </Link>
           </nav>
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            className="rounded-lg p-2 text-[#e9f2ec] hover:bg-white/5 md:hidden"
+          >
+            {menuOpen ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </svg>
+            )}
+          </button>
         </div>
+        {menuOpen && (
+          <nav className="mt-3 flex flex-col gap-1 border-t border-white/5 pt-3 text-sm font-semibold md:hidden">
+            {[
+              { href: "#support", label: "Help & Support" },
+              { href: "/app/login", label: "Log in" },
+              { href: "/partner", label: "Partner login" },
+              { href: "/admin", label: "Admin" },
+            ].map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-[#e9f2ec] hover:bg-white/5"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+        )}
       </header>
 
       {/* Hero — sliding, fading image carousel */}
