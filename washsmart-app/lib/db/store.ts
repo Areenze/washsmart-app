@@ -19,6 +19,7 @@
 
 import { getSupabase } from "./supabase";
 import { notifySoon } from "./notifications";
+import { normalizePhone } from "../phone";
 import type {
   LedgerEntry,
   LocationRequest,
@@ -790,6 +791,8 @@ export async function getProfile(): Promise<Profile | null> {
 export async function saveProfile(p: Profile): Promise<void> {
   const user = await currentUser();
   if (!user) throw new Error("Not signed in.");
+  // Defense in depth: always persist E.164 (+234…) regardless of caller.
+  const phone = normalizePhone(p.phone) ?? p.phone;
   const { error } = await getSupabase()
     .from("profiles")
     .upsert(
@@ -797,7 +800,7 @@ export async function saveProfile(p: Profile): Promise<void> {
         id: user.id,
         name: p.name,
         email: p.email,
-        phone: p.phone,
+        phone,
         area: p.area ?? null,
       },
       { onConflict: "id" }

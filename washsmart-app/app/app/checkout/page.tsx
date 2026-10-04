@@ -8,6 +8,7 @@
  * subscription for the now-authenticated user.
  */
 
+import { normalizePhone, isValidPhone, PHONE_ERROR } from "@/lib/phone";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -81,7 +82,7 @@ function CheckoutInner() {
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const nameOk = name.trim().length > 1;
-  const phoneOk = phone.trim().replace(/\D/g, "").length >= 7;
+  const phoneOk = isValidPhone(phone);
   const valid = nameOk && emailOk && phoneOk;
   // Signed-in buyers with a complete profile never see the form twice —
   // they get a read-only summary instead.
@@ -118,7 +119,7 @@ function CheckoutInner() {
     setStep("processing");
     setSendError(null);
     const redirectTo = `${window.location.origin}/app/auth/callback?plan=${plan?.id ?? "standard"}`;
-    const res = await sendSignInLink(email, name, phone, redirectTo);
+    const res = await sendSignInLink(email, name, normalizePhone(phone) ?? phone.trim(), redirectTo);
     if (!res.ok) {
       setSendError(res.error ?? "Could not send the verification email.");
       setStep("form");
@@ -130,7 +131,7 @@ function CheckoutInner() {
   const resendLink = async () => {
     if (!plan) return;
     const redirectTo = `${window.location.origin}/app/auth/callback?plan=${plan.id}`;
-    const res = await sendSignInLink(email, name, phone, redirectTo);
+    const res = await sendSignInLink(email, name, normalizePhone(phone) ?? phone.trim(), redirectTo);
     if (res.ok) {
       setResent(true);
       window.setTimeout(() => setResent(false), 3000);
@@ -143,7 +144,7 @@ function CheckoutInner() {
     setSendingLink(true);
     setSendError(null);
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=login`;
-    const res = await sendSignInLink(email, name, phone, redirectTo);
+    const res = await sendSignInLink(email, name, normalizePhone(phone) ?? phone.trim(), redirectTo);
     setSendingLink(false);
     if (res.ok) {
       setLinkSent(true);
@@ -333,7 +334,7 @@ function CheckoutInner() {
               />
               {touched.phone && !phoneOk && (
                 <p className="mt-1 text-xs text-red-400">
-                  Please enter a valid phone number.
+                  {PHONE_ERROR}
                 </p>
               )}
             </div>

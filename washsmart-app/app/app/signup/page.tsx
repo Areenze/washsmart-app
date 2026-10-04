@@ -11,6 +11,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { normalizePhone, isValidPhone, PHONE_ERROR } from "@/lib/phone";
 import {
   getProfile,
   isEmailRegistered,
@@ -76,7 +77,7 @@ function SignupInner() {
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const nameOk = name.trim().length > 1;
-  const phoneOk = phone.trim().replace(/\D/g, "").length >= 7;
+  const phoneOk = isValidPhone(phone);
   const passwordOk = password.length >= 6;
   const valid = nameOk && emailOk && phoneOk && passwordOk;
 
@@ -105,7 +106,7 @@ function SignupInner() {
     setStep("processing");
     setSendError(null);
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
-    const res = await signUpWithPassword(email, password, name, phone, redirectTo);
+    const res = await signUpWithPassword(email, password, name, normalizePhone(phone) ?? phone.trim(), redirectTo);
     if (!res.ok) {
       setSendError(res.error ?? "Could not create your account.");
       setStep("form");
@@ -150,7 +151,7 @@ function SignupInner() {
     setSendingLink(true);
     setSendError(null);
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=login`;
-    const res = await sendSignInLink(email, name, phone, redirectTo);
+    const res = await sendSignInLink(email, name, normalizePhone(phone) ?? phone.trim(), redirectTo);
     setSendingLink(false);
     if (res.ok) {
       setLinkSent(true);
@@ -345,7 +346,7 @@ function SignupInner() {
                 />
                 {touched.phone && !phoneOk && (
                   <p className="mt-1 text-xs text-red-400">
-                    Please enter a valid phone number.
+                    {PHONE_ERROR}
                   </p>
                 )}
               </div>

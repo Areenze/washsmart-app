@@ -18,6 +18,7 @@ import {
   inputClass,
 } from "@/components/ui";
 import { submitApplication, type ApplicationInput } from "@/lib/db/store";
+import { normalizePhone, isValidPhone, PHONE_ERROR } from "@/lib/phone";
 import { deletePhoto, uploadPhoto } from "@/lib/db/photos";
 import type { PartnerApplication } from "@/lib/db/types";
 
@@ -59,7 +60,7 @@ const emptyDraft: Draft = {
 };
 
 const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-const digitsOk = (v: string) => v.trim().replace(/\D/g, "").length >= 7;
+const digitsOk = (v: string) => isValidPhone(v);
 
 const composeHours = (open: string, close: string) =>
   open && close ? `${open} – ${close}` : "";
@@ -276,7 +277,16 @@ export default function ApplyWizard() {
     setSubmitting(true);
     setSubmitError("");
     try {
-      const app = await submitApplication(draft);
+      const app = await submitApplication({
+        ...draft,
+        business: {
+          ...draft.business,
+          phone: normalizePhone(draft.business.phone) ?? draft.business.phone.trim(),
+          whatsapp: draft.business.whatsapp.trim()
+            ? normalizePhone(draft.business.whatsapp) ?? draft.business.whatsapp.trim()
+            : "",
+        },
+      });
       setDone(app);
       window.scrollTo({ top: 0 });
     } catch (err: any) {
@@ -375,7 +385,7 @@ export default function ApplyWizard() {
                     required
                     error={
                       touched && !digitsOk(draft.business.phone)
-                        ? "Please enter a valid phone number."
+                        ? PHONE_ERROR
                         : undefined
                     }
                   >

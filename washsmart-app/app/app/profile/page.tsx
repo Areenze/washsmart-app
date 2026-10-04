@@ -22,6 +22,7 @@ import {
   signOut,
 } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
+import { normalizePhone, isValidPhone, PHONE_ERROR } from "@/lib/phone";
 import type { Profile, Subscription, Vehicle } from "@/lib/db/types";
 
 export default function ProfilePage() {
@@ -50,7 +51,7 @@ export default function ProfilePage() {
   }, []);
 
   const nameOk = profile.name.trim().length > 1;
-  const phoneOk = profile.phone.trim().replace(/\D/g, "").length >= 7;
+  const phoneOk = isValidPhone(profile.phone);
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email.trim());
 
   const save = async () => {
@@ -59,7 +60,7 @@ export default function ProfilePage() {
     await saveProfile({
       name: profile.name.trim(),
       email: profile.email.trim(),
-      phone: profile.phone.trim(),
+      phone: normalizePhone(profile.phone) ?? profile.phone.trim(),
       area: profile.area?.trim() || undefined,
     });
     setSaved(true);
@@ -147,7 +148,7 @@ export default function ProfilePage() {
           <Field
             label="Phone number"
             required
-            error={touched && !phoneOk ? "Please enter a valid phone number." : undefined}
+            error={touched && !phoneOk ? PHONE_ERROR : undefined}
           >
             <input
               value={profile.phone}
