@@ -35,22 +35,31 @@ export default function AppShell({ children }: { children: ReactNode }) {
   // Clean chrome on auth/callback pages: no Home/Partners/Subscription tabs.
   const hideTabs = HIDE_TABS_PATHS.includes(pathname);
 
-  // The subscriber home (/app) is for logged-in subscribers only. Logged-out
-  // visitors go to the landing page — so the browser back button from the
-  // login page returns to / instead of a logged-out subscriber home.
+  // Single auth check per route change — the source of truth for both the
+  // header chrome and the login gate below. The redirect decision uses the
+  // FRESH profile (never the previous render's loggedIn), so a just-completed
+  // sign-in navigating to /app is never bounced to / by stale state.
   useEffect(() => {
-    if (loggedIn === false && pathname === "/app") router.replace("/");
-  }, [loggedIn, pathname, router]);
-
-  useEffect(() => {
+    let cancelled = false;
     (async () => {
+      let authed = false;
       try {
-        setLoggedIn(!!(await getProfile()));
+        authed = !!(await getProfile());
       } catch {
-        setLoggedIn(false);
+        authed = false;
       }
+      if (cancelled) return;
+      setLoggedIn(authed);
+      // The subscriber home (/app) is for logged-in subscribers only.
+      // Logged-out visitors go to the landing page — so the browser back
+      // button from the login page returns to / instead of a logged-out
+      // subscriber home.
+      if (!authed && pathname === "/app") router.replace("/");
     })();
-  }, [pathname]);
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname, router]);
 
   // Scroll-spy: highlight the tab for the section nearest the top of the
   // viewport (just below the sticky header). Position-based, so it can't
