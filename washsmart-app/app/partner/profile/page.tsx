@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Badge, Card, Field, PrimaryButton, inputClass } from "@/components/ui";
+import { Badge, Card, DAY_HOURS, Field, PrimaryButton, inputClass } from "@/components/ui";
 import {
   currentPartnerSession,
   getPartner,
@@ -21,9 +21,23 @@ const ALL_SERVICES = [
   "Detailing",
 ];
 
+// Parse a stored hours string like "07:00AM - 07:00PM" or "8:00am – 6:00pm"
+// back into picker values.
+function parseHours(raw: string): [string, string] {
+  const parts = raw.split(/[–—-]/).map((s) => s.trim());
+  const norm = (s: string) =>
+    s.toLowerCase().replace(/\s+/g, "").replace(/^0(\d:)/, "$1");
+  const find = (s: string) =>
+    DAY_HOURS.find((h) => h.value === norm(s))?.value ?? "";
+  return [find(parts[0] ?? ""), find(parts[1] ?? "")];
+}
+
 export default function PartnerProfilePage() {
   const [partner, setPartner] = useState<Partner | null>(null);
   const [hours, setHours] = useState("");
+  const [openTime, setOpenTime] = useState("");
+  const [closeTime, setCloseTime] = useState("");
+  const [hoursError, setHoursError] = useState<string | undefined>();
   const [phone, setPhone] = useState("");
   const [services, setServices] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
@@ -36,6 +50,9 @@ export default function PartnerProfilePage() {
       if (!fresh) return;
       setPartner(fresh);
       setHours(fresh.hours);
+      const [o, c] = parseHours(fresh.hours);
+      setOpenTime(o);
+      setCloseTime(c);
       setPhone(fresh.phone);
       setServices(fresh.services);
     })();
@@ -54,7 +71,27 @@ export default function PartnerProfilePage() {
       list.includes(s) ? list.filter((x) => x !== s) : [...list, s]
     );
 
+  const setHourPart = (which: "open" | "close", v: string) => {
+    const o = which === "open" ? v : openTime;
+    const c = which === "close" ? v : closeTime;
+    if (which === "open") setOpenTime(v);
+    else setCloseTime(v);
+    setHours(o && c ? `${o} – ${c}` : "");
+    setHoursError(undefined);
+  };
+
   const save = async () => {
+    const oi = DAY_HOURS.findIndex((h) => h.value === openTime);
+    const ci = DAY_HOURS.findIndex((h) => h.value === closeTime);
+    if (oi < 0 || ci < 0) {
+      setHoursError("Select your opening and closing hours.");
+      return;
+    }
+    if (ci <= oi) {
+      setHoursError("Closing time must be after opening time.");
+      return;
+    }
+    setHoursError(undefined);
     const updated = await updatePartner(partner.id, { hours, phone, services });
     if (updated) {
       setPartner({ ...updated });
@@ -124,12 +161,35 @@ export default function PartnerProfilePage() {
       <Card className="mt-6">
         <h2 className="text-lg font-bold">Edit details</h2>
         <div className="mt-4 space-y-4">
-          <Field label="Opening hours">
-            <input
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
-              className={inputClass(false)}
-            />
+          <Field label="Opening hours" error={hoursError}>
+            <div className="grid grid-cols-2 gap-4">
+              <select
+                aria-label="Opening time"
+                value={openTime}
+                onChange={(e) => setHourPart("open", e.target.value)}
+                className={inputClass(!!hoursError)}
+              >
+                <option value="">Opening…</option>
+                {DAY_HOURS.map((h) => (
+                  <option key={h.value} value={h.value}>
+                    {h.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                aria-label="Closing time"
+                value={closeTime}
+                onChange={(e) => setHourPart("close", e.target.value)}
+                className={inputClass(!!hoursError)}
+              >
+                <option value="">Closing…</option>
+                {DAY_HOURS.map((h) => (
+                  <option key={h.value} value={h.value}>
+                    {h.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </Field>
           <Field label="Phone number">
             <input

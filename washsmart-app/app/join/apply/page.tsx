@@ -10,6 +10,7 @@ import Link from "next/link";
 import {
   Brand,
   Card,
+  DAY_HOURS,
   Field,
   Logo,
   PrimaryButton,
@@ -58,17 +59,6 @@ const emptyDraft: Draft = {
 
 const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 const digitsOk = (v: string) => v.trim().replace(/\D/g, "").length >= 7;
-
-// Opening-hour picker options: 5:00am – 11:00pm, hourly.
-const HOURS: { value: string; label: string }[] = Array.from(
-  { length: 19 },
-  (_, i) => {
-    const h24 = i + 5;
-    const suffix = h24 < 12 ? "am" : "pm";
-    const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
-    return { value: `${h12}:00${suffix}`, label: `${h12}:00 ${suffix}` };
-  }
-);
 
 const composeHours = (open: string, close: string) =>
   open && close ? `${open} – ${close}` : "";
@@ -120,8 +110,8 @@ export default function ApplyWizard() {
           l.state.trim().length > 1
         );
       case 2: {
-        const oi = HOURS.findIndex((h) => h.value === o.openingTime);
-        const ci = HOURS.findIndex((h) => h.value === o.closingTime);
+        const oi = DAY_HOURS.findIndex((h) => h.value === o.openingTime);
+        const ci = DAY_HOURS.findIndex((h) => h.value === o.closingTime);
         return oi >= 0 && ci > oi;
       }
       case 3:
@@ -136,8 +126,8 @@ export default function ApplyWizard() {
   // Opening-hours picker state for the step-2 Field (error text + red ring).
   const hoursState = (): { error?: string; bad: boolean } => {
     const o = draft.operations;
-    const oi = HOURS.findIndex((h) => h.value === o.openingTime);
-    const ci = HOURS.findIndex((h) => h.value === o.closingTime);
+    const oi = DAY_HOURS.findIndex((h) => h.value === o.openingTime);
+    const ci = DAY_HOURS.findIndex((h) => h.value === o.closingTime);
     if (!touched) return { bad: false };
     if (oi < 0 || ci < 0)
       return { error: "Select your opening and closing hours.", bad: true };
@@ -436,7 +426,7 @@ export default function ApplyWizard() {
                         className={inputClass(hs.bad)}
                       >
                         <option value="">Opening…</option>
-                        {HOURS.map((h) => (
+                        {DAY_HOURS.map((h) => (
                           <option key={h.value} value={h.value}>
                             {h.label}
                           </option>
@@ -449,7 +439,7 @@ export default function ApplyWizard() {
                         className={inputClass(hs.bad)}
                       >
                         <option value="">Closing…</option>
-                        {HOURS.map((h) => (
+                        {DAY_HOURS.map((h) => (
                           <option key={h.value} value={h.value}>
                             {h.label}
                           </option>

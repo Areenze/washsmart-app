@@ -236,6 +236,17 @@ export function inputClass(bad: boolean): string {
   }`;
 }
 
+// Opening-hour picker options shared by partner forms: 5:00am – 11:00pm, hourly.
+export const DAY_HOURS: { value: string; label: string }[] = Array.from(
+  { length: 19 },
+  (_, i) => {
+    const h24 = i + 5;
+    const suffix = h24 < 12 ? "am" : "pm";
+    const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+    return { value: `${h12}:00${suffix}`, label: `${h12}:00 ${suffix}` };
+  }
+);
+
 export function SectionTitle({
   children,
   action,
