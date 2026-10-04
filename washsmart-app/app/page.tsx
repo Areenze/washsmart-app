@@ -806,9 +806,9 @@ export default function EntryPage() {
           </div>
           <div>
             <p className="font-bold text-gray-300">Partners</p>
-            <ul className="mt-3 space-y-2 text-gray-500">
-              <li><Link href="/join" className="hover:text-white">Become a Partner</Link></li>
-              <li><Link href="/partner" className="hover:text-white">Partner Login</Link></li>
+            <ul className="mt-3 space-y-2">
+              <li><Link href="/join" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#48d87c] hover:text-white">Become a Partner ↗</Link></li>
+              <li><Link href="/partner" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white">Partner Login ↗</Link></li>
             </ul>
           </div>
           <div>
