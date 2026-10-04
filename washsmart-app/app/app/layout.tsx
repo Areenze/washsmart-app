@@ -79,7 +79,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     await signOut();
-    router.replace("/");
+    // Land on the subscriber home (/app), which already renders an adapted
+    // logged-out state. Hard navigation (not router.replace) guarantees all
+    // client state is fresh — a client-side replace to the same route would
+    // keep stale profile/QR state mounted.
+    window.location.replace("/app");
   };
 
   return (
