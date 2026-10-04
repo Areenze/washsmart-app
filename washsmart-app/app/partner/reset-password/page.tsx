@@ -98,7 +98,7 @@ function ResetInner() {
             <Logo />
             <Brand />
           </Link>
-          <span className="text-sm font-semibold text-gray-400">Partner App</span>
+          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">PARTNER PORTAL</span>
         </div>
       </header>
 
