@@ -22,7 +22,7 @@ import type { LedgerEntry, Partner } from "@/lib/db/types";
 function lineStyle(kind: LedgerEntry["kind"]): string {
   switch (kind) {
     case "wash_earning":
-      return "text-[#48d87c]";
+      return "text-[#2dd4bf]";
     case "settlement_payout":
       return "text-gray-200";
     default:
@@ -121,7 +121,7 @@ export default function SettlementStatementPage() {
       <section className="mx-auto max-w-3xl py-8">
         <Link
           href="/partner/earnings"
-          className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+          className="mb-5 inline-block text-sm font-semibold text-[#2dd4bf]"
         >
           ← Back to Earnings
         </Link>
@@ -142,7 +142,7 @@ export default function SettlementStatementPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/earnings"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#2dd4bf]"
       >
         ← Back to Earnings
       </Link>
@@ -155,7 +155,7 @@ export default function SettlementStatementPage() {
         <span
           className={
             data.status === "paid"
-              ? "shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]"
+              ? "shrink-0 rounded-full bg-[#14b8a6]/10 px-3 py-1 text-xs font-bold text-[#2dd4bf]"
               : "shrink-0 rounded-full bg-[#f5b942]/20 px-3 py-1 text-xs font-bold text-[#f5b942]"
           }
         >
@@ -163,7 +163,7 @@ export default function SettlementStatementPage() {
         </span>
       </div>
 
-      <Card className="mt-6 bg-[#063c28] text-white">
+      <Card className="mt-6 bg-[#0c3a38] text-white">
         <div className="divide-y divide-white/10">
           <div className="flex justify-between py-2">
             <p className="text-white/70">Completed washes</p>
@@ -190,7 +190,7 @@ export default function SettlementStatementPage() {
           </div>
           <div className="flex justify-between py-3">
             <p className="font-bold">Amount payable</p>
-            <p className="text-xl font-bold text-[#65e28e]">
+            <p className="text-xl font-bold text-[#5eead4]">
               {fmtNaira(data.payable)}
             </p>
           </div>

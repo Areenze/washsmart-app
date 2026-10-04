@@ -53,7 +53,7 @@ export default function NewPartnerTicketPage() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/support"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#2dd4bf]"
       >
         ← Back
       </Link>
@@ -110,7 +110,7 @@ export default function NewPartnerTicketPage() {
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-xl bg-[#2ed06a] py-4 font-bold text-white disabled:opacity-60"
+          className="w-full rounded-xl bg-[#14b8a6] py-4 font-bold text-white disabled:opacity-60"
         >
           {busy ? "Filing…" : "File Ticket"}
         </button>

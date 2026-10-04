@@ -54,11 +54,11 @@ export default function PartnerDashboard() {
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((c) => (
-          <div key={c.label} className="rounded-2xl bg-[#063c28] p-4 text-white">
+          <div key={c.label} className="rounded-2xl bg-[#0c3a38] p-4 text-white">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
               {c.label}
             </p>
-            <p className={`mt-1 text-2xl font-bold ${c.accent ? "text-[#65e28e]" : ""}`}>
+            <p className={`mt-1 text-2xl font-bold ${c.accent ? "text-[#5eead4]" : ""}`}>
               {c.value}
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function PartnerDashboard() {
       </div>
       <Link
         href="/partner/scan"
-        className="mt-4 block w-full rounded-xl bg-[#2ed06a] py-4 text-center text-lg font-bold text-white"
+        className="mt-4 block w-full rounded-xl bg-[#14b8a6] py-4 text-center text-lg font-bold text-white"
       >
         📷 SCAN CUSTOMER QR
       </Link>
@@ -81,14 +81,14 @@ export default function PartnerDashboard() {
             </div>
             <div className="rounded-xl bg-[#0a0f0c] p-4">
               <p className="text-sm text-gray-400">Total earnings</p>
-              <p className="mt-1 text-2xl font-bold text-[#48d87c]">
+              <p className="mt-1 text-2xl font-bold text-[#2dd4bf]">
                 {fmtNaira(stats.totalEarnings)}
               </p>
             </div>
           </div>
           <Link
             href="/partner/earnings"
-            className="mt-4 inline-block text-sm font-semibold text-[#48d87c]"
+            className="mt-4 inline-block text-sm font-semibold text-[#2dd4bf]"
           >
             View earnings →
           </Link>
@@ -107,14 +107,14 @@ export default function PartnerDashboard() {
                   key={t.id}
                   className="flex items-center gap-3 border-b pb-3 last:border-0"
                 >
-                  <div className="h-3 w-3 shrink-0 rounded-full bg-[#20a957]" />
+                  <div className="h-3 w-3 shrink-0 rounded-full bg-[#14b8a6]" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold">
                       Wash confirmed — {t.subscriberName}
                     </p>
                     <p className="text-xs text-gray-500">{fmtDate(t.at)}</p>
                   </div>
-                  <span className="text-sm font-bold text-[#48d87c]">
+                  <span className="text-sm font-bold text-[#2dd4bf]">
                     {fmtNaira(t.payout)}
                   </span>
                 </div>

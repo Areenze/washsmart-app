@@ -75,7 +75,7 @@ export default function PartnerLogin() {
       </header>
 
       <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+        <div className="rounded-3xl bg-[#0c3a38] p-8 text-center text-white">
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Partner Login</h1>
           <p className="mt-2 text-sm text-white/70">
@@ -97,7 +97,7 @@ export default function PartnerLogin() {
             placeholder="e.g. WS-2026-0001"
             autoComplete="username"
             autoCapitalize="characters"
-            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
+            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#14b8a6]"
           />
           <p className="mt-1 text-xs text-gray-500">
             Your Partner ID was issued when your application was approved.
@@ -114,12 +114,12 @@ export default function PartnerLogin() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your partner password"
               autoComplete="current-password"
-              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
+              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#14b8a6]"
             />
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#2dd4bf]"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
@@ -134,7 +134,7 @@ export default function PartnerLogin() {
           <button
             type="submit"
             disabled={busy}
-            className="mt-6 w-full rounded-xl bg-[#168846] py-4 text-lg font-bold text-white disabled:opacity-60"
+            className="mt-6 w-full rounded-xl bg-[#0f766e] py-4 text-lg font-bold text-white disabled:opacity-60"
           >
             {busy ? "Signing in…" : "Sign In"}
           </button>
@@ -142,15 +142,15 @@ export default function PartnerLogin() {
           <p className="mt-3 text-center text-sm">
             <Link
               href="/partner/forgot-password"
-              className="font-bold text-[#48d87c]"
+              className="font-bold text-[#2dd4bf]"
             >
               Forgot password?
             </Link>
           </p>
         </form>
 
-        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
-          <p className="text-sm font-bold text-[#48d87c]">
+        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#14b8a6]/30 bg-[#14b8a6]/10 p-6">
+          <p className="text-sm font-bold text-[#2dd4bf]">
             🔑 Approved partners — tap to fill your Partner ID
           </p>
           <p className="mt-1 text-xs text-gray-400">
@@ -158,7 +158,7 @@ export default function PartnerLogin() {
             approved.{" "}
             <Link
               href="/partner/forgot-password"
-              className="font-bold text-[#48d87c]"
+              className="font-bold text-[#2dd4bf]"
             >
               Reset it here
             </Link>{" "}
@@ -170,7 +170,7 @@ export default function PartnerLogin() {
                 key={p.id}
                 type="button"
                 onClick={() => fill(p)}
-                className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
+                className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#14b8a6]"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -179,7 +179,7 @@ export default function PartnerLogin() {
                       ID: {p.partnerId}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-bold text-[#48d87c]">
+                  <span className="shrink-0 text-xs font-bold text-[#2dd4bf]">
                     Fill →
                   </span>
                 </div>
@@ -190,7 +190,7 @@ export default function PartnerLogin() {
 
         <p className="mt-6 text-center text-xs text-gray-500">
           Not a partner yet?{" "}
-          <Link href="/join" className="font-bold text-[#48d87c]">
+          <Link href="/join" className="font-bold text-[#2dd4bf]">
             Apply here
           </Link>
         </p>

@@ -103,7 +103,7 @@ function ResetInner() {
       </header>
 
       <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+        <div className="rounded-3xl bg-[#0c3a38] p-8 text-center text-white">
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Set a new password</h1>
         </div>
@@ -114,7 +114,7 @@ function ResetInner() {
               <p className="font-bold text-red-300">{fatal}</p>
               <Link
                 href="/partner/forgot-password"
-                className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
+                className="mt-6 inline-block rounded-full bg-[#14b8a6] px-6 py-3 font-bold text-white"
               >
                 Request a new link
               </Link>
@@ -136,12 +136,12 @@ function ResetInner() {
                   onChange={(e) => setPw(e.target.value)}
                   placeholder="At least 6 characters"
                   autoComplete="new-password"
-                  className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
+                  className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#14b8a6]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#2dd4bf]"
                 >
                   {showPw ? "Hide" : "Show"}
                 </button>
@@ -160,7 +160,7 @@ function ResetInner() {
                 onChange={(e) => setPw2(e.target.value)}
                 placeholder="Repeat the new password"
                 autoComplete="new-password"
-                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
+                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#14b8a6]"
               />
 
               {error && (
@@ -172,7 +172,7 @@ function ResetInner() {
               <button
                 type="submit"
                 disabled={saving}
-                className="mt-6 w-full rounded-xl bg-[#168846] py-4 text-lg font-bold text-white disabled:opacity-60"
+                className="mt-6 w-full rounded-xl bg-[#0f766e] py-4 text-lg font-bold text-white disabled:opacity-60"
               >
                 {saving ? "Saving…" : "Set new password"}
               </button>

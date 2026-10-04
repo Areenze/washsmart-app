@@ -9,10 +9,10 @@
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 
-export function Logo({ size = 40 }: { size?: number }) {
+export function Logo({ size = 40, tone = "green" }: { size?: number; tone?: "green" | "teal" }) {
   return (
     <div
-      className="flex items-center justify-center rounded-full bg-[#20a957] text-white"
+      className={`flex items-center justify-center rounded-full text-white ${tone === "teal" ? "bg-[#14b8a6]" : "bg-[#20a957]"}`}
       style={{ width: size, height: size, fontSize: size * 0.5 }}
       aria-hidden
     >

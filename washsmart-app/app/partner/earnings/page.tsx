@@ -76,7 +76,7 @@ function BreakdownRow({
       <p
         className={
           strong
-            ? "text-lg font-bold text-[#65e28e]"
+            ? "text-lg font-bold text-[#5eead4]"
             : negative
               ? "font-semibold text-red-300"
               : "font-semibold"
@@ -113,7 +113,7 @@ export default function EarningsPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#2dd4bf]"
       >
         ← Back
       </Link>
@@ -124,13 +124,13 @@ export default function EarningsPage() {
       </p>
 
       {/* Pending settlement — the live current cycle */}
-      <Card className="mt-6 bg-[#063c28] text-white">
+      <Card className="mt-6 bg-[#0c3a38] text-white">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm text-white/60">
               PENDING SETTLEMENT · {pending.period.toUpperCase()}
             </p>
-            <p className="mt-1 text-4xl font-bold text-[#65e28e]">
+            <p className="mt-1 text-4xl font-bold text-[#5eead4]">
               {fmtNaira(pending.payable)}
             </p>
             <p className="mt-1 text-sm text-white/60">amount payable</p>
@@ -161,7 +161,7 @@ export default function EarningsPage() {
           />
           <div className="flex items-center justify-between py-3">
             <p className="font-bold">Amount payable</p>
-            <p className="text-xl font-bold text-[#65e28e]">
+            <p className="text-xl font-bold text-[#5eead4]">
               {fmtNaira(pending.payable)}
             </p>
           </div>
@@ -175,7 +175,7 @@ export default function EarningsPage() {
         </p>
         <Link
           href="/partner/settlements/current"
-          className="mt-4 block rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] text-center font-bold text-white"
+          className="mt-4 block rounded-full bg-[#14b8a6] py-3 transition-all duration-200 hover:bg-[#0d9488] text-center font-bold text-white"
         >
           View Statement
         </Link>
@@ -202,7 +202,7 @@ export default function EarningsPage() {
             <Card key={s.id}>
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-bold text-[#48d87c]">
+                  <p className="text-sm font-bold text-[#2dd4bf]">
                     ✓ Settlement Paid
                   </p>
                   <p className="mt-1 text-3xl font-bold">
@@ -218,7 +218,7 @@ export default function EarningsPage() {
                     </span>
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]">
+                <span className="shrink-0 rounded-full bg-[#14b8a6]/10 px-3 py-1 text-xs font-bold text-[#2dd4bf]">
                   Paid
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function EarningsPage() {
               </div>
               <Link
                 href={`/partner/settlements/${s.id}`}
-                className="mt-4 block rounded-xl border-2 border-[#20a957]/50 py-2.5 text-center text-sm font-bold text-[#48d87c]"
+                className="mt-4 block rounded-xl border-2 border-[#14b8a6]/50 py-2.5 text-center text-sm font-bold text-[#2dd4bf]"
               >
                 View Statement
               </Link>
@@ -256,7 +256,7 @@ export default function EarningsPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500">LIFETIME PAID OUT</p>
-            <p className="mt-1 text-2xl font-bold text-[#48d87c]">
+            <p className="mt-1 text-2xl font-bold text-[#2dd4bf]">
               {fmtNaira(lifetime.paid)}
             </p>
           </div>
@@ -266,10 +266,10 @@ export default function EarningsPage() {
       {/* How the money flows */}
       <h2 className="mt-10 text-xl font-bold">How WashSMART pays you</h2>
       <Card className="mt-4">
-        <ol className="relative space-y-6 border-l-2 border-[#20a957]/30 pl-6">
+        <ol className="relative space-y-6 border-l-2 border-[#14b8a6]/30 pl-6">
           {MONEY_FLOW.map((step, i) => (
             <li key={step.title} className="relative">
-              <span className="absolute -left-[34px] flex h-6 w-6 items-center justify-center rounded-full bg-[#168846] text-xs font-bold text-white">
+              <span className="absolute -left-[34px] flex h-6 w-6 items-center justify-center rounded-full bg-[#0f766e] text-xs font-bold text-white">
                 {i + 1}
               </span>
               <p className="font-bold">{step.title}</p>
@@ -279,14 +279,14 @@ export default function EarningsPage() {
         </ol>
       </Card>
 
-      <Card className="mt-4 bg-[#20a957]/10">
-        <p className="font-bold text-[#48d87c]">
+      <Card className="mt-4 bg-[#14b8a6]/10">
+        <p className="font-bold text-[#2dd4bf]">
           Why monthly settlements — not instant payout
         </p>
         <ul className="mt-3 space-y-2">
           {WHY_MONTHLY.map((w) => (
             <li key={w} className="flex gap-2 text-sm text-gray-300">
-              <span className="text-[#48d87c]">✓</span> {w}
+              <span className="text-[#2dd4bf]">✓</span> {w}
             </li>
           ))}
         </ul>
@@ -295,7 +295,7 @@ export default function EarningsPage() {
       <p className="mt-6 text-xs text-gray-500">
         Demo figures — production settlements are calculated by WashSMART and
         paid via Paystack transfers to your registered bank account.{" "}
-        <Link href="/partner/ledger" className="font-bold text-[#48d87c]">
+        <Link href="/partner/ledger" className="font-bold text-[#2dd4bf]">
           View full ledger →
         </Link>
       </p>
