@@ -69,6 +69,9 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
           <Link href="/partner/dashboard" className="flex items-center gap-2">
             <Logo />
             <Brand />
+            <span className="ml-1 rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">
+              PARTNER PORTAL
+            </span>
           </Link>
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
