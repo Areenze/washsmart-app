@@ -3,7 +3,13 @@
 import Link from "next/link";
 import type { Partner } from "@/lib/db/types";
 
-export default function PartnerCard({ partner }: { partner: Partner }) {
+export default function PartnerCard({
+  partner,
+  detailBase = "/app/partners",
+}: {
+  partner: Partner;
+  detailBase?: string;
+}) {
   return (
     <div className="rounded-2xl bg-[#111a14] p-5 shadow-sm">
       <div className="flex items-start justify-between">
@@ -34,7 +40,7 @@ export default function PartnerCard({ partner }: { partner: Partner }) {
       </div>
 
       <Link
-        href={`/app/partners/${partner.id}`}
+        href={`${detailBase}/${partner.id}`}
         className="mt-4 block w-full rounded-full border border-[#20a957] py-2 transition-all duration-200 hover:bg-[#20a957]/10 text-center text-sm font-semibold text-[#48d87c]"
       >
         View Partner

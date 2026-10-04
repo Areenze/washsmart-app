@@ -10,7 +10,11 @@ import { EmptyState, Reveal } from "@/components/ui";
 import { listApprovedPartners, submitLocationRequest } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
 
-export function PartnersSection() {
+export function PartnersSection({
+  detailBase = "/app/partners",
+}: {
+  detailBase?: string;
+}) {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [q, setQ] = useState("");
   const [reqEmail, setReqEmail] = useState("");
@@ -124,7 +128,7 @@ export function PartnersSection() {
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {filtered.map((p, i) => (
             <Reveal key={p.id} delay={Math.min(i, 5) * 75}>
-              <PartnerCard partner={p} />
+              <PartnerCard partner={p} detailBase={detailBase} />
             </Reveal>
           ))}
         </div>

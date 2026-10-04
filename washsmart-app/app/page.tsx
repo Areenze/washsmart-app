@@ -129,7 +129,7 @@ function NavLink({ href, children }: { href: string; children: string }) {
 const MOBILE_LINKS = [
   { href: "#how-it-works", label: "How It Works" },
   { href: "#plans", label: "Plans" },
-  { href: "/app/partners", label: "Find a Wash" },
+  { href: "/find-a-wash", label: "Find a Wash" },
   { href: "#support", label: "FAQ" },
   { href: "/app/signup", label: "Subscribe" },
   { href: "/app/login", label: "Log in" },
@@ -146,7 +146,7 @@ export default function EntryPage() {
 
   const findWash = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/app/partners${washQuery.trim() ? `?q=${encodeURIComponent(washQuery.trim())}` : ""}`);
+    router.push(`/find-a-wash${washQuery.trim() ? `?q=${encodeURIComponent(washQuery.trim())}` : ""}`);
   };
 
   useEffect(() => {
@@ -174,7 +174,7 @@ export default function EntryPage() {
           <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
             <NavLink href="#how-it-works">How It Works</NavLink>
             <NavLink href="#plans">Plans</NavLink>
-            <NavLink href="/app/partners">Find a Wash</NavLink>
+            <NavLink href="/find-a-wash">Find a Wash</NavLink>
             <NavLink href="#support">FAQ</NavLink>
             <NavLink href="/app/login">Log in</NavLink>
             <Link
@@ -801,7 +801,7 @@ export default function EntryPage() {
             <ul className="mt-3 space-y-2 text-gray-500">
               <li><Link href="#how-it-works" className="hover:text-white">How It Works</Link></li>
               <li><Link href="#plans" className="hover:text-white">Plans</Link></li>
-              <li><Link href="/app/partners" className="hover:text-white">Find a Wash</Link></li>
+              <li><Link href="/find-a-wash" className="hover:text-white">Find a Wash</Link></li>
               <li><Link href="#support" className="hover:text-white">FAQ</Link></li>
               <li><Link href="/app/login" className="hover:text-white">Log in</Link></li>
             </ul>
