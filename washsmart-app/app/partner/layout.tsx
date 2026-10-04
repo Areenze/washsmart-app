@@ -81,18 +81,16 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <div className="mx-auto w-full max-w-7xl flex-1 px-5">{children}</div>
-
-      <nav className="sticky bottom-0 border-t bg-[#111a14] px-2 py-3 md:hidden">
-        <div className="flex justify-around text-[11px]">
+      <nav className="sticky top-0 z-10 border-b border-white/5 bg-[#111a14]/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-3 sm:gap-2 sm:px-5">
           {tabs.map((t) => (
             <Link
               key={t.href}
               href={t.href}
               className={
                 pathname === t.href
-                  ? "font-bold text-[#48d87c]"
-                  : "text-gray-400"
+                  ? "border-b-2 border-[#48d87c] px-3 py-3 text-sm font-bold text-[#48d87c]"
+                  : "border-b-2 border-transparent px-3 py-3 text-sm font-semibold text-gray-400 hover:text-[#e9f2ec]"
               }
             >
               {t.label}
@@ -101,21 +99,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
         </div>
       </nav>
 
-      <nav className="hidden border-t bg-[#111a14] md:block">
-        <div className="mx-auto flex max-w-7xl gap-8 px-5 py-3 text-sm font-semibold">
-          {tabs.map((t) => (
-            <Link
-              key={t.href}
-              href={t.href}
-              className={
-                pathname === t.href ? "text-[#48d87c]" : "text-gray-400"
-              }
-            >
-              {t.label}
-            </Link>
-          ))}
-        </div>
-      </nav>
+      <div className="mx-auto w-full max-w-7xl flex-1 px-5">{children}</div>
     </div>
   );
 }
