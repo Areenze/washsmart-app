@@ -2,17 +2,18 @@
 
 /* PartnerMap — Leaflet map of approved WashSMART partners (dark theme).
  *
- * Keyless Esri dark-gray tiles (no API key, no billing, no watermark — CARTO
- * key-gated their basemaps in Aug 2026). Pins cluster automatically at scale
- * (500+ partners collapse into numbered green clusters). Tapping a pin
- * shows the partner card popup with a link to its detail page.
+ * Tiles: CARTO dark_matter when NEXT_PUBLIC_CARTO_API_KEY is set, otherwise
+ * keyless Esri dark gray (CARTO key-gated their basemaps in Aug 2026).
+ * Pins cluster automatically at scale (500+ partners collapse into numbered
+ * green clusters). Tapping a pin shows the partner card popup with a link
+ * to its detail page.
  *
  * Partners without GPS coordinates are skipped — the count line under the
  * map says how many are plotted.
  */
 
-import { useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useMemo, useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import Link from "next/link";
@@ -32,6 +33,28 @@ const TILE_ATTR = CARTO_KEY
 
 /* Lagos fallback center. */
 const LAGOS: [number, number] = [6.5244, 3.3792];
+
+/* MapContainer only honors `center` on mount, but partners load async —
+ * recenter once when the first pins arrive, then never fight the user. */
+function RecenterOnFirstPins({
+  center,
+  zoom,
+  hasPins,
+}: {
+  center: [number, number];
+  zoom: number;
+  hasPins: boolean;
+}) {
+  const map = useMap();
+  const done = useRef(false);
+  useEffect(() => {
+    if (hasPins && !done.current) {
+      done.current = true;
+      map.setView(center, zoom);
+    }
+  }, [map, center, zoom, hasPins]);
+  return null;
+}
 
 function parseGps(gps?: string): [number, number] | null {
   if (!gps) return null;
@@ -113,6 +136,11 @@ export function PartnerMap({
           style={{ height: "62vh", minHeight: 420, width: "100%", background: "#0d130f" }}
         >
           <TileLayer attribution={TILE_ATTR} url={TILE_URL} />
+          <RecenterOnFirstPins
+            center={center}
+            zoom={plotted.length > 0 ? 12 : 11}
+            hasPins={plotted.length > 0}
+          />
           <MarkerClusterGroup
             chunkedLoading
             iconCreateFunction={clusterIcon}
