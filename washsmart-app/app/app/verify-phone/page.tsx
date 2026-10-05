@@ -47,6 +47,13 @@ function VerifyPhoneInner() {
   useEffect(() => {
     (async () => {
       try {
+        const {
+          data: { session },
+        } = await getSupabase().auth.getSession();
+        if (!session) {
+          router.replace("/app/login?next=/app/verify-phone");
+          return;
+        }
         const p = await getProfile();
         if (p?.phone_verified) {
           router.replace(next);
