@@ -136,6 +136,15 @@ button:not(:disabled) {
 .subscriber-light .bg-\[\#063c28\] {
   background-color: #ddf2e6;
 }
+.subscriber-light .bg-\[\#0d130f\] {
+  background-color: #ffffff;
+}
+.subscriber-light .bg-\[\#0e2a1c\] {
+  background-color: #ddf2e6;
+}
+.subscriber-light .bg-\[\#2a2110\] {
+  background-color: #fbf0d9;
+}
 .subscriber-light .bg-white\/5 {
   background-color: rgb(19 25 21 / 0.04);
 }
