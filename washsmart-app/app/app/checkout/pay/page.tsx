@@ -220,7 +220,7 @@ function PayInner() {
     <section className="mx-auto max-w-xl px-5 py-8">
       <Link
         href="/app/subscription"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back to plans
       </Link>
@@ -236,7 +236,7 @@ function PayInner() {
           </p>
         )}
 
-        <div className="mt-6 rounded-2xl bg-[#34d186]/10 p-5">
+        <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5">
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">{plan.name} Plan (30-day credits)</span>
             <span className="font-bold">{plan.price}</span>
@@ -244,7 +244,7 @@ function PayInner() {
           {promo && promo.kind !== "bonus_washes" && (
             <div className="mt-2 flex justify-between text-sm">
               <span className="text-gray-400">Promo ({promo.label})</span>
-              <span className="font-bold text-[#66dca4]">
+              <span className="font-bold text-[#48d87c]">
                 −₦{promo.discountNaira.toLocaleString("en-NG")}
               </span>
             </div>
@@ -252,12 +252,12 @@ function PayInner() {
           {promo && promo.kind === "bonus_washes" && (
             <div className="mt-2 flex justify-between text-sm">
               <span className="text-gray-400">Promo applied</span>
-              <span className="font-bold text-[#66dca4]">{promo.label}</span>
+              <span className="font-bold text-[#48d87c]">{promo.label}</span>
             </div>
           )}
-          <div className="mt-3 flex justify-between border-t border-[#34d186]/20 pt-3 font-bold">
+          <div className="mt-3 flex justify-between border-t border-[#20a957]/20 pt-3 font-bold">
             <span>Total due today</span>
-            <span className="text-[#66dca4]">
+            <span className="text-[#48d87c]">
               ₦{finalAmount.toLocaleString("en-NG")}
             </span>
           </div>
@@ -265,8 +265,8 @@ function PayInner() {
 
         <div className="mt-4">
           {promo ? (
-            <div className="flex items-center justify-between rounded-xl bg-[#34d186]/10 px-4 py-3">
-              <p className="text-sm font-bold text-[#66dca4]">
+            <div className="flex items-center justify-between rounded-xl bg-[#20a957]/10 px-4 py-3">
+              <p className="text-sm font-bold text-[#48d87c]">
                 ✓ {promoInput.trim().toUpperCase()} — {promo.label}
               </p>
               <button
@@ -313,7 +313,7 @@ function PayInner() {
 
         {phase === "verifying" ? (
           <div className="mt-6 rounded-2xl bg-white/5 p-8 text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#34d186]" />
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
             <p className="mt-4 font-bold">Verifying your payment…</p>
             <p className="mt-1 text-sm text-gray-400">Please do not close this page.</p>
           </div>
@@ -325,7 +325,7 @@ function PayInner() {
               className={`mt-6 w-full rounded-full py-3 font-bold text-white transition-all duration-200 ${
                 phase === "opening"
                   ? "cursor-wait bg-white/15"
-                  : "bg-[#34d186] hover:bg-[#27ab6c]"
+                  : "bg-[#20a957] hover:bg-[#1a8a47]"
               }`}
             >
               {phase === "opening"

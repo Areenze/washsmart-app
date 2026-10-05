@@ -93,10 +93,10 @@ function PhotoPicker({
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
-        className="block w-full rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#34d186] disabled:opacity-50"
+        className="block w-full rounded-2xl border-2 border-dashed border-white/20 p-6 text-center hover:border-[#20a957] disabled:opacity-50"
       >
         <div className="text-3xl">{icon}</div>
-        <p className="mt-1 text-sm font-semibold text-[#66dca4]">
+        <p className="mt-1 text-sm font-semibold text-[#48d87c]">
           {uploading ? "Uploading…" : "Choose photos"}
         </p>
       </button>
@@ -328,11 +328,11 @@ export default function ApplyWizard() {
           <>
             <Link
               href="/join"
-              className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+              className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
             >
               ← Back
             </Link>
-            <p className="text-sm font-semibold text-[#66dca4]">
+            <p className="text-sm font-semibold text-[#48d87c]">
               STEP {step + 1} OF {STEP_TITLES.length}
             </p>
             <h1 className="mt-1 text-3xl font-bold">{STEP_TITLES[step]}</h1>
@@ -517,13 +517,13 @@ export default function ApplyWizard() {
                       <button
                         onClick={useMyLocation}
                         disabled={locating}
-                        className="shrink-0 rounded-xl border border-[#34d186] px-4 text-sm font-bold text-[#66dca4] disabled:opacity-50"
+                        className="shrink-0 rounded-xl border border-[#20a957] px-4 text-sm font-bold text-[#48d87c] disabled:opacity-50"
                       >
                         {locating ? "Locating…" : "📍 Pin"}
                       </button>
                     </div>
                   </Field>
-                  <div className="flex h-40 items-center justify-center rounded-2xl bg-[#34d186]/15">
+                  <div className="flex h-40 items-center justify-center rounded-2xl bg-[#20a957]/15">
                     <div className="text-center">
                       <div className="text-4xl">🗺️</div>
                       <p className="mt-1 text-sm font-semibold text-gray-300">
@@ -621,7 +621,7 @@ export default function ApplyWizard() {
                         key={s}
                         className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold ${
                           draft.services.includes(s)
-                            ? "border-[#34d186] bg-[#34d186]/10 text-[#66dca4]"
+                            ? "border-[#20a957] bg-[#20a957]/10 text-[#48d87c]"
                             : "border-white/10"
                         }`}
                       >
@@ -629,7 +629,7 @@ export default function ApplyWizard() {
                           type="checkbox"
                           checked={draft.services.includes(s)}
                           onChange={() => toggleService(s)}
-                          className="h-4 w-4 accent-[#34d186]"
+                          className="h-4 w-4 accent-[#20a957]"
                         />
                         {s}
                       </label>
@@ -802,7 +802,7 @@ function ReviewScreen({
 function SuccessScreen({ app }: { app: PartnerApplication }) {
   return (
     <Card className="bg-[#063c28] text-center text-white">
-      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#40d48d] text-4xl">
+      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#2ed06a] text-4xl">
         ✓
       </div>
       <h1 className="mt-5 text-3xl font-bold">Application received!</h1>

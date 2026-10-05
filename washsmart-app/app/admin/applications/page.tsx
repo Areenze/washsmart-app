@@ -55,7 +55,7 @@ export default function AdminApplicationsPage() {
               onClick={() => setFilter(f)}
               className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
                 filter === f
-                  ? "bg-[#34d186] text-white"
+                  ? "bg-[#20a957] text-white"
                   : "bg-[#111a14] text-gray-400"
               }`}
             >
@@ -87,7 +87,7 @@ export default function AdminApplicationsPage() {
             <Link
               key={a.ref}
               href={`/admin/applications/${a.ref}`}
-              className="block rounded-2xl bg-[#111a14] p-5 shadow-sm transition-colors hover:border hover:border-[#34d186]"
+              className="block rounded-2xl bg-[#111a14] p-5 shadow-sm transition-colors hover:border hover:border-[#20a957]"
             >
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>

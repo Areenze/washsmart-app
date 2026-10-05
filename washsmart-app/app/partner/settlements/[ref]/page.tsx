@@ -22,7 +22,7 @@ import type { LedgerEntry, Partner } from "@/lib/db/types";
 function lineStyle(kind: LedgerEntry["kind"]): string {
   switch (kind) {
     case "wash_earning":
-      return "text-[#66dca4]";
+      return "text-[#48d87c]";
     case "settlement_payout":
       return "text-gray-200";
     default:
@@ -121,7 +121,7 @@ export default function SettlementStatementPage() {
       <section className="mx-auto max-w-3xl py-8">
         <Link
           href="/partner/earnings"
-          className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+          className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
         >
           ← Back to Earnings
         </Link>
@@ -142,7 +142,7 @@ export default function SettlementStatementPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/earnings"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back to Earnings
       </Link>
@@ -155,7 +155,7 @@ export default function SettlementStatementPage() {
         <span
           className={
             data.status === "paid"
-              ? "shrink-0 rounded-full bg-[#34d186]/10 px-3 py-1 text-xs font-bold text-[#66dca4]"
+              ? "shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]"
               : "shrink-0 rounded-full bg-[#f5b942]/20 px-3 py-1 text-xs font-bold text-[#f5b942]"
           }
         >

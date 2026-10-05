@@ -134,7 +134,7 @@ export default function ApplicationDetailPage() {
     <div className="mx-auto max-w-3xl">
       <Link
         href="/admin/applications"
-        className="text-sm font-semibold text-[#66dca4]"
+        className="text-sm font-semibold text-[#48d87c]"
       >
         ← All applications
       </Link>
@@ -196,7 +196,7 @@ export default function ApplicationDetailPage() {
           {[...app.services, app.otherService].filter(Boolean).map((s) => (
             <span
               key={s}
-              className="rounded-full bg-[#34d186]/10 px-3 py-1.5 text-sm font-semibold text-[#66dca4]"
+              className="rounded-full bg-[#20a957]/10 px-3 py-1.5 text-sm font-semibold text-[#48d87c]"
             >
               {s}
             </span>
@@ -236,7 +236,7 @@ export default function ApplicationDetailPage() {
             <button
               onClick={() => persist("in_progress")}
               disabled={saving}
-              className="mt-4 rounded-full bg-[#34d186] px-8 py-3 font-bold text-white transition-all hover:bg-[#27ab6c] disabled:opacity-50"
+              className="mt-4 rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all hover:bg-[#1a8a47] disabled:opacity-50"
             >
               {saving ? "Starting…" : "Start inspection"}
             </button>
@@ -263,7 +263,7 @@ export default function ApplicationDetailPage() {
                             onClick={() => setItem(item.key, true)}
                             className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
                               entry.pass === true
-                                ? "bg-[#34d186] text-white"
+                                ? "bg-[#20a957] text-white"
                                 : "bg-white/5 text-gray-400 hover:bg-white/10"
                             }`}
                           >
@@ -283,7 +283,7 @@ export default function ApplicationDetailPage() {
                       ) : (
                         <span
                           className={`text-sm font-bold ${
-                            entry.pass ? "text-[#66dca4]" : "text-red-400"
+                            entry.pass ? "text-[#48d87c]" : "text-red-400"
                           }`}
                         >
                           {entry.pass ? "✓ Pass" : entry.pass === false ? "✗ Fail" : "—"}
@@ -295,7 +295,7 @@ export default function ApplicationDetailPage() {
                         value={entry.note}
                         onChange={(e) => setNote(item.key, e.target.value)}
                         placeholder="Note (optional)"
-                        className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+                        className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none placeholder:text-gray-500 focus:border-[#20a957]"
                       />
                     ) : (
                       entry.note && (
@@ -318,7 +318,7 @@ export default function ApplicationDetailPage() {
                       value={inspectorName}
                       onChange={(e) => setInspectorName(e.target.value)}
                       placeholder="Who inspected the site?"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#20a957]"
                     />
                   </div>
                   <div>
@@ -329,7 +329,7 @@ export default function ApplicationDetailPage() {
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Summary, concerns, follow-ups…"
-                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#20a957]"
                     />
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function ApplicationDetailPage() {
                   <button
                     onClick={() => persist("passed")}
                     disabled={saving}
-                    className="rounded-full bg-[#34d186] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#27ab6c] disabled:opacity-50"
+                    className="rounded-full bg-[#20a957] px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#1a8a47] disabled:opacity-50"
                   >
                     ✓ Mark passed
                   </button>
@@ -376,7 +376,7 @@ export default function ApplicationDetailPage() {
             <button
               onClick={() => setConfirmKind("approve")}
               disabled={acting}
-              className="flex-1 rounded-full bg-[#34d186] py-3 font-bold text-white transition-all hover:bg-[#27ab6c] disabled:opacity-50"
+              className="flex-1 rounded-full bg-[#20a957] py-3 font-bold text-white transition-all hover:bg-[#1a8a47] disabled:opacity-50"
             >
               {acting ? "Working…" : "✓ Approve Partner"}
             </button>
@@ -394,7 +394,7 @@ export default function ApplicationDetailPage() {
       ) : (
         <p className="mt-4 rounded-2xl bg-[#111a14] p-4 text-center text-sm text-gray-400 shadow-sm">
           This application was {app.status}.{" "}
-          <Link href="/admin/applications" className="font-bold text-[#66dca4]">
+          <Link href="/admin/applications" className="font-bold text-[#48d87c]">
             Back to queue
           </Link>
         </p>

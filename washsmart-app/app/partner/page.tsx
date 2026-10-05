@@ -68,7 +68,7 @@ export default function PartnerLogin() {
             <Logo />
             <Brand />
           </Link>
-          <span className="rounded-md bg-[#34d186]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#66dca4]">
+          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">
             PARTNER PORTAL
           </span>
         </div>
@@ -97,7 +97,7 @@ export default function PartnerLogin() {
             placeholder="e.g. WS-2026-0001"
             autoComplete="username"
             autoCapitalize="characters"
-            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#34d186]"
+            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
           />
           <p className="mt-1 text-xs text-gray-500">
             Your Partner ID was issued when your application was approved.
@@ -114,12 +114,12 @@ export default function PartnerLogin() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your partner password"
               autoComplete="current-password"
-              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#34d186]"
+              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
             />
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#66dca4]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
@@ -142,15 +142,15 @@ export default function PartnerLogin() {
           <p className="mt-3 text-center text-sm">
             <Link
               href="/partner/forgot-password"
-              className="font-bold text-[#66dca4]"
+              className="font-bold text-[#48d87c]"
             >
               Forgot password?
             </Link>
           </p>
         </form>
 
-        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#34d186]/30 bg-[#34d186]/10 p-6">
-          <p className="text-sm font-bold text-[#66dca4]">
+        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
+          <p className="text-sm font-bold text-[#48d87c]">
             🔑 Approved partners — tap to fill your Partner ID
           </p>
           <p className="mt-1 text-xs text-gray-400">
@@ -158,7 +158,7 @@ export default function PartnerLogin() {
             approved.{" "}
             <Link
               href="/partner/forgot-password"
-              className="font-bold text-[#66dca4]"
+              className="font-bold text-[#48d87c]"
             >
               Reset it here
             </Link>{" "}
@@ -170,7 +170,7 @@ export default function PartnerLogin() {
                 key={p.id}
                 type="button"
                 onClick={() => fill(p)}
-                className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#34d186]"
+                className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -179,7 +179,7 @@ export default function PartnerLogin() {
                       ID: {p.partnerId}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-bold text-[#66dca4]">
+                  <span className="shrink-0 text-xs font-bold text-[#48d87c]">
                     Fill →
                   </span>
                 </div>
@@ -190,7 +190,7 @@ export default function PartnerLogin() {
 
         <p className="mt-6 text-center text-xs text-gray-500">
           Not a partner yet?{" "}
-          <Link href="/join" className="font-bold text-[#66dca4]">
+          <Link href="/join" className="font-bold text-[#48d87c]">
             Apply here
           </Link>
         </p>

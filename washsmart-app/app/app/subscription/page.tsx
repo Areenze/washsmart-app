@@ -11,7 +11,7 @@ export default function SubscriptionPage() {
     <section className="mx-auto max-w-6xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>

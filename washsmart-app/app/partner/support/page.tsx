@@ -15,7 +15,7 @@ import { currentUserId } from "@/lib/db/store";
 const STATUS_STYLE: Record<string, string> = {
   open: "bg-amber-500/15 text-amber-300",
   investigating: "bg-blue-500/15 text-blue-300",
-  resolved: "bg-[#34d186]/15 text-[#66dca4]",
+  resolved: "bg-[#20a957]/15 text-[#48d87c]",
   closed: "bg-gray-500/15 text-gray-400",
 };
 
@@ -42,7 +42,7 @@ export default function PartnerSupportPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -55,7 +55,7 @@ export default function PartnerSupportPage() {
         </div>
         <Link
           href="/partner/support/new"
-          className="rounded-full bg-[#40d48d] px-5 py-2.5 font-bold text-white"
+          className="rounded-full bg-[#2ed06a] px-5 py-2.5 font-bold text-white"
         >
           + New Ticket
         </Link>

@@ -46,19 +46,19 @@ export default function ReferralCard({
     <div
       className={`rounded-3xl p-6 shadow-sm ${
         highlight
-          ? "border-2 border-[#34d186] bg-[#0e2a1c]"
+          ? "border-2 border-[#20a957] bg-[#0e2a1c]"
           : "bg-[#111a14]"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-[#66dca4]">
+          <p className="text-sm font-bold text-[#48d87c]">
             🎁 REFER A FRIEND
           </p>
           <h2 className="mt-1 text-2xl font-bold">Get 1 free wash</h2>
         </div>
         {count > 0 && (
-          <div className="rounded-full bg-[#34d186]/15 px-3 py-1 text-xs font-bold text-green-400">
+          <div className="rounded-full bg-[#20a957]/15 px-3 py-1 text-xs font-bold text-green-400">
             {count} joined
           </div>
         )}
@@ -76,7 +76,7 @@ export default function ReferralCard({
             </p>
             <button
               onClick={copy}
-              className="shrink-0 rounded-lg bg-[#34d186] px-3 py-1.5 text-xs font-bold text-white"
+              className="shrink-0 rounded-lg bg-[#20a957] px-3 py-1.5 text-xs font-bold text-white"
             >
               {copied ? "Copied!" : "Copy"}
             </button>

@@ -7,7 +7,7 @@ import Link from "next/link";
 function Stub({ icon, title, points }: { icon: string; title: string; points: string[] }) {
   return (
     <div>
-      <Link href="/admin/dashboard" className="text-sm font-semibold text-[#66dca4]">
+      <Link href="/admin/dashboard" className="text-sm font-semibold text-[#48d87c]">
         ← Dashboard
       </Link>
       <div className="mx-auto mt-10 max-w-xl rounded-3xl bg-[#111a14] p-10 text-center shadow-sm">

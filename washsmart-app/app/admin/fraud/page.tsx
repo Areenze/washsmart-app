@@ -80,7 +80,7 @@ export default function AdminFraudPage() {
               <div className="mt-3 flex items-center gap-4">
                 <Link
                   href={f.href}
-                  className="text-sm font-bold text-[#66dca4] hover:underline"
+                  className="text-sm font-bold text-[#48d87c] hover:underline"
                 >
                   {f.entityName} →
                 </Link>

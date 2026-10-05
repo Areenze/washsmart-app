@@ -46,7 +46,7 @@ export default function AdminReviewsPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={`rounded-full px-4 py-2 text-sm font-bold ${
-                filter === f ? "bg-[#34d186] text-white" : "bg-[#111a14] text-gray-400"
+                filter === f ? "bg-[#20a957] text-white" : "bg-[#111a14] text-gray-400"
               }`}
             >
               {f === "low" ? "⚠️ Low ratings" : "All"}
@@ -78,7 +78,7 @@ export default function AdminReviewsPage() {
                 <span className="text-xs text-gray-500">{fmtDate(r.at)}</span>
               </div>
               <p className="mt-2 text-sm">
-                <Link href={`/admin/partners/${r.partnerId}`} className="font-bold text-[#66dca4]">
+                <Link href={`/admin/partners/${r.partnerId}`} className="font-bold text-[#48d87c]">
                   {r.partnerName}
                 </Link>
               </p>

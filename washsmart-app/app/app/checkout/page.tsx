@@ -154,7 +154,7 @@ function CheckoutInner() {
   };
 
   const fieldClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186] ${
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
       bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
@@ -172,7 +172,7 @@ function CheckoutInner() {
     <section className="mx-auto max-w-xl px-5 py-8">
       <Link
         href="/app/subscription"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -184,20 +184,20 @@ function CheckoutInner() {
             {plan.name} Plan · {plan.washes} wash credits, valid 30 days
           </p>
           {loggedIn && !profileComplete && (
-            <p className="mt-2 rounded-xl bg-[#34d186]/10 p-3 text-xs font-semibold text-[#66dca4]">
+            <p className="mt-2 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
               Buying as {name} ({email}) — this plan will attach to your
               account.
             </p>
           )}
 
-          <div className="mt-6 rounded-2xl bg-[#34d186]/10 p-5">
+          <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">{plan.name} Plan (30-day credits)</span>
               <span className="font-bold">{plan.price}</span>
             </div>
-            <div className="mt-3 flex justify-between border-t border-[#34d186]/20 pt-3 font-bold">
+            <div className="mt-3 flex justify-between border-t border-[#20a957]/20 pt-3 font-bold">
               <span>Total due today</span>
-              <span className="text-[#66dca4]">{plan.price}</span>
+              <span className="text-[#48d87c]">{plan.price}</span>
             </div>
           </div>
 
@@ -212,7 +212,7 @@ function CheckoutInner() {
               </p>
               <Link
                 href="/app/profile"
-                className="mt-2 inline-block text-xs font-bold text-[#66dca4]"
+                className="mt-2 inline-block text-xs font-bold text-[#48d87c]"
               >
                 Wrong details? Update them in your profile →
               </Link>
@@ -365,7 +365,7 @@ function CheckoutInner() {
             disabled={!canPay}
             className={`mt-6 w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
               canPay
-                ? "bg-[#34d186] hover:bg-[#27ab6c]"
+                ? "bg-[#20a957] hover:bg-[#1a8a47]"
                 : "cursor-not-allowed bg-white/15"
             }`}
           >
@@ -382,7 +382,7 @@ function CheckoutInner() {
 
       {step === "processing" && (
         <div className="rounded-3xl bg-[#111a14] p-12 text-center shadow-sm">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#34d186]" />
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
           <p className="mt-5 font-bold">Processing…</p>
           <p className="mt-1 text-sm text-gray-400">
             Please do not close this page.
@@ -392,7 +392,7 @@ function CheckoutInner() {
 
       {step === "verify" && (
         <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#34d186]/10 text-3xl">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
             ✉️
           </div>
           <h1 className="mt-4 text-center text-2xl font-bold">
@@ -412,7 +412,7 @@ function CheckoutInner() {
             Resend verification link
           </button>
           {resent && (
-            <p className="mt-2 text-center text-xs font-semibold text-[#66dca4]">
+            <p className="mt-2 text-center text-xs font-semibold text-[#48d87c]">
               A new verification link was sent to {email.trim()}.
             </p>
           )}

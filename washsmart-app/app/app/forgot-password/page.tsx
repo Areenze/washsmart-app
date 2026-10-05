@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
     <section className="mx-auto max-w-md px-5 py-12">
       <Link
         href="/app/login"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
       <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
         {phase === "sent" ? (
           <div className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#34d186]/10 text-3xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
               ✉️
             </div>
             <h1 className="mt-4 text-2xl font-bold">Check your inbox</h1>
@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
             </p>
             <Link
               href="/app/login"
-              className="mt-6 block w-full rounded-full bg-[#34d186] py-3 text-center font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
+              className="mt-6 block w-full rounded-full bg-[#20a957] py-3 text-center font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
             >
               Back to login
             </Link>
@@ -85,13 +85,13 @@ export default function ForgotPasswordPage() {
                   placeholder="e.g. adaeze@example.com"
                   inputMode="email"
                   autoComplete="email"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={phase === "sending"}
-                className="w-full rounded-full bg-[#34d186] py-3 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c] disabled:opacity-60"
+                className="w-full rounded-full bg-[#20a957] py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47] disabled:opacity-60"
               >
                 {phase === "sending" ? "Sending…" : "Email me a reset link"}
               </button>

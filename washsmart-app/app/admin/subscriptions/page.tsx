@@ -46,7 +46,7 @@ export default function AdminSubscriptionsPage() {
               key={f}
               onClick={() => setStatus(f)}
               className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
-                status === f ? "bg-[#34d186] text-white" : "bg-[#111a14] text-gray-400"
+                status === f ? "bg-[#20a957] text-white" : "bg-[#111a14] text-gray-400"
               }`}
             >
               {f}
@@ -79,7 +79,7 @@ export default function AdminSubscriptionsPage() {
               {rows.map((r) => (
                 <tr key={r.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
                   <td className="px-5 py-4">
-                    <Link href={`/admin/subscribers/${r.subscriberId}`} className="font-bold text-[#66dca4]">
+                    <Link href={`/admin/subscribers/${r.subscriberId}`} className="font-bold text-[#48d87c]">
                       {r.subscriberName}
                     </Link>
                   </td>

@@ -36,7 +36,7 @@ export default function NotificationBell({
     <Link
       href={href}
       aria-label={`Notifications${count > 0 ? ` (${count} unread)` : ""}`}
-      className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#34d186]/10 text-lg"
+      className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957]/10 text-lg"
     >
       🔔
       {count > 0 && (

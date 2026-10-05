@@ -71,7 +71,7 @@ const pinIcon = L.divIcon({
   html: `<div style="
       width:30px;height:30px;border-radius:50% 50% 50% 0;
       transform:rotate(-45deg);
-      background:#34d186;
+      background:#20a957;
       border:3px solid #0d1f14;
       box-shadow:0 2px 8px rgba(0,0,0,.5);
     "><div style="
@@ -104,10 +104,18 @@ function clusterIcon(cluster: any) {
 export function PartnerMap({
   partners,
   detailBase,
+  light = false,
 }: {
   partners: Partner[];
   detailBase: string;
+  /** Light basemap for light-theme surfaces (subscriber app). */
+  light?: boolean;
 }) {
+  const tileUrl = light
+    ? CARTO_KEY
+      ? `https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`
+      : "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+    : TILE_URL;
   const plotted = useMemo(
     () =>
       partners
@@ -133,9 +141,9 @@ export function PartnerMap({
           center={center}
           zoom={plotted.length > 0 ? 12 : 11}
           scrollWheelZoom={true}
-          style={{ height: "62vh", minHeight: 420, width: "100%", background: "#0d130f" }}
+          style={{ height: "62vh", minHeight: 420, width: "100%", background: light ? "#e9eeeb" : "#0d130f" }}
         >
-          <TileLayer attribution={TILE_ATTR} url={TILE_URL} />
+          <TileLayer attribution={TILE_ATTR} url={tileUrl} />
           <RecenterOnFirstPins
             center={center}
             zoom={plotted.length > 0 ? 12 : 11}
@@ -164,7 +172,7 @@ export function PartnerMap({
                       href={`${detailBase}/${p.id}`}
                       style={{
                         display: "inline-block",
-                        background: "#34d186",
+                        background: "#20a957",
                         color: "#fff",
                         fontWeight: 700,
                         fontSize: 12,

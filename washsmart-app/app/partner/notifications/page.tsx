@@ -49,7 +49,7 @@ export default function PartnerNotificationsPage() {
     <section className="mx-auto max-w-2xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -58,7 +58,7 @@ export default function PartnerNotificationsPage() {
         {items.some((n) => !n.read) && (
           <button
             onClick={readAll}
-            className="text-sm font-bold text-[#66dca4]"
+            className="text-sm font-bold text-[#48d87c]"
           >
             Mark all read
           </button>
@@ -79,7 +79,7 @@ export default function PartnerNotificationsPage() {
             const inner = (
               <div
                 className={`flex gap-3 rounded-2xl p-4 ${
-                  n.read ? "bg-[#111a14]" : "bg-[#34d186]/10"
+                  n.read ? "bg-[#111a14]" : "bg-[#20a957]/10"
                 }`}
               >
                 <span className="text-2xl">{KIND_ICON[n.kind] ?? "🔔"}</span>

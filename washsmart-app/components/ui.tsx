@@ -1,7 +1,7 @@
 "use client";
 
-/* Shared WashSMART UI primitives — green color scheme (Bolt-inspired trial).
- * Primary #34d186 · dark #063c28 · accent #40d48d · bright #66dca4
+/* Shared WashSMART UI primitives — green color scheme (green color scheme).
+ * Primary #20a957 · dark #063c28 · accent #2ed06a · bright #48d87c
  * Shapes follow the EverWash-inspired system: pill buttons/capsules,
  * tinted icon chips, soft-shadow cards, staggered scroll reveals.
  */
@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 export function Logo({ size = 40 }: { size?: number }) {
   return (
     <div
-      className="flex items-center justify-center rounded-full bg-[#34d186] text-white"
+      className="flex items-center justify-center rounded-full bg-[#20a957] text-white"
       style={{ width: size, height: size, fontSize: size * 0.5 }}
       aria-hidden
     >
@@ -25,7 +25,7 @@ export function Brand({ light = false }: { light?: boolean }) {
   void light; // all headers are dark now; brand always renders light
   return (
     <span className="text-xl font-bold text-[#e9f2ec]">
-      Wash<span className="text-[#34d186]">SMART</span>
+      Wash<span className="text-[#20a957]">SMART</span>
     </span>
   );
 }
@@ -40,7 +40,7 @@ export function BackButton({
   return (
     <button
       onClick={onClick}
-      className="mb-5 text-sm font-semibold text-[#66dca4]"
+      className="mb-5 text-sm font-semibold text-[#48d87c]"
     >
       {label}
     </button>
@@ -68,7 +68,7 @@ export function PrimaryButton({
       className={`rounded-full px-8 py-3.5 font-semibold tracking-wide text-white transition-all duration-200 active:scale-[0.98] ${
         disabled
           ? "cursor-not-allowed bg-white/15"
-          : "bg-[#34d186] shadow-lg shadow-[#34d186]/20 hover:bg-[#27ab6c] hover:shadow-xl hover:shadow-[#34d186]/25"
+          : "bg-[#20a957] shadow-lg shadow-[#20a957]/20 hover:bg-[#1a8a47] hover:shadow-xl hover:shadow-[#20a957]/25"
       } ${className}`}
     >
       {children}
@@ -88,7 +88,7 @@ export function OutlineButton({
   return (
     <button
       onClick={onClick}
-      className={`rounded-full border border-[#34d186] px-8 py-3.5 font-semibold tracking-wide text-[#66dca4] transition-all duration-200 hover:bg-[#34d186]/10 active:scale-[0.98] ${className}`}
+      className={`rounded-full border border-[#20a957] px-8 py-3.5 font-semibold tracking-wide text-[#48d87c] transition-all duration-200 hover:bg-[#20a957]/10 active:scale-[0.98] ${className}`}
     >
       {children}
     </button>
@@ -123,7 +123,7 @@ export function IconChip({
   size?: number;
 }) {
   const tones: Record<string, string> = {
-    green: "bg-[#34d186]/15 text-[#66dca4]",
+    green: "bg-[#20a957]/15 text-[#48d87c]",
     teal: "bg-cyan-400/15 text-cyan-300",
     amber: "bg-amber-400/15 text-amber-300",
   };
@@ -190,7 +190,7 @@ export function Badge({
   tone?: "green" | "amber" | "gray" | "red";
 }) {
   const tones: Record<string, string> = {
-    green: "bg-[#34d186]/15 text-green-400",
+    green: "bg-[#20a957]/15 text-green-400",
     amber: "bg-amber-500/15 text-amber-200",
     gray: "bg-white/5 text-gray-300",
     red: "bg-red-500/15 text-red-300",
@@ -231,7 +231,7 @@ export function Field({
 }
 
 export function inputClass(bad: boolean): string {
-  return `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186] ${
+  return `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
     bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
   }`;
 }
@@ -296,7 +296,7 @@ export function StepDots({
         <div
           key={i}
           className={`h-2 flex-1 rounded-full ${
-            i < current ? "bg-[#34d186]" : "bg-white/10"
+            i < current ? "bg-[#20a957]" : "bg-white/10"
           }`}
         />
       ))}
@@ -355,7 +355,7 @@ export function ConfirmDialog({
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder={inputPlaceholder}
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-gray-500 focus:border-[#20a957]"
             />
           </div>
         )}
@@ -372,7 +372,7 @@ export function ConfirmDialog({
             className={`flex-1 rounded-full py-3 text-sm font-bold text-white transition-all disabled:opacity-50 ${
               danger
                 ? "bg-red-600 hover:bg-red-500"
-                : "bg-[#34d186] hover:bg-[#27ab6c]"
+                : "bg-[#20a957] hover:bg-[#1a8a47]"
             }`}
           >
             {confirmLabel}

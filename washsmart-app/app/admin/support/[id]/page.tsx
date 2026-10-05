@@ -75,7 +75,7 @@ export default function AdminTicketDetailPage() {
     <section className="max-w-3xl">
       <Link
         href="/admin/support"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Tickets
       </Link>
@@ -91,7 +91,7 @@ export default function AdminTicketDetailPage() {
           <p className="text-xs uppercase text-gray-500">Subscriber</p>
           <Link
             href={`/admin/subscribers/${ticket.subscriberId}`}
-            className="font-bold text-[#66dca4] hover:underline"
+            className="font-bold text-[#48d87c] hover:underline"
           >
             {ticket.subscriberName}
           </Link>
@@ -101,7 +101,7 @@ export default function AdminTicketDetailPage() {
           {ticket.partnerId ? (
             <Link
               href={`/admin/partners/${ticket.partnerId}`}
-              className="font-bold text-[#66dca4] hover:underline"
+              className="font-bold text-[#48d87c] hover:underline"
             >
               {ticket.partnerName ?? ticket.partnerId}
             </Link>
@@ -137,7 +137,7 @@ export default function AdminTicketDetailPage() {
               onClick={() => setStatus(s)}
               className={`rounded-full px-4 py-1.5 text-sm font-bold capitalize disabled:opacity-40 ${
                 ticket.status === s
-                  ? "bg-[#34d186] text-white"
+                  ? "bg-[#20a957] text-white"
                   : "bg-white/5 text-gray-300"
               }`}
             >
@@ -180,7 +180,7 @@ export default function AdminTicketDetailPage() {
         <button
           onClick={saveNotes}
           disabled={saving}
-          className="mt-2 rounded-full bg-[#34d186] px-5 py-2 text-sm font-bold text-white disabled:opacity-50"
+          className="mt-2 rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white disabled:opacity-50"
         >
           Save notes
         </button>

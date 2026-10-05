@@ -70,7 +70,7 @@ export default function AdminCreditsPage() {
               {data.rows.map((r, i) => (
                 <tr key={i} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02]">
                   <td className="px-5 py-4">
-                    <Link href={`/admin/subscribers/${r.subscriberId}`} className="font-bold text-[#66dca4]">
+                    <Link href={`/admin/subscribers/${r.subscriberId}`} className="font-bold text-[#48d87c]">
                       {r.subscriberName}
                     </Link>
                   </td>

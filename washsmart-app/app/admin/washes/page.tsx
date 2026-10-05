@@ -47,7 +47,7 @@ export default function AdminWashesPage() {
             placeholder="Search subscriber, partner, ID…"
             className="w-56 bg-transparent text-sm outline-none placeholder:text-gray-500"
           />
-          <button type="submit" className="rounded-full bg-[#34d186] px-4 py-1.5 text-xs font-bold text-white">
+          <button type="submit" className="rounded-full bg-[#20a957] px-4 py-1.5 text-xs font-bold text-white">
             Search
           </button>
         </form>
@@ -79,12 +79,12 @@ export default function AdminWashesPage() {
                     {r.id.slice(0, 8).toUpperCase()}
                   </td>
                   <td className="px-5 py-4">
-                    <Link href={`/admin/subscribers/${r.subscriberId}`} className="font-bold text-[#66dca4]">
+                    <Link href={`/admin/subscribers/${r.subscriberId}`} className="font-bold text-[#48d87c]">
                       {r.subscriberName}
                     </Link>
                   </td>
                   <td className="px-5 py-4">
-                    <Link href={`/admin/partners/${r.partnerId}`} className="font-bold text-[#66dca4]">
+                    <Link href={`/admin/partners/${r.partnerId}`} className="font-bold text-[#48d87c]">
                       {r.partnerName}
                     </Link>
                   </td>

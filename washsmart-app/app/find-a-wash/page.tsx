@@ -19,7 +19,7 @@ export default function FindAWashPage() {
           </Link>
           <Link
             href="/app/signup"
-            className="rounded-full bg-[#34d186] px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
+            className="rounded-full bg-[#20a957] px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
           >
             Subscribe
           </Link>
@@ -30,7 +30,7 @@ export default function FindAWashPage() {
         <Suspense fallback={<p className="text-gray-400">Loading…</p>}>
           <PartnersSection detailBase="/find-a-wash" />
         </Suspense>
-        <div className="mt-10 rounded-3xl border border-[#34d186]/25 bg-[#0e2a1c] p-8 text-center">
+        <div className="mt-10 rounded-3xl border border-[#20a957]/25 bg-[#0e2a1c] p-8 text-center">
           <p className="text-xl font-bold">Don&rsquo;t see your area yet?</p>
           <p className="mx-auto mt-2 max-w-xl text-sm text-gray-400">
             We&rsquo;re adding approved wash centers across Lagos. Subscribe and
@@ -38,7 +38,7 @@ export default function FindAWashPage() {
           </p>
           <Link
             href="/app/signup"
-            className="mt-5 inline-block rounded-full bg-[#34d186] px-8 py-3.5 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c] active:scale-[0.98]"
+            className="mt-5 inline-block rounded-full bg-[#20a957] px-8 py-3.5 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
           >
             Get WashSMART &rarr;
           </Link>

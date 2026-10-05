@@ -28,7 +28,7 @@ function Bars({ data, format }: { data: MonthlyPoint[]; format: (v: number) => s
         <div key={d.key} className="flex flex-1 flex-col items-center gap-1">
           <p className="text-[10px] font-bold text-gray-400">{format(d.value)}</p>
           <div
-            className="w-full rounded-t-lg bg-[#34d186]/70 transition-all hover:bg-[#34d186]"
+            className="w-full rounded-t-lg bg-[#20a957]/70 transition-all hover:bg-[#20a957]"
             style={{ height: `${Math.max(4, (d.value / max) * 120)}px` }}
             title={`${d.month}: ${format(d.value)}`}
           />
@@ -122,7 +122,7 @@ export default function AdminReportsPage() {
           <div className="mt-4 space-y-3 text-sm">
             {[
               ["Credits issued", credits.issued, "text-white"],
-              ["Redeemed", credits.redeemed, "text-[#66dca4]"],
+              ["Redeemed", credits.redeemed, "text-[#48d87c]"],
               ["Expired unused (breakage)", credits.expiredUnused, "text-amber-400"],
               ["Active & remaining", credits.activeRemaining, "text-gray-400"],
             ].map(([label, v, cls]) => (
@@ -155,7 +155,7 @@ export default function AdminReportsPage() {
                   </div>
                   <div className="mt-1 h-2 rounded-full bg-white/5">
                     <div
-                      className="h-2 rounded-full bg-[#34d186]"
+                      className="h-2 rounded-full bg-[#20a957]"
                       style={{ width: `${(p.revenue / max) * 100}%` }}
                     />
                   </div>
@@ -178,7 +178,7 @@ export default function AdminReportsPage() {
               >
                 <span>
                   <span className="mr-2 text-gray-500">{i + 1}.</span>
-                  <span className="font-bold text-[#66dca4]">{p.name}</span>
+                  <span className="font-bold text-[#48d87c]">{p.name}</span>
                 </span>
                 <span className="text-gray-400">
                   {p.washes} washes · {ngn(p.gross)}
@@ -245,7 +245,7 @@ function TrafficSection() {
                 title={`${d.day}: ${d.views} views, ${d.sessions} sessions`}
               >
                 <div
-                  className="w-full rounded-t-md bg-[#34d186]/70 hover:bg-[#34d186]"
+                  className="w-full rounded-t-md bg-[#20a957]/70 hover:bg-[#20a957]"
                   style={{ height: `${Math.max(3, (d.views / max) * 96)}px` }}
                 />
                 <p className="text-[9px] text-gray-600">{d.day.slice(8)}</p>

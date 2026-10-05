@@ -130,7 +130,7 @@ export function PartnerReviews({ partnerId }: { partnerId: string }) {
           <p className="text-sm text-gray-500">Loading…</p>
         ) : !loggedIn ? (
           <p className="text-sm text-gray-400">
-            <Link href="/app/login" className="font-bold text-[#66dca4]">
+            <Link href="/app/login" className="font-bold text-[#48d87c]">
               Log in
             </Link>{" "}
             to leave a review after your wash here.
@@ -171,13 +171,13 @@ export function PartnerReviews({ partnerId }: { partnerId: string }) {
               rows={3}
               maxLength={500}
               placeholder="How was your wash? (optional)"
-              className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+              className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957]"
             />
             {error && (
               <p className="mt-2 text-sm font-semibold text-red-400">{error}</p>
             )}
             {saved && (
-              <p className="mt-2 text-sm font-semibold text-[#66dca4]">
+              <p className="mt-2 text-sm font-semibold text-[#48d87c]">
                 Review saved ✓
               </p>
             )}
@@ -187,7 +187,7 @@ export function PartnerReviews({ partnerId }: { partnerId: string }) {
               className={`mt-3 rounded-full px-8 py-2.5 text-sm font-bold text-white transition-all duration-200 active:scale-[0.98] ${
                 sending
                   ? "cursor-not-allowed bg-white/15"
-                  : "bg-[#34d186] shadow-lg shadow-[#34d186]/20 hover:bg-[#27ab6c]"
+                  : "bg-[#20a957] shadow-lg shadow-[#20a957]/20 hover:bg-[#1a8a47]"
               }`}
             >
               {sending ? "Saving…" : myReview ? "Update Review" : "Post Review"}
@@ -208,7 +208,7 @@ export function PartnerReviews({ partnerId }: { partnerId: string }) {
               key={r.id}
               className={`rounded-2xl border p-4 ${
                 myReview?.id === r.id
-                  ? "border-[#34d186]/40 bg-[#34d186]/5"
+                  ? "border-[#20a957]/40 bg-[#20a957]/5"
                   : "border-white/5 bg-white/[0.02]"
               }`}
             >
@@ -217,7 +217,7 @@ export function PartnerReviews({ partnerId }: { partnerId: string }) {
                   <span className="font-bold text-sm">
                     {shortName(r.subscriberName)}
                     {myReview?.id === r.id && (
-                      <span className="ml-2 rounded-full bg-[#34d186]/15 px-2 py-0.5 text-xs font-bold text-[#66dca4]">
+                      <span className="ml-2 rounded-full bg-[#20a957]/15 px-2 py-0.5 text-xs font-bold text-[#48d87c]">
                         You
                       </span>
                     )}

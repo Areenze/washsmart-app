@@ -30,7 +30,7 @@ export default function JoinLanding() {
             <Logo />
             <Brand />
           </Link>
-          <Link href="/partner" className="text-sm font-semibold text-[#66dca4]">
+          <Link href="/partner" className="text-sm font-semibold text-[#48d87c]">
             Already a partner? Log in
           </Link>
         </div>
@@ -39,7 +39,7 @@ export default function JoinLanding() {
       <section className="mx-auto max-w-7xl px-5 py-8">
         <Link
           href="/"
-          className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+          className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
         >
           ← Home
         </Link>
@@ -82,7 +82,7 @@ export default function JoinLanding() {
         <div className="mt-5 grid gap-4 md:grid-cols-4">
           {steps.map(([n, title, body]) => (
             <div key={n} className="rounded-2xl bg-[#111a14] p-6 shadow-sm">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#34d186] font-bold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957] font-bold text-white">
                 {n}
               </div>
               <p className="mt-3 font-bold">{title}</p>
@@ -98,7 +98,7 @@ export default function JoinLanding() {
           </p>
           <Link
             href="/join/apply"
-            className="mt-6 inline-block rounded-full bg-[#34d186] px-8 py-3.5 font-bold text-white"
+            className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3.5 font-bold text-white"
           >
             Apply Now →
           </Link>

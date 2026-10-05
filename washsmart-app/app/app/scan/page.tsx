@@ -101,7 +101,7 @@ function ScanInner() {
     <section className="mx-auto max-w-xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -121,7 +121,7 @@ function ScanInner() {
             </p>
             <Link
               href="/app/subscription"
-              className="mt-8 block w-full rounded-full bg-[#40d48d] py-3 transition-all duration-200 hover:bg-[#25b856] font-bold text-white"
+              className="mt-8 block w-full rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] font-bold text-white"
             >
               View Plans
             </Link>

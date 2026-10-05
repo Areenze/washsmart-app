@@ -17,7 +17,7 @@ export default function PartnerCard({
           <h3 className="font-bold">{partner.name}</h3>
           <p className="mt-1 text-sm text-gray-400">{partner.location}</p>
         </div>
-        <span className="rounded-full bg-[#34d186]/15 px-2 py-1 text-xs font-bold text-green-400">
+        <span className="rounded-full bg-[#20a957]/15 px-2 py-1 text-xs font-bold text-green-400">
           Approved
         </span>
       </div>
@@ -41,7 +41,7 @@ export default function PartnerCard({
 
       <Link
         href={`${detailBase}/${partner.id}`}
-        className="mt-4 block w-full rounded-full border border-[#34d186] py-2 transition-all duration-200 hover:bg-[#34d186]/10 text-center text-sm font-semibold text-[#66dca4]"
+        className="mt-4 block w-full rounded-full border border-[#20a957] py-2 transition-all duration-200 hover:bg-[#20a957]/10 text-center text-sm font-semibold text-[#48d87c]"
       >
         View Partner
       </Link>

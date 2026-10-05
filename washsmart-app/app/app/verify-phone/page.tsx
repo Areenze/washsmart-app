@@ -132,7 +132,7 @@ function VerifyPhoneInner() {
                 placeholder="e.g. 0803 123 4567"
                 inputMode="tel"
                 autoComplete="tel"
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-[#20a957]"
               />
             </label>
             {touched && !phoneOk && (
@@ -156,7 +156,7 @@ function VerifyPhoneInner() {
               placeholder="6-digit code"
               inputMode="numeric"
               autoComplete="one-time-code"
-              className="mt-3 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center text-2xl font-bold tracking-[0.3em] text-white outline-none placeholder:text-gray-600 focus:border-[#34d186]"
+              className="mt-3 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center text-2xl font-bold tracking-[0.3em] text-white outline-none placeholder:text-gray-600 focus:border-[#20a957]"
             />
             {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
             <PrimaryButton onClick={confirmCode} disabled={busy} className="mt-5 w-full">
@@ -165,7 +165,7 @@ function VerifyPhoneInner() {
             <button
               onClick={sendCode}
               disabled={busy || cooldown > 0}
-              className="mt-3 w-full text-sm font-semibold text-[#66dca4] disabled:opacity-40"
+              className="mt-3 w-full text-sm font-semibold text-[#48d87c] disabled:opacity-40"
             >
               {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
             </button>
@@ -173,8 +173,8 @@ function VerifyPhoneInner() {
         )}
 
         {step === "done" && (
-          <div className="mt-6 rounded-2xl bg-[#34d186]/10 p-5 text-center">
-            <p className="text-lg font-bold text-[#66dca4]">✓ Number verified</p>
+          <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5 text-center">
+            <p className="text-lg font-bold text-[#48d87c]">✓ Number verified</p>
             <p className="mt-1 text-sm text-gray-400">Taking you back…</p>
           </div>
         )}

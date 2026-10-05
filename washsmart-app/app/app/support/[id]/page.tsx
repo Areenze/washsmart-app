@@ -45,7 +45,7 @@ export default function TicketDetailPage() {
     <section className="mx-auto max-w-2xl px-5 py-8">
       <Link
         href="/app/support"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>

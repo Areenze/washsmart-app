@@ -161,7 +161,7 @@ function SignupInner() {
   };
 
   const fieldClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186] ${
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
       bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
@@ -171,7 +171,7 @@ function SignupInner() {
     <section className="mx-auto max-w-md px-5 py-12">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -179,7 +179,7 @@ function SignupInner() {
       <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
         {step === "verify" ? (
           <div className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#34d186]/10 text-3xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
               ✉️
             </div>
             <h1 className="mt-4 text-2xl font-bold">Verify your email</h1>
@@ -194,7 +194,7 @@ function SignupInner() {
             </p>
             <button
               onClick={() => router.push("/app")}
-              className="mt-5 w-full rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] font-bold text-white"
+              className="mt-5 w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Continue to the app →
             </button>
@@ -208,7 +208,7 @@ function SignupInner() {
                 : "Resend verification link"}
             </button>
             {resent && (
-              <p className="mt-2 text-center text-xs font-semibold text-[#66dca4]">
+              <p className="mt-2 text-center text-xs font-semibold text-[#48d87c]">
                 A new verification link was sent to {email.trim()}.
               </p>
             )}
@@ -224,7 +224,7 @@ function SignupInner() {
           </div>
         ) : step === "processing" ? (
           <div className="p-8 text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#34d186]" />
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
             <p className="mt-5 font-bold">Creating your account…</p>
             <p className="mt-1 text-sm text-gray-400">
               Please do not close this page.
@@ -238,7 +238,7 @@ function SignupInner() {
               pick a plan after verifying your email.
             </p>
             {inviteCode.trim() && (
-              <p className="mt-3 rounded-xl bg-[#34d186]/10 p-3 text-xs font-semibold text-[#66dca4]">
+              <p className="mt-3 rounded-xl bg-[#20a957]/10 p-3 text-xs font-semibold text-[#48d87c]">
                 🎉 You were invited by a friend — they&apos;ll earn a free
                 wash when you subscribe.
               </p>
@@ -370,7 +370,7 @@ function SignupInner() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#66dca4]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#48d87c]"
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -410,7 +410,7 @@ function SignupInner() {
                 disabled={!valid || isDuplicate}
                 className={`w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
                   valid && !isDuplicate
-                    ? "bg-[#34d186] hover:bg-[#27ab6c]"
+                    ? "bg-[#20a957] hover:bg-[#1a8a47]"
                     : "cursor-not-allowed bg-white/15"
                 }`}
               >
@@ -420,7 +420,7 @@ function SignupInner() {
 
             <p className="mt-5 text-center text-sm text-gray-400">
               Already a subscriber?{" "}
-              <Link href="/app/login" className="font-bold text-[#66dca4]">
+              <Link href="/app/login" className="font-bold text-[#48d87c]">
                 Log in →
               </Link>
             </p>

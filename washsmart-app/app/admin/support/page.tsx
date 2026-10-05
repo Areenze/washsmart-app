@@ -48,7 +48,7 @@ export default function AdminSupportPage() {
             onClick={() => setFilter(s)}
             className={`rounded-full px-4 py-1.5 text-sm font-bold capitalize ${
               filter === s
-                ? "bg-[#34d186] text-white"
+                ? "bg-[#20a957] text-white"
                 : "bg-[#111a14] text-gray-400"
             }`}
           >
@@ -80,14 +80,14 @@ export default function AdminSupportPage() {
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/support/${t.id}`}
-                      className="font-bold text-[#66dca4] hover:underline"
+                      className="font-bold text-[#48d87c] hover:underline"
                     >
                       {t.subject}
                     </Link>
                   </td>
                   <td className="px-4 py-3 text-gray-400">
                     {t.partnerName ? (
-                      <span className="text-[#66dca4]">
+                      <span className="text-[#48d87c]">
                         🏪 {t.partnerName} <span className="text-xs">(partner)</span>
                       </span>
                     ) : (

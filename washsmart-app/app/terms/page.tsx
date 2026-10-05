@@ -57,7 +57,7 @@ export default function TermsPage() {
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
       <div className="mx-auto max-w-3xl px-5 py-12">
-        <Link href="/" className="text-sm font-semibold text-[#66dca4]">
+        <Link href="/" className="text-sm font-semibold text-[#48d87c]">
           ← Back to home
         </Link>
         <h1 className="mt-6 text-4xl font-bold">Terms of Service</h1>
@@ -76,7 +76,7 @@ export default function TermsPage() {
           Questions? Email{" "}
           <a
             href="mailto:support@washsmart.ng"
-            className="font-bold text-[#66dca4]"
+            className="font-bold text-[#48d87c]"
           >
             support@washsmart.ng
           </a>

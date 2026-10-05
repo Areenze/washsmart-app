@@ -19,7 +19,7 @@ export default function HistoryPage() {
     <section className="mx-auto max-w-3xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -33,7 +33,7 @@ export default function HistoryPage() {
           action={
             <Link
               href="/app/partners"
-              className="inline-block rounded-full bg-[#34d186] px-6 py-3 transition-all duration-200 hover:bg-[#27ab6c] font-bold text-white"
+              className="inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Find a Partner
             </Link>
@@ -47,7 +47,7 @@ export default function HistoryPage() {
               className="flex items-center justify-between border-b p-5 last:border-0"
             >
               <div className="flex items-center gap-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#34d186]/10 text-xl">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#20a957]/10 text-xl">
                   🚗
                 </div>
                 <div>
@@ -60,7 +60,7 @@ export default function HistoryPage() {
                 <p className="text-xs text-gray-500">{fmtDate(w.at)}</p>
                 <Link
                   href={`/app/support/new?wash=${w.id}`}
-                  className="mt-1 inline-block text-xs font-bold text-[#66dca4]"
+                  className="mt-1 inline-block text-xs font-bold text-[#48d87c]"
                 >
                   Report a problem
                 </Link>

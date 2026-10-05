@@ -63,7 +63,7 @@ function ResetInner() {
   }, []);
 
   const inputClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186] ${
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
       bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
@@ -95,7 +95,7 @@ function ResetInner() {
     <section className="mx-auto max-w-md px-5 py-12">
       <Link
         href="/app/login"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -107,7 +107,7 @@ function ResetInner() {
             <p className="mt-2 text-sm font-semibold text-red-400">{fatal}</p>
             <Link
               href="/app/forgot-password"
-              className="mt-6 block w-full rounded-full bg-[#34d186] py-3 text-center font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
+              className="mt-6 block w-full rounded-full bg-[#20a957] py-3 text-center font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
             >
               Request a new link
             </Link>
@@ -141,7 +141,7 @@ function ResetInner() {
                   <button
                     type="button"
                     onClick={() => setShowPw((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#66dca4]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#48d87c]"
                   >
                     {showPw ? "Hide" : "Show"}
                   </button>
@@ -163,7 +163,7 @@ function ResetInner() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full rounded-full bg-[#34d186] py-3 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c] disabled:opacity-60"
+                className="w-full rounded-full bg-[#20a957] py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47] disabled:opacity-60"
               >
                 {saving ? "Saving…" : "Set new password"}
               </button>

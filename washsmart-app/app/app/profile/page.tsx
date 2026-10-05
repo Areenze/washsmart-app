@@ -100,7 +100,7 @@ export default function ProfilePage() {
     <section className="mx-auto max-w-3xl px-5 py-8">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -167,11 +167,11 @@ export default function ProfilePage() {
               className={inputClass(touched && !phoneOk)}
             />
             {profile.phone_verified ? (
-              <p className="mt-1 text-xs font-semibold text-[#66dca4]">✓ Verified</p>
+              <p className="mt-1 text-xs font-semibold text-[#48d87c]">✓ Verified</p>
             ) : (
               <Link
                 href="/app/verify-phone?next=/app/profile"
-                className="mt-1 inline-block text-xs font-semibold text-[#66dca4] hover:underline"
+                className="mt-1 inline-block text-xs font-semibold text-[#48d87c] hover:underline"
               >
                 Verify this number →
               </Link>
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                 className="flex items-center justify-between rounded-xl bg-[#0a0f0c] px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#34d186]/10 text-xl">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957]/10 text-xl">
                     🚗
                   </div>
                   <div>
@@ -248,7 +248,7 @@ export default function ProfilePage() {
         <button
           onClick={addVehicle}
           disabled={newVehicle.label.trim().length < 2}
-          className="mt-3 rounded-full border border-[#34d186] px-5 py-2.5 transition-all duration-200 hover:bg-[#34d186]/10 text-sm font-bold text-[#66dca4] disabled:opacity-40"
+          className="mt-3 rounded-full border border-[#20a957] px-5 py-2.5 transition-all duration-200 hover:bg-[#20a957]/10 text-sm font-bold text-[#48d87c] disabled:opacity-40"
         >
           + Add Vehicle
         </button>
@@ -276,7 +276,7 @@ export default function ProfilePage() {
             </div>
             <Link
               href="/app/subscription"
-              className="mt-3 block rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] text-center font-bold text-white"
+              className="mt-3 block rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               Manage Subscription
             </Link>
@@ -286,7 +286,7 @@ export default function ProfilePage() {
             <p className="text-sm text-gray-400">No active subscription.</p>
             <Link
               href="/app/subscription"
-              className="mt-3 block rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] text-center font-bold text-white"
+              className="mt-3 block rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               View Plans
             </Link>

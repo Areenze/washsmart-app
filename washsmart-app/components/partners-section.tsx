@@ -25,8 +25,11 @@ const PartnerMap = dynamic(
 
 export function PartnersSection({
   detailBase = "/app/partners",
+  mapLight = false,
 }: {
   detailBase?: string;
+  /** Light basemap tiles (subscriber light theme). */
+  mapLight?: boolean;
 }) {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [q, setQ] = useState("");
@@ -105,7 +108,7 @@ export function PartnersSection({
       </div>
 
       <div className="mt-6">
-        <PartnerMap partners={filtered} detailBase={detailBase} />
+        <PartnerMap partners={filtered} detailBase={detailBase} light={mapLight} />
       </div>
 
       {query && filtered.length === 0 && (
@@ -139,8 +142,8 @@ export function PartnersSection({
         </p>
 
         {reqState === "done" ? (
-          <div className="mx-auto mt-6 max-w-xl rounded-2xl bg-[#34d186]/10 p-5">
-            <p className="font-bold text-[#66dca4]">Request received ✓</p>
+          <div className="mx-auto mt-6 max-w-xl rounded-2xl bg-[#20a957]/10 p-5">
+            <p className="font-bold text-[#48d87c]">Request received ✓</p>
             <p className="mt-1 text-sm text-gray-400">
               We&rsquo;ll prioritize <span className="font-semibold text-[#e9f2ec]">{reqArea.trim()}</span> as
               our network grows. Watch your inbox for launch news.
@@ -158,21 +161,21 @@ export function PartnersSection({
               inputMode="email"
               autoComplete="email"
               aria-label="Email address"
-              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957]"
             />
             <input
               value={reqArea}
               onChange={(e) => setReqArea(e.target.value)}
               placeholder="Neighborhood or city"
               aria-label="Neighborhood or city"
-              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186]"
+              className="w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957]"
             />
             <button
               type="submit"
               disabled={!canSend}
               className={`shrink-0 rounded-full px-8 py-3 text-sm font-bold text-white transition-all duration-200 active:scale-[0.98] ${
                 canSend
-                  ? "bg-[#34d186] shadow-lg shadow-[#34d186]/20 hover:bg-[#27ab6c]"
+                  ? "bg-[#20a957] shadow-lg shadow-[#20a957]/20 hover:bg-[#1a8a47]"
                   : "cursor-not-allowed bg-white/15"
               }`}
             >

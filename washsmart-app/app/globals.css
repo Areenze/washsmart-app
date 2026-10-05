@@ -4,12 +4,12 @@
   --background: #0a0f0c;
   --foreground: #e9f2ec;
 
-  /* WashSMART brand greens (Bolt-inspired trial) */
-  --brand: #34d186;
+  /* WashSMART brand greens (green color scheme) */
+  --brand: #20a957;
   --brand-deep: #063c28;
-  --brand-accent: #40d48d;
-  --brand-bright: #66dca4;
-  --brand-hover: #27ab6c;
+  --brand-accent: #2ed06a;
+  --brand-bright: #48d87c;
+  --brand-hover: #1a8a47;
 
   /* Surfaces */
   --surface: #111a14;
@@ -103,4 +103,138 @@ textarea {
  * buttons to cursor: default). Disabled buttons keep the default cursor. */
 button:not(:disabled) {
   cursor: pointer;
+}
+
+/* ------------------------------------------------------------------
+ * Subscriber light theme (Bolt-like): white surfaces, near-black text,
+ * WashSMART green accents. Scoped to the /app shell via .subscriber-light
+ * so /partner and /admin keep the dark theme.
+ *
+ * How it works: subscriber routes hardcode dark Tailwind utilities
+ * (bg-[#111a14], text-gray-400, border-white/5, ...). The rules below
+ * remap those utilities to light values inside the subscriber scope.
+ * When adding a NEW dark utility to a subscriber route, add its light
+ * override here. Green brand utilities are intentionally untouched.
+ * ------------------------------------------------------------------ */
+.subscriber-light {
+  color-scheme: light;
+}
+
+/* Page + card surfaces */
+.subscriber-light.bg-\[\#0a0f0c\],
+.subscriber-light .bg-\[\#0a0f0c\] {
+  background-color: #f3f5f4;
+}
+.subscriber-light .bg-\[\#111a14\],
+.subscriber-light .bg-\[\#111a14\]\/95,
+.subscriber-light .bg-\[\#111a14\]\/90,
+.subscriber-light .bg-\[\#111a14\]\/40,
+.subscriber-light .bg-\[\#111a14\]\/10,
+.subscriber-light .bg-\[\#111a14\]\/5 {
+  background-color: #ffffff;
+}
+.subscriber-light .bg-\[\#063c28\] {
+  background-color: #ddf2e6;
+}
+.subscriber-light .bg-white\/5 {
+  background-color: rgb(19 25 21 / 0.04);
+}
+.subscriber-light .bg-white\/10 {
+  background-color: rgb(19 25 21 / 0.06);
+}
+.subscriber-light .bg-white\/15 {
+  background-color: rgb(19 25 21 / 0.08);
+}
+
+/* Primary text */
+.subscriber-light.text-\[\#e9f2ec\],
+.subscriber-light .text-\[\#e9f2ec\] {
+  color: #141a16;
+}
+.subscriber-light .text-white {
+  color: #141a16;
+}
+.subscriber-light .text-white\/70 {
+  color: rgb(20 26 22 / 0.72);
+}
+.subscriber-light .text-white\/75 {
+  color: rgb(20 26 22 / 0.78);
+}
+.subscriber-light .text-white\/60 {
+  color: rgb(20 26 22 / 0.62);
+}
+.subscriber-light .text-white\/50 {
+  color: rgb(20 26 22 / 0.52);
+}
+.subscriber-light .text-gray-200 {
+  color: #2c3430;
+}
+.subscriber-light .text-gray-300 {
+  color: #3f4743;
+}
+.subscriber-light .text-gray-400 {
+  color: #5b665f;
+}
+.subscriber-light .text-gray-500 {
+  color: #6f7973;
+}
+
+/* Accent text: light greens are unreadable on white -> deep green */
+.subscriber-light .text-\[\#48d87c\],
+.subscriber-light .text-\[\#65e28e\],
+.subscriber-light .text-green-400 {
+  color: #178a46;
+}
+.subscriber-light .hover\:text-\[\#48d87c\]:hover {
+  color: #106434;
+}
+.subscriber-light .text-red-400 {
+  color: #dc2626;
+}
+.subscriber-light .hover\:text-red-400:hover {
+  color: #b91c1c;
+}
+.subscriber-light .text-amber-200,
+.subscriber-light .text-\[\#f5b942\] {
+  color: #b45309;
+}
+.subscriber-light .text-yellow-400 {
+  color: #a16207;
+}
+.subscriber-light .text-blue-400 {
+  color: #2563eb;
+}
+
+/* Borders: white hairlines -> ink hairlines */
+.subscriber-light .border-white\/5 {
+  border-color: rgb(20 26 22 / 0.07);
+}
+.subscriber-light .border-white\/10 {
+  border-color: rgb(20 26 22 / 0.1);
+}
+.subscriber-light .border-white\/15 {
+  border-color: rgb(20 26 22 / 0.14);
+}
+.subscriber-light .border-white\/20 {
+  border-color: rgb(20 26 22 / 0.18);
+}
+.subscriber-light .border-white\/25 {
+  border-color: rgb(20 26 22 / 0.22);
+}
+.subscriber-light .border-white\/30 {
+  border-color: rgb(20 26 22 / 0.26);
+}
+.subscriber-light .border-white\/40 {
+  border-color: rgb(20 26 22 / 0.34);
+}
+.subscriber-light .border-white\/70 {
+  border-color: rgb(20 26 22 / 0.6);
+}
+.subscriber-light .border-red-400 {
+  border-color: #ef4444;
+}
+
+/* Leaflet loading background inside the light theme */
+.subscriber-light .leaflet-container {
+  background: #e9eeeb;
 }

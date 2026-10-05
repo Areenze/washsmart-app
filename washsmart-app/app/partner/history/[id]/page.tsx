@@ -43,7 +43,7 @@ export default function PartnerWashDetailPage() {
         <h1 className="text-2xl font-bold">Transaction not found</h1>
         <Link
           href="/partner/history"
-          className="mt-6 inline-block rounded-full bg-[#34d186] px-6 py-3 font-bold text-white"
+          className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
         >
           ← Back to History
         </Link>
@@ -67,7 +67,7 @@ export default function PartnerWashDetailPage() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/history"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back to History
       </Link>

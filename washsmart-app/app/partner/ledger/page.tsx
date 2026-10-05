@@ -45,7 +45,7 @@ export default function PartnerLedgerPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/earnings"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -85,7 +85,7 @@ export default function PartnerLedgerPage() {
               </div>
               <p
                 className={`w-28 text-right font-mono text-sm font-bold ${
-                  e.amount >= 0 ? "text-[#66dca4]" : "text-red-300"
+                  e.amount >= 0 ? "text-[#48d87c]" : "text-red-300"
                 }`}
               >
                 {e.amount >= 0 ? "+" : "−"}

@@ -142,7 +142,7 @@ export default function LoginPage() {
   };
 
   const inputClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186] ${
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
       bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
@@ -150,7 +150,7 @@ export default function LoginPage() {
     <section className="mx-auto max-w-md px-5 py-12">
       <Link
         href="/app"
-        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
+        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
       >
         ← Back
       </Link>
@@ -158,7 +158,7 @@ export default function LoginPage() {
       <div className="rounded-3xl bg-[#111a14] p-7 shadow-sm">
         {step === "sent" ? (
           <div className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#34d186]/10 text-3xl">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
               ✉️
             </div>
             <h1 className="mt-4 text-2xl font-bold">Check your inbox</h1>
@@ -172,7 +172,7 @@ export default function LoginPage() {
             </p>
             <button
               onClick={() => router.push("/app")}
-              className="mt-5 w-full rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] font-bold text-white"
+              className="mt-5 w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
             >
               Continue to the app →
             </button>
@@ -189,7 +189,7 @@ export default function LoginPage() {
             </p>
             <Link
               href="/app/signup"
-              className="mt-6 block w-full rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] text-center font-bold text-white"
+              className="mt-6 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
             >
               Create an account
             </Link>
@@ -223,14 +223,14 @@ export default function LoginPage() {
             <button
               onClick={resendVerification}
               disabled={resendCooldown > 0}
-              className="mt-5 w-full rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] font-bold text-white disabled:opacity-50"
+              className="mt-5 w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white disabled:opacity-50"
             >
               {resendCooldown > 0
                 ? `Resend available in ${resendCooldown}s`
                 : "Resend verification link"}
             </button>
             {resent && (
-              <p className="mt-2 text-xs font-semibold text-[#66dca4]">
+              <p className="mt-2 text-xs font-semibold text-[#48d87c]">
                 A new verification link was sent to {email.trim()}.
               </p>
             )}
@@ -246,7 +246,7 @@ export default function LoginPage() {
           </div>
         ) : (
           <>
-            <p className="text-sm font-semibold text-[#66dca4]">{greet} 👋</p>
+            <p className="text-sm font-semibold text-[#48d87c]">{greet} 👋</p>
             <h1 className="mt-1 text-2xl font-bold">Welcome back</h1>
             <p className="mt-1 text-sm text-gray-400">
               Log in with your email and password.
@@ -294,7 +294,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#66dca4]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#48d87c]"
                   >
                     {showPassword ? "Hide" : "Show"}
                   </button>
@@ -306,7 +306,7 @@ export default function LoginPage() {
                 className={`w-full rounded-full py-3 transition-all duration-200 font-bold text-white ${
                   step === "checking"
                     ? "cursor-wait bg-white/15"
-                    : "bg-[#34d186] hover:bg-[#27ab6c]"
+                    : "bg-[#20a957] hover:bg-[#1a8a47]"
                 }`}
               >
                 {step === "checking" ? "Signing in…" : "Sign In"}
@@ -316,7 +316,7 @@ export default function LoginPage() {
             <div className="mt-4 flex items-center justify-between text-sm">
               <Link
                 href="/app/forgot-password"
-                className="font-semibold text-[#66dca4]"
+                className="font-semibold text-[#48d87c]"
               >
                 Forgot password?
               </Link>
@@ -350,7 +350,7 @@ export default function LoginPage() {
 
             <p className="mt-5 text-center text-sm text-gray-400">
               New to WashSMART?{" "}
-              <Link href="/app/signup" className="font-bold text-[#66dca4]">
+              <Link href="/app/signup" className="font-bold text-[#48d87c]">
                 Create an account →
               </Link>
             </p>
