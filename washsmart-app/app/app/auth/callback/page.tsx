@@ -42,6 +42,16 @@ function CallbackInner() {
   useEffect(() => {
     (async () => {
       try {
+        // Supabase redirects here with ?error=&error_description= when the
+        // token was already used or expired. Surface the specific reason
+        // instead of our generic text.
+        const urlError =
+          search.get("error_description") || search.get("error");
+        if (urlError) {
+          throw new Error(
+            `${urlError} Please request a new link and open it once.`
+          );
+        }
         const code = search.get("code");
         if (code) {
           // PKCE path: exchange the code for a session.
@@ -128,8 +138,16 @@ function CallbackInner() {
             : "/app";
         router.replace(safeNext);
       } catch (e) {
+        // A ?code= that fails to exchange almost always means the link was
+        // opened in a different browser than the one that requested it
+        // (the PKCE verifier lives in the requesting browser's storage).
+        const hadCode = !!search.get("code");
         setError(
-          e instanceof Error ? e.message : "Verification failed. Please try again."
+          hadCode
+            ? "This link couldn't be verified in this browser — it was probably opened in a different browser than the one that requested it. Please go back, request a new link, and open it in the same browser."
+            : e instanceof Error
+              ? e.message
+              : "Verification failed. Please try again."
         );
       }
     })();
@@ -137,16 +155,32 @@ function CallbackInner() {
   }, []);
 
   if (error) {
+    // Send the user back to where they can actually request a fresh link:
+    // a failed login link -> login page, signup -> signup page (its verify
+    // panel offers resend), checkout -> plans.
+    const failedMode = search.get("mode");
+    const recovery =
+      failedMode === "login"
+        ? { href: "/app/login", label: "Back to log in" }
+        : failedMode === "signup"
+          ? { href: "/app/signup", label: "Back to sign up" }
+          : { href: "/app/subscription", label: "Back to Plans" };
     return (
       <section className="mx-auto max-w-xl px-5 py-16 text-center">
         <h1 className="text-2xl font-bold">Verification didn&apos;t work</h1>
         <p className="mt-3 text-sm text-gray-400">{error}</p>
         <Link
-          href="/app/subscription"
+          href={recovery.href}
           className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
         >
-          Back to Plans
+          {recovery.label}
         </Link>
+        {failedMode === "signup" && (
+          <p className="mx-auto mt-4 max-w-sm text-xs text-gray-500">
+            Tip: enter your email on the sign-up page — if it needs
+            verification you&apos;ll get a resend option there.
+          </p>
+        )}
       </section>
     );
   }
