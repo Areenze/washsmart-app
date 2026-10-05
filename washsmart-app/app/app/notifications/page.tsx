@@ -55,7 +55,7 @@ export default function NotificationsPage() {
         {items.some((n) => !n.read) && (
           <button
             onClick={readAll}
-            className="text-sm font-bold text-[#48d87c]"
+            className="text-sm font-bold text-[#66dca4]"
           >
             Mark all read
           </button>
@@ -76,7 +76,7 @@ export default function NotificationsPage() {
             const inner = (
               <div
                 className={`flex gap-3 rounded-2xl p-4 ${
-                  n.read ? "bg-[#111a14]" : "bg-[#20a957]/10"
+                  n.read ? "bg-[#111a14]" : "bg-[#34d186]/10"
                 }`}
               >
                 <span className="text-2xl">{KIND_ICON[n.kind] ?? "🔔"}</span>
@@ -95,7 +95,7 @@ export default function NotificationsPage() {
                   </p>
                 </div>
                 {!n.read && (
-                  <span className="h-2.5 w-2.5 shrink-0 self-center rounded-full bg-[#20a957]" />
+                  <span className="h-2.5 w-2.5 shrink-0 self-center rounded-full bg-[#34d186]" />
                 )}
               </div>
             );

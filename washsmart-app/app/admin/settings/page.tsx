@@ -148,7 +148,7 @@ function AdminsTab() {
         <button
           onClick={grant}
           disabled={busy || !email.trim()}
-          className="rounded-xl bg-[#20a957] px-5 text-sm font-bold text-white disabled:opacity-40"
+          className="rounded-xl bg-[#34d186] px-5 text-sm font-bold text-white disabled:opacity-40"
         >
           {busy ? "…" : "Grant admin"}
         </button>
@@ -301,14 +301,14 @@ function PlansTab() {
                         [p.id]: { ...prev[p.id], popular: e.target.checked },
                       }))
                     }
-                    className="h-4 w-4 accent-[#20a957]"
+                    className="h-4 w-4 accent-[#34d186]"
                   />
                   Mark as popular
                 </label>
                 <button
                   onClick={() => setConfirming(p)}
                   disabled={!dirty || saving === p.id}
-                  className="w-full rounded-full bg-[#20a957] py-2 text-sm font-bold text-white disabled:opacity-30"
+                  className="w-full rounded-full bg-[#34d186] py-2 text-sm font-bold text-white disabled:opacity-30"
                 >
                   {saving === p.id ? "Saving…" : "Save changes"}
                 </button>
@@ -357,7 +357,7 @@ export default function AdminSettingsPage() {
             onClick={() => setTab(t.id)}
             className={`rounded-full px-4 py-1.5 text-sm font-bold ${
               tab === t.id
-                ? "bg-[#20a957] text-white"
+                ? "bg-[#34d186] text-white"
                 : "bg-[#111a14] text-gray-400"
             }`}
           >

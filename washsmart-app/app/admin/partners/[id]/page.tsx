@@ -50,7 +50,7 @@ export default function AdminPartnerDetailPage() {
 
   return (
     <div>
-      <button onClick={() => router.back()} className="mb-4 text-sm font-semibold text-[#48d87c]">
+      <button onClick={() => router.back()} className="mb-4 text-sm font-semibold text-[#66dca4]">
         ← Back
       </button>
       <div className="flex flex-wrap items-center gap-3">
@@ -103,7 +103,7 @@ export default function AdminPartnerDetailPage() {
               <h3 className="mb-2 mt-4 text-sm font-bold text-gray-400">SERVICES</h3>
               <div className="flex flex-wrap gap-2">
                 {p.services.map((x: string) => (
-                  <span key={x} className="rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-semibold text-[#48d87c]">
+                  <span key={x} className="rounded-full bg-[#34d186]/10 px-3 py-1 text-xs font-semibold text-[#66dca4]">
                     {x}
                   </span>
                 ))}
@@ -149,7 +149,7 @@ export default function AdminPartnerDetailPage() {
           {p.application_ref && (
             <Link
               href={`/admin/applications/${p.application_ref}`}
-              className="mt-4 inline-block text-sm font-bold text-[#48d87c]"
+              className="mt-4 inline-block text-sm font-bold text-[#66dca4]"
             >
               View application →
             </Link>
@@ -199,7 +199,7 @@ export default function AdminPartnerDetailPage() {
                 ))}
               </ul>
             )}
-            <Link href="/admin/settlements" className="mt-3 inline-block text-sm font-bold text-[#48d87c]">
+            <Link href="/admin/settlements" className="mt-3 inline-block text-sm font-bold text-[#66dca4]">
               Manage settlements →
             </Link>
           </Section>

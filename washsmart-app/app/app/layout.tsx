@@ -151,14 +151,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 onClick={() => goSection(t.id)}
                 className={`group relative transition-colors ${
                   isActive(t.id)
-                    ? "text-[#48d87c]"
+                    ? "text-[#66dca4]"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
                 {t.label}
                 <span
                   aria-hidden
-                  className={`absolute -bottom-1.5 left-0 h-[3px] w-full origin-left rounded-full bg-[#20a957] transition-transform duration-300 ${
+                  className={`absolute -bottom-1.5 left-0 h-[3px] w-full origin-left rounded-full bg-[#34d186] transition-transform duration-300 ${
                     isActive(t.id) ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                   }`}
                 />
@@ -170,13 +170,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-3">
               <Link
                 href="/app/login"
-                className="text-sm font-bold text-[#48d87c] transition-colors hover:text-white"
+                className="text-sm font-bold text-[#66dca4] transition-colors hover:text-white"
               >
                 Log in
               </Link>
               <Link
                 href="/app/signup"
-                className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+                className="rounded-full bg-[#34d186] px-5 py-2 text-sm font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
               >
                 Sign up
               </Link>
@@ -188,7 +188,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   href="/app#subscription"
                   title={`${washBalance} ${washBalance === 1 ? "wash" : "washes"} remaining`}
                   aria-label={`${washBalance} ${washBalance === 1 ? "wash" : "washes"} remaining`}
-                  className="rounded-full bg-[#20a957]/15 px-3 py-2 text-xs font-bold text-[#48d87c] transition-colors hover:bg-[#20a957]/25"
+                  className="rounded-full bg-[#34d186]/15 px-3 py-2 text-xs font-bold text-[#66dca4] transition-colors hover:bg-[#34d186]/25"
                 >
                   🧽 {washBalance}
                   <span className="hidden sm:inline">
@@ -215,7 +215,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               <Link
                 href="/app/profile"
                 aria-label="Profile"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#20a957]/10 text-lg"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#34d186]/10 text-lg"
               >
                 👤
               </Link>
@@ -236,7 +236,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               onClick={() => goSection(t.id)}
               className={
                 isActive(t.id)
-                  ? "rounded-full bg-[#20a957]/15 px-4 py-1.5 font-bold text-[#48d87c]"
+                  ? "rounded-full bg-[#34d186]/15 px-4 py-1.5 font-bold text-[#66dca4]"
                   : "px-4 py-1.5 text-gray-400"
               }
             >

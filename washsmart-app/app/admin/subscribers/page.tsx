@@ -57,7 +57,7 @@ export default function AdminSubscribersPage() {
           />
           <button
             type="submit"
-            className="rounded-full bg-[#20a957] px-4 py-1.5 text-xs font-bold text-white"
+            className="rounded-full bg-[#34d186] px-4 py-1.5 text-xs font-bold text-white"
           >
             Search
           </button>
@@ -120,7 +120,7 @@ export default function AdminSubscribersPage() {
                   <td className="px-5 py-4 text-right">
                     <Link
                       href={`/admin/subscribers/${r.id}`}
-                      className="font-bold text-[#48d87c]"
+                      className="font-bold text-[#66dca4]"
                     >
                       View →
                     </Link>

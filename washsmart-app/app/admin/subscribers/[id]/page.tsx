@@ -78,7 +78,7 @@ export default function AdminSubscriberDetailPage() {
     <div>
       <button
         onClick={() => router.back()}
-        className="mb-4 text-sm font-semibold text-[#48d87c]"
+        className="mb-4 text-sm font-semibold text-[#66dca4]"
       >
         ← Back
       </button>
@@ -123,7 +123,7 @@ export default function AdminSubscriberDetailPage() {
               <p className="text-xs text-gray-500">Used</p>
             </div>
             <div className="rounded-2xl bg-white/[0.03] p-4">
-              <p className="text-2xl font-bold text-[#48d87c]">{totalIssued - totalUsed}</p>
+              <p className="text-2xl font-bold text-[#66dca4]">{totalIssued - totalUsed}</p>
               <p className="text-xs text-gray-500">Remaining</p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export default function AdminSubscriberDetailPage() {
               {d.washes.map((w) => (
                 <li key={w.id} className="rounded-xl bg-white/[0.03] px-3 py-2">
                   <div className="flex justify-between gap-2">
-                    <Link href={`/admin/partners/${w.partnerId}`} className="font-bold text-[#48d87c]">
+                    <Link href={`/admin/partners/${w.partnerId}`} className="font-bold text-[#66dca4]">
                       {w.partnerName}
                     </Link>
                     <span className="text-xs text-gray-500">{fmtDate(w.at)}</span>

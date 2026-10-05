@@ -98,7 +98,7 @@ function ResetInner() {
             <Logo />
             <Brand />
           </Link>
-          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">PARTNER PORTAL</span>
+          <span className="rounded-md bg-[#34d186]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#66dca4]">PARTNER PORTAL</span>
         </div>
       </header>
 
@@ -114,7 +114,7 @@ function ResetInner() {
               <p className="font-bold text-red-300">{fatal}</p>
               <Link
                 href="/partner/forgot-password"
-                className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
+                className="mt-6 inline-block rounded-full bg-[#34d186] px-6 py-3 font-bold text-white"
               >
                 Request a new link
               </Link>
@@ -136,12 +136,12 @@ function ResetInner() {
                   onChange={(e) => setPw(e.target.value)}
                   placeholder="At least 6 characters"
                   autoComplete="new-password"
-                  className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
+                  className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#34d186]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#66dca4]"
                 >
                   {showPw ? "Hide" : "Show"}
                 </button>
@@ -160,7 +160,7 @@ function ResetInner() {
                 onChange={(e) => setPw2(e.target.value)}
                 placeholder="Repeat the new password"
                 autoComplete="new-password"
-                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
+                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#34d186]"
               />
 
               {error && (

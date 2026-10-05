@@ -43,7 +43,7 @@ export default function PartnerDetail({
           action={
             <Link
               href={backHref}
-              className="inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
+              className="inline-block rounded-full bg-[#34d186] px-6 py-3 transition-all duration-200 hover:bg-[#27ab6c] font-bold text-white"
             >
               Back to Partners
             </Link>
@@ -61,7 +61,7 @@ export default function PartnerDetail({
     <section className="mx-auto max-w-3xl px-5 py-8">
       <Link
         href={backHref}
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
       >
         ← Back
       </Link>
@@ -101,7 +101,7 @@ export default function PartnerDetail({
             <span className="text-gray-400">Phone</span>
             <a
               href={`tel:${partner.phone.replace(/\s/g, "")}`}
-              className="font-semibold text-[#48d87c]"
+              className="font-semibold text-[#66dca4]"
             >
               {partner.phone}
             </a>
@@ -118,7 +118,7 @@ export default function PartnerDetail({
             {partner.services.map((s) => (
               <span
                 key={s}
-                className="rounded-full bg-[#20a957]/10 px-3 py-1.5 text-sm font-semibold text-[#48d87c]"
+                className="rounded-full bg-[#34d186]/10 px-3 py-1.5 text-sm font-semibold text-[#66dca4]"
               >
                 {s}
               </span>
@@ -149,7 +149,7 @@ export default function PartnerDetail({
           {partner.status === "Open" ? (
             <Link
               href={`/app/scan?partner=${partner.id}`}
-              className="flex-1 rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
+              className="flex-1 rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] text-center font-bold text-white"
             >
               Scan & Wash Here
             </Link>
@@ -162,7 +162,7 @@ export default function PartnerDetail({
             href={mapsUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 rounded-full border border-[#20a957] py-3 transition-all duration-200 hover:bg-[#20a957]/10 text-center font-bold text-[#48d87c]"
+            className="flex-1 rounded-full border border-[#34d186] py-3 transition-all duration-200 hover:bg-[#34d186]/10 text-center font-bold text-[#66dca4]"
           >
             Get Directions
           </a>

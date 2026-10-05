@@ -37,7 +37,7 @@ export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
       <div className="mx-auto max-w-3xl px-5 py-12">
-        <Link href="/" className="text-sm font-semibold text-[#48d87c]">
+        <Link href="/" className="text-sm font-semibold text-[#66dca4]">
           ← Back to home
         </Link>
         <h1 className="mt-6 text-4xl font-bold">Privacy Policy</h1>
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
           Questions about your data? Email{" "}
           <a
             href="mailto:support@washsmart.ng"
-            className="font-bold text-[#48d87c]"
+            className="font-bold text-[#66dca4]"
           >
             support@washsmart.ng
           </a>

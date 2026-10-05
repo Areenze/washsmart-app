@@ -129,7 +129,7 @@ export default function AdminSettlementsPage() {
               key={f}
               onClick={() => setStatus(f)}
               className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
-                status === f ? "bg-[#20a957] text-white" : "bg-[#111a14] text-gray-400"
+                status === f ? "bg-[#34d186] text-white" : "bg-[#111a14] text-gray-400"
               }`}
             >
               {f}
@@ -139,7 +139,7 @@ export default function AdminSettlementsPage() {
       </div>
 
       {notice && (
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-[#20a957]/10 px-5 py-3 text-sm font-semibold text-[#48d87c]">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-[#34d186]/10 px-5 py-3 text-sm font-semibold text-[#66dca4]">
           <span>{notice}</span>
           <button onClick={() => setNotice(null)} className="text-lg leading-none">
             ×
@@ -167,7 +167,7 @@ export default function AdminSettlementsPage() {
                     <div className="text-sm">
                       <Link
                         href={`/admin/partners/${a.partnerId}`}
-                        className="font-bold text-[#48d87c]"
+                        className="font-bold text-[#66dca4]"
                       >
                         {a.partnerName}
                       </Link>
@@ -206,7 +206,7 @@ export default function AdminSettlementsPage() {
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="font-bold">
-                        <Link href={`/admin/partners/${r.partnerId}`} className="text-[#48d87c]">
+                        <Link href={`/admin/partners/${r.partnerId}`} className="text-[#66dca4]">
                           {r.partnerName}
                         </Link>{" "}
                         <span className="text-gray-400">· {r.period}</span>
@@ -227,7 +227,7 @@ export default function AdminSettlementsPage() {
                         <button
                           onClick={() => askApprove(r)}
                           disabled={busy !== null}
-                          className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white transition-all hover:bg-[#1a8a47] disabled:opacity-50"
+                          className="rounded-full bg-[#34d186] px-5 py-2 text-sm font-bold text-white transition-all hover:bg-[#27ab6c] disabled:opacity-50"
                         >
                           Approve
                         </button>
@@ -236,7 +236,7 @@ export default function AdminSettlementsPage() {
                         <button
                           onClick={() => askPaid(r)}
                           disabled={busy !== null}
-                          className="rounded-full border border-[#20a957] px-5 py-2 text-sm font-bold text-[#48d87c] transition-all hover:bg-[#20a957]/10 disabled:opacity-50"
+                          className="rounded-full border border-[#34d186] px-5 py-2 text-sm font-bold text-[#66dca4] transition-all hover:bg-[#34d186]/10 disabled:opacity-50"
                         >
                           Mark paid
                         </button>

@@ -176,7 +176,7 @@ export default function UserHome() {
       </p>
 
       {verifyEmail && !profile && (
-        <div className="mt-4 flex items-start justify-between gap-3 rounded-2xl border border-[#20a957]/40 bg-[#0e2a1c] p-4">
+        <div className="mt-4 flex items-start justify-between gap-3 rounded-2xl border border-[#34d186]/40 bg-[#0e2a1c] p-4">
           <p className="text-sm text-gray-300">
             ✉️{" "}
             <span className="font-bold text-[#e9f2ec]">
@@ -262,7 +262,7 @@ export default function UserHome() {
               </p>
               <Link
                 href="/app/login"
-                className="rounded-full bg-[#20a957] px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+                className="rounded-full bg-[#34d186] px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
               >
                 Log in →
               </Link>
@@ -275,7 +275,7 @@ export default function UserHome() {
               </p>
               <Link
                 href="#subscription"
-                className="mt-4 inline-block rounded-full bg-[#2ed06a] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#25b856]"
+                className="mt-4 inline-block rounded-full bg-[#40d48d] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#25b856]"
               >
                 View Plans
               </Link>
@@ -331,14 +331,14 @@ export default function UserHome() {
             {subscription ? (
               <Link
                 href="#wash-qr"
-                className="rounded-full bg-[#20a957] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/20 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+                className="rounded-full bg-[#34d186] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#34d186]/20 transition-all duration-200 hover:bg-[#27ab6c] active:scale-[0.98]"
               >
                 Get My Wash QR
               </Link>
             ) : (
               <Link
                 href="/app/signup"
-                className="rounded-full bg-[#20a957] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/20 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+                className="rounded-full bg-[#34d186] px-6 py-3 font-semibold tracking-wide text-white shadow-lg shadow-[#34d186]/20 transition-all duration-200 hover:bg-[#27ab6c] active:scale-[0.98]"
               >
                 Subscribe Now
               </Link>
@@ -378,13 +378,13 @@ export default function UserHome() {
                     {subscription.planName} Plan
                   </h2>
                 </div>
-                <div className="rounded-full bg-[#20a957]/15 px-3 py-1 text-xs font-bold text-green-400">
+                <div className="rounded-full bg-[#34d186]/15 px-3 py-1 text-xs font-bold text-green-400">
                   ACTIVE
                 </div>
               </div>
-              <div className="mt-6 rounded-2xl bg-[#20a957]/10 p-5">
+              <div className="mt-6 rounded-2xl bg-[#34d186]/10 p-5">
                 <p className="text-sm text-gray-400">Washes remaining</p>
-                <div className="mt-1 text-4xl font-bold text-[#48d87c]">
+                <div className="mt-1 text-4xl font-bold text-[#66dca4]">
                   {totalWashes}
                   <span className="text-base font-normal text-gray-400">
                     {" "}
@@ -392,7 +392,7 @@ export default function UserHome() {
                   </span>
                 </div>
                 {bonusWashes > 0 && (
-                  <p className="mt-1 text-xs font-semibold text-[#48d87c]">
+                  <p className="mt-1 text-xs font-semibold text-[#66dca4]">
                     🎁 Includes {bonusWashes} free referral wash
                     {bonusWashes === 1 ? "" : "es"}
                   </p>
@@ -407,7 +407,7 @@ export default function UserHome() {
                 className={`mt-5 block w-full rounded-full py-3 transition-all duration-200 text-center font-bold text-white ${
                   outOfWashes
                     ? "pointer-events-none bg-white/15"
-                    : "bg-[#20a957] hover:bg-[#1a8a47]"
+                    : "bg-[#34d186] hover:bg-[#27ab6c]"
                 }`}
               >
                 {outOfWashes ? "No Washes Left" : "Scan & Wash"}
@@ -415,7 +415,7 @@ export default function UserHome() {
               {outOfWashes && (
                 <Link
                   href="#subscription"
-                  className="mt-3 block w-full rounded-full border border-[#20a957] py-3 transition-all duration-200 hover:bg-[#20a957]/10 text-center text-sm font-bold text-[#48d87c]"
+                  className="mt-3 block w-full rounded-full border border-[#34d186] py-3 transition-all duration-200 hover:bg-[#34d186]/10 text-center text-sm font-bold text-[#66dca4]"
                 >
                   Renew Subscription
                 </Link>
@@ -430,7 +430,7 @@ export default function UserHome() {
               </p>
               <Link
                 href="#subscription"
-                className="mt-5 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
+                className="mt-5 block w-full rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] text-center font-bold text-white"
               >
                 View Plans
               </Link>
@@ -457,7 +457,7 @@ export default function UserHome() {
           action={
             <Link
               href="/app/history"
-              className="text-sm font-semibold text-[#48d87c]"
+              className="text-sm font-semibold text-[#66dca4]"
             >
               View all →
             </Link>

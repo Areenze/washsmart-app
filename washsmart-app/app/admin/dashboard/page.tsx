@@ -26,7 +26,7 @@ function Card({
   href?: string;
 }) {
   const inner = (
-    <div className="rounded-3xl bg-[#111a14] p-5 shadow-sm transition-colors hover:border hover:border-[#20a957]/40">
+    <div className="rounded-3xl bg-[#111a14] p-5 shadow-sm transition-colors hover:border hover:border-[#34d186]/40">
       <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
         {label}
       </p>

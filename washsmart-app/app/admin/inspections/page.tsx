@@ -45,7 +45,7 @@ export default function AdminInspectionsPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={`rounded-full px-4 py-2 text-sm font-bold ${
-                filter === f ? "bg-[#20a957] text-white" : "bg-[#111a14] text-gray-400"
+                filter === f ? "bg-[#34d186] text-white" : "bg-[#111a14] text-gray-400"
               }`}
             >
               {f === "in_progress" ? "In progress" : f[0].toUpperCase() + f.slice(1)}
@@ -95,7 +95,7 @@ export default function AdminInspectionsPage() {
                   <td className="px-5 py-4 text-right">
                     <Link
                       href={`/admin/applications/${r.applicationRef}`}
-                      className="font-bold text-[#48d87c]"
+                      className="font-bold text-[#66dca4]"
                     >
                       Open →
                     </Link>

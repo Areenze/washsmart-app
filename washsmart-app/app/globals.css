@@ -4,12 +4,12 @@
   --background: #0a0f0c;
   --foreground: #e9f2ec;
 
-  /* WashSMART brand greens */
-  --brand: #20a957;
+  /* WashSMART brand greens (Bolt-inspired trial) */
+  --brand: #34d186;
   --brand-deep: #063c28;
-  --brand-accent: #2ed06a;
-  --brand-bright: #48d87c;
-  --brand-hover: #1a8a47;
+  --brand-accent: #40d48d;
+  --brand-bright: #66dca4;
+  --brand-hover: #27ab6c;
 
   /* Surfaces */
   --surface: #111a14;

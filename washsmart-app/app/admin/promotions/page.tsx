@@ -106,7 +106,7 @@ export default function AdminPromotionsPage() {
         </div>
         <button
           onClick={() => setShowForm((s) => !s)}
-          className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white"
+          className="rounded-full bg-[#34d186] px-5 py-2 text-sm font-bold text-white"
         >
           {showForm ? "Close" : "New code"}
         </button>
@@ -174,7 +174,7 @@ export default function AdminPromotionsPage() {
                     onClick={() => togglePlan(p.id)}
                     className={`rounded-full px-3 py-1 text-xs font-bold ${
                       planIds.includes(p.id)
-                        ? "bg-[#20a957] text-white"
+                        ? "bg-[#34d186] text-white"
                         : "bg-white/5 text-gray-400"
                     }`}
                   >
@@ -199,7 +199,7 @@ export default function AdminPromotionsPage() {
           <button
             onClick={create}
             disabled={busy}
-            className="mt-4 rounded-full bg-[#20a957] px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+            className="mt-4 rounded-full bg-[#34d186] px-6 py-2.5 text-sm font-bold text-white disabled:opacity-50"
           >
             {busy ? "Creating…" : "Create code"}
           </button>

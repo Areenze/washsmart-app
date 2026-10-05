@@ -103,14 +103,14 @@ function OnboardingInner() {
   };
 
   const inputClass = (bad: boolean) =>
-    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#20a957] ${
+    `w-full rounded-xl border px-4 py-3 text-sm text-[#e9f2ec] outline-none placeholder:text-gray-500 focus:border-[#34d186] ${
       bad ? "border-red-400 bg-red-500/10" : "border-white/10 bg-white/5"
     }`;
 
   if (loading) {
     return (
       <section className="mx-auto max-w-xl px-5 py-16 text-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
+        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#34d186]" />
         <p className="mt-5 font-bold">Setting up your account…</p>
       </section>
     );
@@ -198,7 +198,7 @@ function OnboardingInner() {
 
         <button
           onClick={() => setDrafts((ds) => [...ds, emptyDraft()])}
-          className="w-full rounded-full border border-dashed border-white/20 py-3 text-sm font-bold text-gray-300 transition-all duration-200 hover:border-[#20a957] hover:text-[#48d87c]"
+          className="w-full rounded-full border border-dashed border-white/20 py-3 text-sm font-bold text-gray-300 transition-all duration-200 hover:border-[#34d186] hover:text-[#66dca4]"
         >
           + Add another vehicle
         </button>
@@ -237,7 +237,7 @@ function OnboardingInner() {
         className={`mt-6 w-full rounded-full py-3 font-bold text-white transition-all duration-200 ${
           saving
             ? "cursor-wait bg-white/15"
-            : "bg-[#20a957] hover:bg-[#1a8a47] active:scale-[0.98]"
+            : "bg-[#34d186] hover:bg-[#27ab6c] active:scale-[0.98]"
         }`}
       >
         {saving ? "Saving…" : "Continue to plans →"}

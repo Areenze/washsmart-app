@@ -71,7 +71,7 @@ const pinIcon = L.divIcon({
   html: `<div style="
       width:30px;height:30px;border-radius:50% 50% 50% 0;
       transform:rotate(-45deg);
-      background:#20a957;
+      background:#34d186;
       border:3px solid #0d1f14;
       box-shadow:0 2px 8px rgba(0,0,0,.5);
     "><div style="
@@ -164,7 +164,7 @@ export function PartnerMap({
                       href={`${detailBase}/${p.id}`}
                       style={{
                         display: "inline-block",
-                        background: "#20a957",
+                        background: "#34d186",
                         color: "#fff",
                         fontWeight: 700,
                         fontSize: 12,

@@ -47,7 +47,7 @@ export default function AdminPartnersPage() {
                 onClick={() => setStatus(f)}
                 className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
                   status === f
-                    ? "bg-[#20a957] text-white"
+                    ? "bg-[#34d186] text-white"
                     : "bg-[#111a14] text-gray-400"
                 }`}
               >
@@ -70,7 +70,7 @@ export default function AdminPartnersPage() {
             />
             <button
               type="submit"
-              className="rounded-full bg-[#20a957] px-4 py-1.5 text-xs font-bold text-white"
+              className="rounded-full bg-[#34d186] px-4 py-1.5 text-xs font-bold text-white"
             >
               Search
             </button>
@@ -118,7 +118,7 @@ export default function AdminPartnersPage() {
                     <span className="text-xs text-gray-500">({r.reviewCount})</span>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    <Link href={`/admin/partners/${r.id}`} className="font-bold text-[#48d87c]">
+                    <Link href={`/admin/partners/${r.id}`} className="font-bold text-[#66dca4]">
                       View →
                     </Link>
                   </td>

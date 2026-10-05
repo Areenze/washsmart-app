@@ -87,7 +87,7 @@ function FaqItem({
         <span className="font-semibold">{q}</span>
         <svg
           aria-hidden
-          className={`h-5 w-5 shrink-0 text-[#48d87c] transition-transform duration-300 ${
+          className={`h-5 w-5 shrink-0 text-[#66dca4] transition-transform duration-300 ${
             open ? "rotate-180" : ""
           }`}
           fill="none"
@@ -115,12 +115,12 @@ function NavLink({ href, children }: { href: string; children: string }) {
   return (
     <Link
       href={href}
-      className="group relative text-[#48d87c] transition-colors hover:text-white"
+      className="group relative text-[#66dca4] transition-colors hover:text-white"
     >
       {children}
       <span
         aria-hidden
-        className="absolute -bottom-1.5 left-0 h-[3px] w-full origin-left scale-x-0 rounded-full bg-[#20a957] transition-transform duration-300 group-hover:scale-x-100"
+        className="absolute -bottom-1.5 left-0 h-[3px] w-full origin-left scale-x-0 rounded-full bg-[#34d186] transition-transform duration-300 group-hover:scale-x-100"
       />
     </Link>
   );
@@ -177,7 +177,7 @@ export default function EntryPage() {
             <NavLink href="/app/login">Log in</NavLink>
             <Link
               href="/app/signup"
-              className="rounded-full bg-[#20a957] px-5 py-2.5 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+              className="rounded-full bg-[#34d186] px-5 py-2.5 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
             >
               Subscribe
             </Link>
@@ -261,7 +261,7 @@ export default function EntryPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="#plans"
-                className="inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold tracking-wide text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] hover:shadow-xl hover:shadow-[#20a957]/30 active:scale-[0.98]"
+                className="inline-block rounded-full bg-[#34d186] px-8 py-4 text-lg font-semibold tracking-wide text-white shadow-lg shadow-[#34d186]/25 transition-all duration-200 hover:bg-[#27ab6c] hover:shadow-xl hover:shadow-[#34d186]/30 active:scale-[0.98]"
               >
                 View Plans
               </Link>
@@ -288,7 +288,7 @@ export default function EntryPage() {
                 </div>
                 <button
                   type="submit"
-                  className="rounded-full bg-[#20a957] px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+                  className="rounded-full bg-[#34d186] px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#27ab6c] active:scale-[0.98]"
                 >
                   Find a wash
                 </button>
@@ -302,7 +302,7 @@ export default function EntryPage() {
                   aria-label={`Show slide ${i + 1}`}
                   className={`h-2 rounded-full transition-all ${
                     i === slide
-                      ? "w-8 bg-[#48d87c]"
+                      ? "w-8 bg-[#66dca4]"
                       : "w-2 bg-[#111a14]/40 hover:bg-[#111a14]/70"
                   }`}
                 />
@@ -330,7 +330,7 @@ export default function EntryPage() {
           </p>
           <p className="mt-6 text-xl font-bold text-white">
             WashSMART changes that.{" "}
-            <span className="text-[#48d87c]">
+            <span className="text-[#66dca4]">
               One subscription. Wash credits. Any approved partner.
             </span>
           </p>
@@ -390,7 +390,7 @@ export default function EntryPage() {
             {STEPS.map(([n, title, body], i) => (
               <Reveal key={n} delay={i * 100}>
                 <div className="h-full rounded-3xl border border-white/5 bg-[#111a14] p-6">
-                  <p className="text-3xl font-bold text-[#20a957]/40">{n}</p>
+                  <p className="text-3xl font-bold text-[#34d186]/40">{n}</p>
                   <p className="mt-3 font-bold">{title}</p>
                   <p className="mt-1 text-sm text-gray-400">{body}</p>
                 </div>
@@ -398,7 +398,7 @@ export default function EntryPage() {
             ))}
           </div>
           <Reveal delay={200}>
-            <div className="mt-10 rounded-3xl border border-[#20a957]/25 bg-[#0e2a1c] p-8">
+            <div className="mt-10 rounded-3xl border border-[#34d186]/25 bg-[#0e2a1c] p-8">
               <p className="text-center text-xs font-bold tracking-[0.2em] text-[#65e28e]">
                 AT THE CAR WASH
               </p>
@@ -417,7 +417,7 @@ export default function EntryPage() {
                       {s}
                     </div>
                     {i < arr.length - 1 && (
-                      <span aria-hidden className="hidden shrink-0 text-[#48d87c] sm:block">
+                      <span aria-hidden className="hidden shrink-0 text-[#66dca4] sm:block">
                         →
                       </span>
                     )}
@@ -470,7 +470,7 @@ export default function EntryPage() {
                     </div>
                   </div>
                   {i < arr.length - 1 && (
-                    <div aria-hidden className="ml-7 h-6 w-px bg-[#20a957]/40" />
+                    <div aria-hidden className="ml-7 h-6 w-px bg-[#34d186]/40" />
                   )}
                 </div>
               ))}
@@ -497,7 +497,7 @@ export default function EntryPage() {
                   <tr className="bg-[#111a14] text-gray-400">
                     <th className="px-5 py-4 font-semibold"></th>
                     <th className="px-5 py-4 font-semibold">Pay as you go</th>
-                    <th className="bg-[#0e2a1c] px-5 py-4 font-bold text-[#48d87c]">
+                    <th className="bg-[#0e2a1c] px-5 py-4 font-bold text-[#66dca4]">
                       WashSMART
                     </th>
                   </tr>
@@ -515,7 +515,7 @@ export default function EntryPage() {
                       <td className="px-5 py-3.5 text-gray-600">
                         {a ? "✓" : "—"}
                       </td>
-                      <td className="bg-[#0e2a1c]/60 px-5 py-3.5 font-bold text-[#48d87c]">
+                      <td className="bg-[#0e2a1c]/60 px-5 py-3.5 font-bold text-[#66dca4]">
                         {b ? "✓" : "—"}
                       </td>
                     </tr>
@@ -549,12 +549,12 @@ export default function EntryPage() {
                 <div
                   className={`relative flex h-full flex-col rounded-3xl border p-8 ${
                     p.popular
-                      ? "border-[#20a957] bg-[#0e2a1c] shadow-[0_0_40px_8px_rgb(32_169_87/0.15)]"
+                      ? "border-[#34d186] bg-[#0e2a1c] shadow-[0_0_40px_8px_rgb(32_169_87/0.15)]"
                       : "border-white/5 bg-[#111a14]"
                   }`}
                 >
                   {p.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#20a957] px-4 py-1 text-xs font-bold text-white">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#34d186] px-4 py-1 text-xs font-bold text-white">
                       MOST POPULAR
                     </span>
                   )}
@@ -565,14 +565,14 @@ export default function EntryPage() {
                     ₦{p.amount.toLocaleString("en-NG")}
                   </p>
                   <p className="mt-1 text-sm text-gray-400">per 30 days</p>
-                  <p className="mt-4 text-2xl font-bold text-[#48d87c]">
+                  <p className="mt-4 text-2xl font-bold text-[#66dca4]">
                     {p.washes} wash{p.washes === 1 ? "" : "es"}
                   </p>
                   <Link
                     href="/app/signup"
                     className={`mt-6 block rounded-full py-3 text-center font-bold text-white transition-all duration-200 active:scale-[0.98] ${
                       p.popular
-                        ? "bg-[#20a957] hover:bg-[#1a8a47]"
+                        ? "bg-[#34d186] hover:bg-[#27ab6c]"
                         : "bg-white/10 hover:bg-white/15"
                     }`}
                   >
@@ -611,7 +611,7 @@ export default function EntryPage() {
             </p>
             <Link
               href="/app/signup"
-              className="mt-6 inline-block rounded-full border-2 border-[#20a957]/50 px-8 py-3.5 font-bold text-[#48d87c] transition-all duration-200 hover:border-[#20a957] hover:bg-[#20a957]/10 active:scale-[0.98]"
+              className="mt-6 inline-block rounded-full border-2 border-[#34d186]/50 px-8 py-3.5 font-bold text-[#66dca4] transition-all duration-200 hover:border-[#34d186] hover:bg-[#34d186]/10 active:scale-[0.98]"
             >
               Start Referring &rarr;
             </Link>
@@ -623,8 +623,8 @@ export default function EntryPage() {
       <section className="mx-auto max-w-7xl px-5 py-16 md:py-24">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <Reveal>
-            <div className="rounded-3xl border border-[#20a957]/30 bg-[#0e2a1c] p-8 text-center">
-              <p className="inline-flex items-center gap-2 rounded-full bg-[#20a957]/15 px-5 py-2.5 font-bold text-[#48d87c]">
+            <div className="rounded-3xl border border-[#34d186]/30 bg-[#0e2a1c] p-8 text-center">
+              <p className="inline-flex items-center gap-2 rounded-full bg-[#34d186]/15 px-5 py-2.5 font-bold text-[#66dca4]">
                 ✓ WASHSMART APPROVED PARTNER
               </p>
               <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3 text-left">
@@ -697,7 +697,7 @@ export default function EntryPage() {
                   key={b}
                   className="flex items-center gap-2 rounded-2xl bg-[#111a14] px-4 py-3 text-sm font-semibold"
                 >
-                  <span className="text-[#48d87c]">✓</span>
+                  <span className="text-[#66dca4]">✓</span>
                   {b}
                 </div>
               ))}
@@ -706,7 +706,7 @@ export default function EntryPage() {
               href="/join"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+              className="mt-8 inline-block rounded-full bg-[#34d186] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#34d186]/25 transition-all duration-200 hover:bg-[#27ab6c] active:scale-[0.98]"
             >
               Become a Partner &rarr;
             </Link>
@@ -727,12 +727,12 @@ export default function EntryPage() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="mt-8 rounded-3xl border border-[#20a957]/30 bg-[#0e2a1c] p-6 text-center shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
+            <div className="mt-8 rounded-3xl border border-[#34d186]/30 bg-[#0e2a1c] p-6 text-center shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
               <p className="text-sm text-gray-300">
                 Still have questions or need a hand? Email us at{" "}
                 <a
                   href="mailto:support@washsmart.ng"
-                  className="font-bold text-[#48d87c] underline decoration-[#20a957]/50 underline-offset-4 transition-colors hover:text-white"
+                  className="font-bold text-[#66dca4] underline decoration-[#34d186]/50 underline-offset-4 transition-colors hover:text-white"
                 >
                   support@washsmart.ng
                 </a>
@@ -770,7 +770,7 @@ export default function EntryPage() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 href="/app/signup"
-                className="inline-block rounded-full bg-[#20a957] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#20a957]/25 transition-all duration-200 hover:bg-[#1a8a47] active:scale-[0.98]"
+                className="inline-block rounded-full bg-[#34d186] px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-[#34d186]/25 transition-all duration-200 hover:bg-[#27ab6c] active:scale-[0.98]"
               >
                 Get Started &rarr;
               </Link>
@@ -811,7 +811,7 @@ export default function EntryPage() {
           <div>
             <p className="font-bold text-gray-300">Partners</p>
             <ul className="mt-3 space-y-2">
-              <li><Link href="/join" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#48d87c] hover:text-white">Become a Partner ↗</Link></li>
+              <li><Link href="/join" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#66dca4] hover:text-white">Become a Partner ↗</Link></li>
               <li><Link href="/partner" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white">Partner Login ↗</Link></li>
             </ul>
           </div>

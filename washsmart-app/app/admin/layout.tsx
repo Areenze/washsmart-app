@@ -124,7 +124,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                 </p>
                 <button
                   onClick={switchAccount}
-                  className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+                  className="mt-6 inline-block rounded-full bg-[#34d186] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
                 >
                   Switch account →
                 </button>
@@ -136,7 +136,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                 </p>
                 <Link
                   href="/app/login?next=/admin"
-                  className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+                  className="mt-6 inline-block rounded-full bg-[#34d186] px-8 py-3 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
                 >
                   Log in →
                 </Link>
@@ -157,7 +157,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         href={item.href}
         className={`flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
           active
-            ? "bg-[#20a957]/15 text-[#48d87c]"
+            ? "bg-[#34d186]/15 text-[#66dca4]"
             : "text-gray-400 hover:bg-white/5 hover:text-white"
         }`}
       >
@@ -235,7 +235,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
                   href={item.href}
                   className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
                     active
-                      ? "bg-[#20a957]/15 text-[#48d87c]"
+                      ? "bg-[#34d186]/15 text-[#66dca4]"
                       : "text-gray-400"
                   }`}
                 >

@@ -61,19 +61,19 @@ export function SubscriptionSection() {
             <div
               className={`relative rounded-3xl bg-[#111a14] p-7 transition-opacity ${
                 isCurrent
-                  ? "border-2 border-[#20a957] shadow-[0_0_40px_8px_rgb(32_169_87/0.28)]"
+                  ? "border-2 border-[#34d186] shadow-[0_0_40px_8px_rgb(32_169_87/0.28)]"
                   : plan.popular
-                    ? "border-2 border-[#20a957]/50 shadow-[0_0_40px_8px_rgb(32_169_87/0.12)]"
+                    ? "border-2 border-[#34d186]/50 shadow-[0_0_40px_8px_rgb(32_169_87/0.12)]"
                     : "border border-white/10 shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]"
               } ${dimmed ? "opacity-60" : ""}`}
             >
               {isCurrent ? (
-                <div className="absolute right-5 top-5 rounded-full bg-[#20a957] px-3 py-1 text-xs font-bold text-white">
+                <div className="absolute right-5 top-5 rounded-full bg-[#34d186] px-3 py-1 text-xs font-bold text-white">
                   CURRENT PLAN
                 </div>
               ) : (
                 plan.popular && (
-                  <div className="absolute right-5 top-5 rounded-full bg-[#20a957]/80 px-3 py-1 text-xs font-bold text-white">
+                  <div className="absolute right-5 top-5 rounded-full bg-[#34d186]/80 px-3 py-1 text-xs font-bold text-white">
                     MOST POPULAR
                   </div>
                 )
@@ -84,19 +84,19 @@ export function SubscriptionSection() {
                 <span className="text-sm font-normal text-gray-400">/30 days</span>
               </div>
               <div className="mt-6 space-y-3 text-sm">
-                <p><span className="font-bold text-[#48d87c]">✓</span> {plan.washes} washes, valid 30 days</p>
-                <p><span className="font-bold text-[#48d87c]">✓</span> Approved partner locations</p>
-                <p><span className="font-bold text-[#48d87c]">✓</span> Digital wash tracking</p>
-                <p><span className="font-bold text-[#48d87c]">✓</span> Subscriber verification</p>
+                <p><span className="font-bold text-[#66dca4]">✓</span> {plan.washes} washes, valid 30 days</p>
+                <p><span className="font-bold text-[#66dca4]">✓</span> Approved partner locations</p>
+                <p><span className="font-bold text-[#66dca4]">✓</span> Digital wash tracking</p>
+                <p><span className="font-bold text-[#66dca4]">✓</span> Subscriber verification</p>
               </div>
               {isCurrent ? (
-                <div className="mt-8 w-full rounded-xl bg-[#20a957]/10 py-3 text-center font-bold text-[#48d87c]">
+                <div className="mt-8 w-full rounded-xl bg-[#34d186]/10 py-3 text-center font-bold text-[#66dca4]">
                   Current Plan
                 </div>
               ) : (
                 <Link
                   href={`/app/checkout?plan=${plan.id}`}
-                  className="mt-8 block w-full rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
+                  className="mt-8 block w-full rounded-full bg-[#34d186] py-3 transition-all duration-200 hover:bg-[#27ab6c] text-center font-bold text-white"
                 >
                   {subscription ? "Switch to This Plan" : "Subscribe Now"}
                 </Link>
@@ -112,7 +112,7 @@ export function SubscriptionSection() {
       </p>
       <p className="mt-2 text-center text-xs text-gray-500">
         🎁 Know a car owner?{" "}
-        <Link href="/app/profile" className="font-bold text-[#48d87c]">
+        <Link href="/app/profile" className="font-bold text-[#66dca4]">
           Refer a friend, get 1 free wash →
         </Link>
       </p>

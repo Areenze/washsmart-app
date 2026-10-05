@@ -68,7 +68,7 @@ export default function PartnerForgotPassword() {
             <Logo />
             <Brand />
           </Link>
-          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">PARTNER PORTAL</span>
+          <span className="rounded-md bg-[#34d186]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#66dca4]">PARTNER PORTAL</span>
         </div>
       </header>
 
@@ -85,7 +85,7 @@ export default function PartnerForgotPassword() {
         <div className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8">
           {phase === "sent" ? (
             <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#34d186]/10 text-3xl">
                 ✉️
               </div>
               <h2 className="mt-4 text-xl font-bold">Check your inbox</h2>
@@ -95,7 +95,7 @@ export default function PartnerForgotPassword() {
               </p>
               <Link
                 href="/partner"
-                className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
+                className="mt-6 inline-block rounded-full bg-[#34d186] px-6 py-3 font-bold text-white"
               >
                 Back to login
               </Link>
@@ -112,7 +112,7 @@ export default function PartnerForgotPassword() {
                 placeholder="e.g. WS-2026-0001"
                 autoComplete="username"
                 autoCapitalize="characters"
-                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
+                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#34d186]"
               />
 
               {error && (
@@ -130,7 +130,7 @@ export default function PartnerForgotPassword() {
               </button>
 
               <p className="mt-4 text-center text-sm">
-                <Link href="/partner" className="font-bold text-[#48d87c]">
+                <Link href="/partner" className="font-bold text-[#66dca4]">
                   ← Back to login
                 </Link>
               </p>
@@ -138,8 +138,8 @@ export default function PartnerForgotPassword() {
           )}
 
           {partners.length > 0 && phase !== "sent" && (
-            <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
-              <p className="text-sm font-bold text-[#48d87c]">
+            <div className="mt-6 rounded-3xl border-2 border-dashed border-[#34d186]/30 bg-[#34d186]/10 p-6">
+              <p className="text-sm font-bold text-[#66dca4]">
                 🔑 Approved partners — tap to fill your Partner ID
               </p>
               <div className="mt-4 space-y-2">
@@ -151,7 +151,7 @@ export default function PartnerForgotPassword() {
                       setPartnerId(p.partnerId);
                       setError(null);
                     }}
-                    className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
+                    className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#34d186]"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function PartnerForgotPassword() {
                           ID: {p.partnerId}
                         </p>
                       </div>
-                      <span className="shrink-0 text-xs font-bold text-[#48d87c]">
+                      <span className="shrink-0 text-xs font-bold text-[#66dca4]">
                         Fill →
                       </span>
                     </div>

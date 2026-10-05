@@ -83,7 +83,7 @@ export default function InstallPrompt() {
         </button>
         <button
           onClick={install}
-          className="rounded-full bg-[#2ed06a] px-5 py-2 text-sm font-bold text-white"
+          className="rounded-full bg-[#40d48d] px-5 py-2 text-sm font-bold text-white"
         >
           Install
         </button>

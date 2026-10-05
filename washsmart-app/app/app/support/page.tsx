@@ -37,7 +37,7 @@ export default function MyTicketsPage() {
         <h1 className="text-3xl font-bold">Support</h1>
         <Link
           href="/app/support/new"
-          className="rounded-full bg-[#20a957] px-5 py-2 text-sm font-bold text-white"
+          className="rounded-full bg-[#34d186] px-5 py-2 text-sm font-bold text-white"
         >
           New report
         </Link>

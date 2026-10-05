@@ -88,7 +88,7 @@ function NewTicketForm() {
     <section className="mx-auto max-w-2xl px-5 py-8">
       <Link
         href="/app/support"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#66dca4]"
       >
         ← Back
       </Link>
@@ -146,7 +146,7 @@ function NewTicketForm() {
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-full bg-[#20a957] py-3 font-bold text-white transition-all duration-200 hover:bg-[#1a8a47] disabled:opacity-50"
+          className="w-full rounded-full bg-[#34d186] py-3 font-bold text-white transition-all duration-200 hover:bg-[#27ab6c] disabled:opacity-50"
         >
           {busy ? "Sending…" : "Send report"}
         </button>

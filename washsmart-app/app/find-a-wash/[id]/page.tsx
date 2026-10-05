@@ -19,7 +19,7 @@ export default function PublicPartnerDetailPage() {
           </Link>
           <Link
             href="/app/signup"
-            className="rounded-full bg-[#20a957] px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#1a8a47]"
+            className="rounded-full bg-[#34d186] px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#27ab6c]"
           >
             Subscribe
           </Link>

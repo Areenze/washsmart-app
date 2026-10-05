@@ -171,7 +171,7 @@ function CallbackInner() {
         <p className="mt-3 text-sm text-gray-400">{error}</p>
         <Link
           href={recovery.href}
-          className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
+          className="mt-6 inline-block rounded-full bg-[#34d186] px-6 py-3 transition-all duration-200 hover:bg-[#27ab6c] font-bold text-white"
         >
           {recovery.label}
         </Link>
@@ -187,7 +187,7 @@ function CallbackInner() {
 
   return (
     <section className="mx-auto max-w-xl px-5 py-16 text-center">
-      <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
+      <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#34d186]" />
       <p className="mt-5 font-bold">Verifying your email…</p>
       <p className="mt-1 text-sm text-gray-400">
         {mode === "signup"
