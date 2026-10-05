@@ -1,14 +1,27 @@
 "use client";
 
-/* PartnersSection — the full partner finder (search + list + map placeholder
- * + coverage request form). Used inline on /app (continuous scroll) and as
- * the body of the /app/partners route. */
+/* PartnersSection — the full partner finder (search + map pins + coverage
+ * request form). Partners are pins on the map, not cards — the list would
+ * be unusable at hundreds of partners. Used inline on /app (continuous
+ * scroll), as the body of the /app/partners route, and on /find-a-wash. */
 
 import { useEffect, useState } from "react";
-import PartnerCard from "@/components/partner-card";
-import { EmptyState, Reveal } from "@/components/ui";
+import dynamic from "next/dynamic";
+import { EmptyState } from "@/components/ui";
 import { listApprovedPartners, submitLocationRequest } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
+
+const PartnerMap = dynamic(
+  () => import("@/components/partner-map").then((m) => m.PartnerMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[62vh] min-h-[420px] items-center justify-center rounded-3xl border border-white/10 bg-[#0d130f]">
+        <p className="text-sm text-gray-500">Loading map…</p>
+      </div>
+    ),
+  }
+);
 
 export function PartnersSection({
   detailBase = "/app/partners",
@@ -86,51 +99,32 @@ export function PartnersSection({
       <div className="mt-10 text-center">
         <h3 className="text-2xl font-bold md:text-3xl">Partner Locations</h3>
         <p className="mx-auto mt-2 max-w-xl text-sm text-gray-400">
-          Check back often — we are continually adding partner washes to our
-          network across Lagos.
+          Every green pin is an approved WashSMART partner. Tap a pin for
+          details — we are continually adding partner washes across Lagos.
         </p>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-[#20a957]/15 p-6">
-        <div className="flex h-56 items-center justify-center rounded-2xl bg-[#152419] md:h-72">
-          <div className="text-center">
-            <div className="text-5xl">📍</div>
-            <p className="mt-2 font-bold">WashSMART Partner Map</p>
-            <p className="text-sm text-gray-300">
-              {partners.length} approved partner{partners.length === 1 ? "" : "s"} near you ·
-              live Google Maps integration in production.
-            </p>
-          </div>
-        </div>
+      <div className="mt-6">
+        <PartnerMap partners={filtered} detailBase={detailBase} />
       </div>
 
-      {query && (
-        <p className="mt-6 text-sm text-gray-400">
-          <span className="font-bold text-[#e9f2ec]">{filtered.length}</span>{" "}
-          result{filtered.length === 1 ? "" : "s"} for{" "}
-          <span className="font-bold text-[#e9f2ec]">“{q.trim()}”</span>
-        </p>
-      )}
-
-      {filtered.length === 0 ? (
+      {query && filtered.length === 0 && (
         <div className="mt-6">
           <EmptyState
             icon="📍"
-            title={query ? "No partners match your search" : "No partners yet"}
-            body={
-              query
-                ? "Try a different area or partner name — new partners join regularly."
-                : "Newly approved partners will appear here automatically."
-            }
+            title="No partners match your search"
+            body="Try a different area or partner name — new partners join regularly."
           />
         </div>
-      ) : (
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {filtered.map((p, i) => (
-            <Reveal key={p.id} delay={Math.min(i, 5) * 75}>
-              <PartnerCard partner={p} detailBase={detailBase} />
-            </Reveal>
-          ))}
+      )}
+
+      {!query && partners.length === 0 && (
+        <div className="mt-6">
+          <EmptyState
+            icon="📍"
+            title="No partners yet"
+            body="Newly approved partners will appear here automatically."
+          />
         </div>
       )}
 
