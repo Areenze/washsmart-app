@@ -19,6 +19,17 @@ import Link from "next/link";
 import type { Partner } from "@/lib/db/types";
 import "leaflet/dist/leaflet.css";
 
+/* CARTO (prettier dark tiles) when a key is configured, Esri as the
+ * keyless fallback. The key is public by necessity (tiles load in the
+ * browser) — NEXT_PUBLIC_CARTO_API_KEY, inlined at build time. */
+const CARTO_KEY = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+const TILE_URL = CARTO_KEY
+  ? `https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`
+  : "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+const TILE_ATTR = CARTO_KEY
+  ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+  : "Powered by <a href='https://www.esri.com'>Esri</a> &amp; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
+
 /* Lagos fallback center. */
 const LAGOS: [number, number] = [6.5244, 3.3792];
 
@@ -101,10 +112,7 @@ export function PartnerMap({
           scrollWheelZoom={true}
           style={{ height: "62vh", minHeight: 420, width: "100%", background: "#0d130f" }}
         >
-          <TileLayer
-            attribution="Powered by <a href='https://www.esri.com'>Esri</a> &amp; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-          />
+          <TileLayer attribution={TILE_ATTR} url={TILE_URL} />
           <MarkerClusterGroup
             chunkedLoading
             iconCreateFunction={clusterIcon}
