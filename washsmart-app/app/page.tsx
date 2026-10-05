@@ -163,7 +163,7 @@ export default function EntryPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+    <main className="subscriber-light min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
       <header className="sticky top-0 z-50 border-b border-white/5 bg-[#111a14]/90 backdrop-blur-md px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-2">
@@ -218,8 +218,9 @@ export default function EntryPage() {
         )}
       </header>
 
-      {/* Hero — sliding, fading image carousel */}
-      <section className="relative overflow-hidden bg-[#062b1e]">
+      {/* Hero — sliding, fading image carousel. Keeps its dark photographic
+          treatment in the light theme (like Bolt's own dark hero). */}
+      <section className="hero-dark relative overflow-hidden bg-[#062b1e]">
         <div className="relative h-[600px] md:h-[640px]">
           {SLIDES.map((src, i) => (
             <div
