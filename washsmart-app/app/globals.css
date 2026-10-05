@@ -273,6 +273,9 @@ button:not(:disabled) {
 .subscriber-light .text-white\/85 {
   color: rgb(20 26 22 / 0.87);
 }
+.subscriber-light .hover\:text-white:hover {
+  color: #141a16;
+}
 
 /* The homepage hero keeps its dark photographic treatment (Bolt's own
  * marketing hero is dark too): re-assert the dark utilities inside it.
