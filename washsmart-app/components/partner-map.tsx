@@ -2,8 +2,8 @@
 
 /* PartnerMap — Leaflet map of approved WashSMART partners (dark theme).
  *
- * Free, keyless tiles (CARTO dark matter over OpenStreetMap data) so there
- * is no Google billing to manage. Pins cluster automatically at scale
+ * Keyless Esri dark-gray tiles (no API key, no billing, no watermark — CARTO
+ * key-gated their basemaps in Aug 2026). Pins cluster automatically at scale
  * (500+ partners collapse into numbered green clusters). Tapping a pin
  * shows the partner card popup with a link to its detail page.
  *
@@ -102,8 +102,8 @@ export function PartnerMap({
           style={{ height: "62vh", minHeight: 420, width: "100%", background: "#0d130f" }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution="Powered by <a href='https://www.esri.com'>Esri</a> &amp; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
           />
           <MarkerClusterGroup
             chunkedLoading
