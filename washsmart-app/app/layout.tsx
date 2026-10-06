@@ -14,6 +14,30 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Machine-readable business identity for search engines and AI assistants.
+// No street address or phone number is published yet, so only the verified
+// support email is included — never invent contact details here.
+const orgJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "WashSMART",
+  url: "https://washsmart.ng",
+  description:
+    "Subscribe to WashSMART and get wash credits redeemable at approved car-wash partners across Lagos. One subscription. Multiple washes. No cash at the wash center.",
+  email: "support@washsmart.ng",
+  areaServed: {
+    "@type": "City",
+    name: "Lagos",
+    address: { "@type": "PostalAddress", addressCountry: "NG" },
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "support@washsmart.ng",
+    areaServed: "NG",
+  },
+};
+
 export const metadata: Metadata = {
   title: "WashSMART — One Subscription. Multiple Washes.",
   description:
@@ -64,6 +88,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
         <SwRegister />
         <Analytics />
         {children}

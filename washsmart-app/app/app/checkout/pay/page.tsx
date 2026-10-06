@@ -165,6 +165,18 @@ function PayInner() {
       if (promo.kind === "bonus_washes") {
         await applyPromoBonus(sub.id, Math.round(promo.value));
       }
+      // Fire the first-time welcome (in-app + email); never blocks navigation.
+      getSupabase()
+        .auth.getSession()
+        .then(({ data: sess }) => {
+          const token = sess.session?.access_token;
+          if (!token) return;
+          fetch("/api/welcome", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          }).catch(() => {});
+        })
+        .catch(() => {});
       const vs = await getVehicles().catch(() => []);
       router.replace(vs.length > 0 ? "/app" : "/app/onboarding?next=/app");
     } catch (e) {

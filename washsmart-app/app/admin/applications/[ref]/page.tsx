@@ -14,6 +14,7 @@ import {
   getApplication,
   rejectApplication,
 } from "@/lib/db/store";
+import { getSupabase } from "@/lib/db/supabase";
 import {
   emptyChecklist,
   getInspection,
@@ -96,6 +97,22 @@ export default function ApplicationDetailPage() {
               ? ` (inspection passed, score ${inspection.score}%)`
               : " (NO passed inspection on file)")
         ).catch(() => {});
+        // Automated partner welcome email (best-effort; never blocks).
+        getSupabase()
+          .auth.getSession()
+          .then(({ data: sess }) => {
+            const token = sess.session?.access_token;
+            if (!token) return;
+            fetch("/api/admin/welcome-partner", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ ref: app.ref }),
+            }).catch(() => {});
+          })
+          .catch(() => {});
         router.push("/admin/applications");
       } else {
         await rejectApplication(app.ref);

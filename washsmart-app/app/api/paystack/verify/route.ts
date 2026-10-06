@@ -12,6 +12,7 @@
  */
 
 import { createClient } from "@supabase/supabase-js";
+import { maybeSendSubscriberWelcome } from "@/lib/welcome";
 
 export async function POST(request: Request) {
   const secret = process.env.PAYSTACK_SECRET_KEY;
@@ -200,6 +201,11 @@ export async function POST(request: Request) {
       } catch {
         /* notifications are best-effort */
       }
+      // First-time buyers also get the automated welcome (in-app + email).
+      await maybeSendSubscriberWelcome(sb, {
+        id: user.id,
+        email: user.email ?? undefined,
+      });
     })();
   }
   return Response.json({ ok: true, subscriptionId: subId });
