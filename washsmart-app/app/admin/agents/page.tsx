@@ -10,10 +10,12 @@ import { Badge, EmptyState, Field, inputClass } from "@/components/ui";
 import {
   AGENT_BOUNTY_NGN,
   createAgent,
+  linkAgentLogin,
   listAgents,
   setAgentStatus,
   updateAgent,
 } from "@/lib/db/agents";
+import { getSupabase } from "@/lib/db/supabase";
 import type { AgentOverviewRow } from "@/lib/db/types";
 
 const ngn = (n: number) => `₦${Math.round(n).toLocaleString("en-NG")}`;
@@ -30,6 +32,12 @@ export default function AdminAgentsPage() {
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
+  const [linkingId, setLinkingId] = useState<string | null>(null);
+  const [linkUid, setLinkUid] = useState("");
+  const [linkEmail, setLinkEmail] = useState("");
+  const [linking, setLinking] = useState(false);
+  const [welcomeNote, setWelcomeNote] = useState<Record<string, string>>({});
+  const [resetting, setResetting] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -98,6 +106,93 @@ export default function AdminAgentsPage() {
       setError(err?.message || "Could not save changes.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const sendWelcome = async (agentId: string): Promise<boolean> => {
+    try {
+      const {
+        data: { session },
+      } = await getSupabase().auth.getSession();
+      const token = session?.access_token;
+      if (!token) return false;
+      const res = await fetch("/api/admin/welcome-agent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ agentId }),
+      });
+      const json = await res.json().catch(() => ({}));
+      return json?.sent === true;
+    } catch {
+      return false;
+    }
+  };
+
+  /** Link the dashboard-created auth user, then auto-send the welcome email. */
+  const linkLogin = async (a: AgentOverviewRow) => {
+    const uid = linkUid.trim();
+    const email = linkEmail.trim();
+    if (!/^[0-9a-f-]{36}$/i.test(uid) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Enter the auth user's UID and a valid email address.");
+      return;
+    }
+    setLinking(true);
+    setError(null);
+    try {
+      await linkAgentLogin(a.id, uid, email);
+      setLinkingId(null);
+      setLinkUid("");
+      setLinkEmail("");
+      await load();
+      const sent = await sendWelcome(a.id);
+      setWelcomeNote((w) => ({
+        ...w,
+        [a.id]: sent
+          ? "✅ Welcome email sent"
+          : "⚠️ Linked, but welcome email not sent (email service not configured)",
+      }));
+    } catch (err: any) {
+      setError(err?.message || "Could not link the login.");
+    } finally {
+      setLinking(false);
+    }
+  };
+
+  const resendWelcome = async (a: AgentOverviewRow) => {
+    setWelcomeNote((w) => ({ ...w, [a.id]: "Sending…" }));
+    const sent = await sendWelcome(a.id);
+    setWelcomeNote((w) => ({
+      ...w,
+      [a.id]: sent ? "✅ Welcome email sent" : "⚠️ Email not sent (service not configured)",
+    }));
+  };
+
+  /** Admin-only password reset: emails the agent a reset link. */
+  const resetPassword = async (a: AgentOverviewRow) => {
+    if (
+      !window.confirm(
+        `Send a password-reset email to ${a.name} (${a.email})?`
+      )
+    )
+      return;
+    setResetting(a.id);
+    try {
+      const { error } = await getSupabase().auth.resetPasswordForEmail(
+        a.email,
+        { redirectTo: `${window.location.origin}/agent/reset-password` }
+      );
+      if (error) throw error;
+      setWelcomeNote((w) => ({ ...w, [a.id]: "✅ Reset email sent" }));
+    } catch (err: any) {
+      setWelcomeNote((w) => ({
+        ...w,
+        [a.id]: `⚠️ ${err?.message || "Could not send reset email"}`,
+      }));
+    } finally {
+      setResetting(null);
     }
   };
 
@@ -256,6 +351,34 @@ export default function AdminAgentsPage() {
                     >
                       Edit
                     </button>
+                    {!a.linked ? (
+                      <button
+                        onClick={() => {
+                          setLinkingId(linkingId === a.id ? null : a.id);
+                          setLinkUid("");
+                          setLinkEmail("");
+                        }}
+                        className="rounded-xl bg-[#20a957] px-3 py-1.5 text-xs font-bold text-white"
+                      >
+                        Link login
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => resendWelcome(a)}
+                          className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-[#20a957]"
+                        >
+                          Resend welcome
+                        </button>
+                        <button
+                          onClick={() => resetPassword(a)}
+                          disabled={resetting === a.id}
+                          className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-[#20a957] disabled:opacity-60"
+                        >
+                          {resetting === a.id ? "Sending…" : "Reset password"}
+                        </button>
+                      </>
+                    )}
                     <button
                       onClick={() => toggle(a)}
                       className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-[#20a957]"
@@ -264,6 +387,46 @@ export default function AdminAgentsPage() {
                     </button>
                   </div>
                 </div>
+                )}
+                {linkingId === a.id && !a.linked && (
+                  <div className="mt-4 rounded-2xl bg-black/30 p-4">
+                    <p className="text-sm font-bold">
+                      Link the auth user you created in the Supabase dashboard
+                    </p>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <Field label="Auth user UID">
+                        <input
+                          value={linkUid}
+                          onChange={(e) => setLinkUid(e.target.value)}
+                          placeholder="e.g. dbf959ac-1ee5-4877-…"
+                          autoComplete="off"
+                          className={inputClass(false)}
+                        />
+                      </Field>
+                      <Field label="Login email">
+                        <input
+                          value={linkEmail}
+                          onChange={(e) => setLinkEmail(e.target.value)}
+                          placeholder="agent@example.com"
+                          inputMode="email"
+                          autoComplete="off"
+                          className={inputClass(false)}
+                        />
+                      </Field>
+                    </div>
+                    <button
+                      onClick={() => linkLogin(a)}
+                      disabled={linking}
+                      className="mt-3 rounded-xl bg-[#20a957] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                    >
+                      {linking ? "Linking…" : "Link & send welcome email"}
+                    </button>
+                  </div>
+                )}
+                {welcomeNote[a.id] && (
+                  <p className="mt-2 text-sm font-semibold text-gray-300">
+                    {welcomeNote[a.id]}
+                  </p>
                 )}
               </div>
             ))}

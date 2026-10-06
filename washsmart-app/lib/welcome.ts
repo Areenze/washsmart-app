@@ -1,4 +1,4 @@
-/* Automated welcome messages — subscriber + partner.
+/* Automated welcome messages — subscriber + partner + agent.
  *
  * Server-only. Every entry point is best-effort: it never throws and never
  * blocks the flow that triggered it (purchase, approval). Email dispatch
@@ -151,5 +151,41 @@ export async function sendPartnerWelcomeEmail(opts: {
     });
   } catch {
     /* welcome must never break approval */
+  }
+}
+
+/* ---------------- field agent ---------------- */
+
+function agentWelcomeHtml(opts: { name: string; code: string }): string {
+  return emailShell(`
+<h2 style="margin:0 0 12px;font-size:22px;">Welcome to WashSMART, ${opts.name} 🤝</h2>
+<p>You're now a WashSMART field agent — you earn by bringing car washes onto the network.</p>
+<p><strong>Your agent code:</strong> <span style="font-family:monospace;font-size:16px;background:#eef4f0;padding:4px 10px;border-radius:8px;">${opts.code}</span><br/>
+Sign in to the Agent App with this code and your password.</p>
+<p><strong>How it works:</strong></p>
+<ol style="padding-left:20px;">
+<li>Share your agent code with car-wash owners you recruit.</li>
+<li>They enter it on the partner application form.</li>
+<li>Track your referred partners and bounty progress in the Agent App dashboard.</li>
+</ol>
+${btn(`${APP_URL}/agent`, "Open the Agent App")}
+<p style="color:#8a938d;font-size:13px;">Hit 20 verified washes within 60 days of a partner's approval to earn your bounty on that partner.</p>`);
+}
+
+/** Email the newly activated field agent. Never throws. */
+export async function sendAgentWelcomeEmail(opts: {
+  to: string;
+  name: string;
+  code: string;
+}): Promise<{ sent: boolean }> {
+  try {
+    return await sendEmail({
+      to: opts.to,
+      subject: "Welcome to WashSMART — you're a field agent 🤝",
+      html: agentWelcomeHtml({ name: opts.name, code: opts.code }),
+    });
+  } catch {
+    /* welcome must never break activation */
+    return { sent: false };
   }
 }

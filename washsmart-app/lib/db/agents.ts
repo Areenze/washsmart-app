@@ -188,3 +188,16 @@ export async function updateAgent(
     .eq("id", id);
   if (error) throw error;
 }
+
+/** Link an auth user to an agent (activates their login). Admin only (RLS). */
+export async function linkAgentLogin(
+  id: string,
+  userId: string,
+  email: string
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from("agents")
+    .update({ user_id: userId.trim(), email: email.trim() })
+    .eq("id", id);
+  if (error) throw error;
+}

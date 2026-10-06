@@ -10,7 +10,7 @@ import { agentLogout, currentAgentSessionStrict } from "@/lib/db/agents";
 import type { Agent } from "@/lib/db/types";
 
 // Pages that render outside the agent shell (own header, no session needed).
-const PUBLIC_AGENT_PATHS = ["/agent"];
+const PUBLIC_AGENT_PATHS = ["/agent", "/agent/reset-password"];
 
 export default function AgentShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
