@@ -74,6 +74,26 @@ create table if not exists partner_applications (
 );
 create index if not exists idx_applications_status on partner_applications (status);
 
+-- ---------- field agents (Phase 2) ----------
+-- Created by admins in /admin/agents; code auto-issued as AGT-001…
+-- The admin creates the auth user in the Supabase dashboard and links it:
+--   update agents set user_id = '<auth-user-uuid>', email = '<email>'
+--   where code = 'AGT-001';
+-- Agents sign in at /agent with agent code + password.
+create table if not exists agents (
+  id          uuid primary key default gen_random_uuid(),
+  code        text not null unique
+              default ('AGT-' || lpad(nextval('agent_code_seq')::text, 3, '0')),
+  name        text not null,
+  phone       text not null,
+  email       text,
+  user_id     uuid,
+  status      text not null default 'active'
+              check (status in ('active','inactive')),
+  created_at  timestamptz not null default now(),
+  created_by  uuid
+);
+
 -- ---------- approved partners ----------
 create table if not exists partners (
   id              text primary key,

@@ -81,6 +81,34 @@ export interface PartnerApplication {
   };
 }
 
+export interface Agent {
+  id: string;
+  code: string; // AGT-001
+  name: string;
+  phone: string;
+  email: string;
+  status: "active" | "inactive";
+  createdAt: string;
+  linked: boolean; // auth user linked
+}
+
+export interface AgentReferral {
+  partner_id: string;
+  name: string;
+  area: string;
+  status: string;
+  approved_at: string | null;
+  washes_total: number;
+  washes_gate: number; // washes within 60 days of approval
+}
+
+export interface AgentOverviewRow extends Agent {
+  partners_referred: number;
+  partners_active: number;
+  washes_total: number;
+  gates_hit: number;
+}
+
 export interface Plan {
   id: string;
   name: string;
