@@ -66,6 +66,10 @@ create table if not exists partner_applications (
 
   reviewed_by       uuid,                -- admin user
   reviewed_at       timestamptz,
+
+  -- field-agent program (Phase 1): optional referral code entered by applicant
+  agent_code        text,
+
   created_at        timestamptz not null default now()
 );
 create index if not exists idx_applications_status on partner_applications (status);

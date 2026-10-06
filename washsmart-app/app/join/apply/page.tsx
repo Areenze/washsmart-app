@@ -56,6 +56,7 @@ const emptyDraft: Draft = {
   },
   services: [],
   otherService: "",
+  agentCode: "",
   photos: { business: [], location: [] },
 };
 
@@ -425,6 +426,20 @@ export default function ApplyWizard() {
                       className={inputClass(touched && !emailOk(draft.business.email))}
                     />
                   </Field>
+                  <Field
+                    label="Agent code"
+                    hint="Optional — if a WashSMART field agent referred you, enter the code they gave you."
+                  >
+                    <input
+                      value={draft.agentCode}
+                      onChange={(e) =>
+                        setDraft((d) => ({ ...d, agentCode: e.target.value }))
+                      }
+                      placeholder="e.g. AGT-042"
+                      autoComplete="off"
+                      className={inputClass(false)}
+                    />
+                  </Field>
                 </div>
               )}
 
@@ -741,6 +756,7 @@ function ReviewScreen({
     ["Phone", draft.business.phone],
     ["WhatsApp", draft.business.whatsapp || "—"],
     ["Email", draft.business.email],
+    ["Agent code", draft.agentCode.trim() || "—"],
     ["Address", `${draft.location.address}, ${draft.location.area}`],
     ["LGA / State", `${draft.location.lga}, ${draft.location.state}`],
     ["GPS", draft.location.gps || "—"],

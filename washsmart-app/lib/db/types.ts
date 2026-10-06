@@ -73,6 +73,8 @@ export interface PartnerApplication {
   };
   services: string[];
   otherService: string;
+  /** Field-agent referral code entered by the applicant (optional, Phase 1). */
+  agentCode: string;
   photos: {
     business: string[];
     location: string[];

@@ -101,6 +101,9 @@ export default function AdminApplicationsPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  {a.agentCode && (
+                    <Badge tone="green">🤝 {a.agentCode}</Badge>
+                  )}
                   {insp ? (
                     <Badge
                       tone={

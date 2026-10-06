@@ -1,6 +1,6 @@
 # WashSMART — Pre-Launch Checklist
 
-Last updated: 2026-10-04. Checked items are done and verified live.
+Last updated: 2026-10-06. Checked items are done and verified live.
 
 ## Mm's inputs (blocking)
 - [ ] `washsmart.ng` DNS configured
@@ -28,6 +28,11 @@ Last updated: 2026-10-04. Checked items are done and verified live.
 - [ ] Decide WS-SET-000001 (approved, ₦2,250 payable — test settlement): mark paid or void before launch
 - [ ] Real partner onboarding (applications → inspections → approvals)
 - [ ] Mm to confirm mobile tab-highlight scroll behavior on his own phone
+
+## Data protection (NDPC/GAID)
+- [ ] Lawyer reviews /privacy + /terms before launch (both are pre-launch drafts; hand them the data register at `docs/data-protection.md` with this review)
+- [ ] NDPC classification: below the 200-data-subjects/6-months threshold today (2 users) → not a Data Controller of Major Importance yet, registration not required at launch. Re-assess once we approach 200 subscribers — at that point register as OHL (₦10,000/yr, annual renewal, no audit filing)
+- [ ] With the lawyer: cross-border transfer position (Supabase hosting region, Resend US, Vercel; Termii/Paystack NG), DPO appointment timing, 72-hour breach notification procedure
 
 ## Launch day
 - [ ] Production smoke test: signup → onboarding → purchase → QR redeem → review

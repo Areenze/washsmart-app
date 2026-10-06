@@ -155,6 +155,7 @@ function mapApplication(r: any): PartnerApplication {
     },
     services: r.services ?? [],
     otherService: r.other_service ?? "",
+    agentCode: r.agent_code ?? "",
     photos: {
       business: r.business_photos ?? [],
       location: r.location_photos ?? [],
@@ -644,6 +645,7 @@ export async function submitApplication(
       staff_count: Number(input.operations.staffCount) || null,
       services: input.services,
       other_service: input.otherService || null,
+      agent_code: input.agentCode.trim() || null,
       business_photos: input.photos.business,
       location_photos: input.photos.location,
     });
@@ -677,6 +679,7 @@ export async function submitApplication(
         },
         services: input.services,
         otherService: input.otherService || "",
+        agentCode: input.agentCode.trim() || "",
         photos: {
           business: input.photos.business,
           location: input.photos.location,
@@ -727,6 +730,7 @@ export async function getApplication(
     operations: { openingHours: "", openingTime: "", closingTime: "", washBays: "", dailyCapacity: "", yearsOperating: "", staffCount: "" },
     services: [],
     otherService: "",
+    agentCode: "",
     photos: { business: [], location: [] },
   };
 }

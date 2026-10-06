@@ -186,6 +186,7 @@ export default function ApplicationDetailPage() {
             ["Phone", app.business.phone],
             ["WhatsApp", app.business.whatsapp || "—"],
             ["Email", app.business.email],
+            ["Agent code", app.agentCode || "—"],
           ]}
         />
         <Section h="Location" />
