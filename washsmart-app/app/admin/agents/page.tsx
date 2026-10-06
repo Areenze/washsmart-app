@@ -3,7 +3,7 @@
 /* /admin/agents — field-agent management.
  * Create agents (code auto-issued AGT-001…), see referral stats, and
  * activate/deactivate. After creating an agent, the admin creates the
- * auth user in the Supabase dashboard and links it with the SQL shown. */
+ * auth user in the Supabase dashboard and links it with "Link login". */
 
 import { useEffect, useState } from "react";
 import { Badge, EmptyState, Field, inputClass } from "@/components/ui";
@@ -19,6 +19,15 @@ import { getSupabase } from "@/lib/db/supabase";
 import type { AgentOverviewRow } from "@/lib/db/types";
 
 const ngn = (n: number) => `₦${Math.round(n).toLocaleString("en-NG")}`;
+
+/** Turn raw DB/RPC errors into something actionable for the admin. */
+function friendlyDbError(err: any): string {
+  const msg = String(err?.message || err || "");
+  if (msg.toLowerCase().includes("admin only")) {
+    return "Admin session expired or not recognized — log out and back in, then try again.";
+  }
+  return msg || "Something went wrong.";
+}
 
 export default function AdminAgentsPage() {
   const [agents, setAgents] = useState<AgentOverviewRow[]>([]);
@@ -143,22 +152,29 @@ export default function AdminAgentsPage() {
     setError(null);
     try {
       await linkAgentLogin(a.id, uid, email);
-      setLinkingId(null);
-      setLinkUid("");
-      setLinkEmail("");
-      await load();
-      const sent = await sendWelcome(a.id);
-      setWelcomeNote((w) => ({
-        ...w,
-        [a.id]: sent
-          ? "✅ Welcome email sent"
-          : "⚠️ Linked, but welcome email not sent (email service not configured)",
-      }));
     } catch (err: any) {
-      setError(err?.message || "Could not link the login.");
-    } finally {
+      setError(friendlyDbError(err) || "Could not link the login.");
       setLinking(false);
+      return;
     }
+    setLinkingId(null);
+    setLinkUid("");
+    setLinkEmail("");
+    setLinking(false);
+    // Reload separately: a reload failure must never masquerade as a link failure.
+    try {
+      await load();
+    } catch (err: any) {
+      setError(friendlyDbError(err));
+      return;
+    }
+    const sent = await sendWelcome(a.id);
+    setWelcomeNote((w) => ({
+      ...w,
+      [a.id]: sent
+        ? "✅ Welcome email sent"
+        : "⚠️ Linked, but welcome email not sent (email service not configured)",
+    }));
   };
 
   const resendWelcome = async (a: AgentOverviewRow) => {
