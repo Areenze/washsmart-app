@@ -176,3 +176,15 @@ export async function setAgentStatus(
     .eq("id", id);
   if (error) throw error;
 }
+
+/** Update an agent's name / phone. Admin only (RLS). */
+export async function updateAgent(
+  id: string,
+  fields: { name: string; phone: string }
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from("agents")
+    .update({ name: fields.name.trim(), phone: fields.phone.trim() })
+    .eq("id", id);
+  if (error) throw error;
+}

@@ -12,6 +12,7 @@ import {
   createAgent,
   listAgents,
   setAgentStatus,
+  updateAgent,
 } from "@/lib/db/agents";
 import type { AgentOverviewRow } from "@/lib/db/types";
 
@@ -25,6 +26,10 @@ export default function AdminAgentsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [newCode, setNewCode] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -70,6 +75,30 @@ export default function AdminAgentsPage() {
       return;
     await setAgentStatus(a.id, next);
     await load();
+  };
+
+  const startEdit = (a: AgentOverviewRow) => {
+    setEditingId(a.id);
+    setEditName(a.name);
+    setEditPhone(a.phone);
+  };
+
+  const saveEdit = async (a: AgentOverviewRow) => {
+    if (editName.trim().length < 2 || editPhone.trim().length < 7) {
+      setError("Enter a valid name and phone number.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateAgent(a.id, { name: editName, phone: editPhone });
+      setEditingId(null);
+      setError(null);
+      await load();
+    } catch (err: any) {
+      setError(err?.message || "Could not save changes.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -159,6 +188,43 @@ export default function AdminAgentsPage() {
                 key={a.id}
                 className="rounded-2xl bg-[#111a14] p-5 shadow-sm"
               >
+                {editingId === a.id ? (
+                  <div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Field label="Full name">
+                        <input
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          className={inputClass(false)}
+                        />
+                      </Field>
+                      <Field label="Phone number">
+                        <input
+                          value={editPhone}
+                          onChange={(e) => setEditPhone(e.target.value)}
+                          inputMode="tel"
+                          className={inputClass(false)}
+                        />
+                      </Field>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() => saveEdit(a)}
+                        disabled={saving}
+                        className="rounded-xl bg-[#20a957] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+                      >
+                        {saving ? "Saving…" : "Save"}
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        disabled={saving}
+                        className="rounded-xl border border-white/10 px-4 py-2 text-sm font-bold text-gray-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="font-bold">
@@ -185,6 +251,12 @@ export default function AdminAgentsPage() {
                       {a.status.toUpperCase()}
                     </Badge>
                     <button
+                      onClick={() => startEdit(a)}
+                      className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-[#20a957]"
+                    >
+                      Edit
+                    </button>
+                    <button
                       onClick={() => toggle(a)}
                       className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-bold text-gray-300 hover:border-[#20a957]"
                     >
@@ -192,6 +264,7 @@ export default function AdminAgentsPage() {
                     </button>
                   </div>
                 </div>
+                )}
               </div>
             ))}
           </div>
