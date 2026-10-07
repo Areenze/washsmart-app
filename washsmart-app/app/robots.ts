@@ -7,9 +7,9 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // Keep crawlers on public marketing pages; the auth-gated
-        // subscriber/partner/admin shells and API routes carry no
+        // subscriber/partner/agent/admin shells and API routes carry no
         // indexable content.
-        disallow: ["/api/", "/admin/", "/partner/", "/app/"],
+        disallow: ["/api/", "/admin/", "/partner/", "/agent/", "/app/"],
       },
     ],
     sitemap: "https://washsmart.ng/sitemap.xml",
