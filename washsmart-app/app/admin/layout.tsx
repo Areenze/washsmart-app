@@ -58,6 +58,9 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           const { count: reqCount } = await getSupabase()
             .from("location_requests")
             .select("id", { count: "exact", head: true });
+          const { count: waitlistCount } = await getSupabase()
+            .from("waitlist_signups")
+            .select("id", { count: "exact", head: true });
           const { count: settleCount } = await getSupabase()
             .from("settlements")
             .select("id", { count: "exact", head: true })
@@ -68,7 +71,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
             .in("status", ["open", "investigating"]);
           setBadges({
             apps: stats.pendingApplications,
-            requests: reqCount ?? 0,
+            requests: (reqCount ?? 0) + (waitlistCount ?? 0),
             settlements: settleCount ?? 0,
             tickets: ticketCount ?? 0,
           });

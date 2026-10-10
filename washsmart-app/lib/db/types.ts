@@ -269,3 +269,13 @@ export interface LocationRequest {
   area: string;
   createdAt: string;
 }
+
+export interface WaitlistSignup {
+  id: string;
+  name: string;
+  email: string;
+  area: string;
+  ownsCar: boolean;
+  howHeard: string | null;
+  createdAt: string;
+}

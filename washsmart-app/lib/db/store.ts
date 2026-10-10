@@ -23,6 +23,7 @@ import { normalizePhone } from "../phone";
 import type {
   LedgerEntry,
   LocationRequest,
+  WaitlistSignup,
   Partner,
   PartnerApplication,
   PartnerLoginResult,
@@ -434,6 +435,45 @@ export async function submitLocationRequest(  email: string,
 
 /* ---------------- admin: coverage requests inbox ---------------- */
 
+/* Pre-launch waitlist (washsmart.ng holding page).
+ * Public insert (RLS); only admins can read the signups. */
+export async function submitWaitlistSignup(input: {
+  name: string;
+  email: string;
+  area: string;
+  ownsCar: boolean;
+  howHeard?: string;
+}): Promise<{ ok: boolean; duplicate?: boolean; error?: string }> {
+  try {
+    const { error } = await getSupabase().from("waitlist_signups").insert({
+      name: input.name.trim(),
+      email: input.email.trim(),
+      area: input.area.trim(),
+      owns_car: input.ownsCar,
+      how_heard: input.howHeard?.trim() || null,
+    });
+    if (error) {
+      if (error.code === "23505") return { ok: false, duplicate: true };
+      throw error;
+    }
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Could not join the waitlist.",
+    };
+  }
+}
+
+/* WhatsApp share link for a waitlist signup inviting friends. */
+export function waitlistWhatsappShareUrl(): string {
+  const msg =
+    "WashSMART is launching in Lagos — one subscription, multiple car washes " +
+    "at approved partners. I just joined the waitlist for early access: " +
+    "https://washsmart.ng";
+  return `https://wa.me/?text=${encodeURIComponent(msg)}`;
+}
+
 export async function listLocationRequests(): Promise<LocationRequest[]> {
   const { data, error } = await getSupabase()
     .from("location_requests")
@@ -451,6 +491,33 @@ export async function listLocationRequests(): Promise<LocationRequest[]> {
 export async function deleteLocationRequest(id: string): Promise<void> {
   const { error } = await getSupabase()
     .from("location_requests")
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
+}
+
+/* ---------------- admin: waitlist inbox ---------------- */
+
+export async function listWaitlistSignups(): Promise<WaitlistSignup[]> {
+  const { data, error } = await getSupabase()
+    .from("waitlist_signups")
+    .select("id,name,email,area,owns_car,how_heard,created_at")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    name: r.name,
+    email: r.email,
+    area: r.area,
+    ownsCar: r.owns_car,
+    howHeard: r.how_heard,
+    createdAt: r.created_at,
+  }));
+}
+
+export async function deleteWaitlistSignup(id: string): Promise<void> {
+  const { error } = await getSupabase()
+    .from("waitlist_signups")
     .delete()
     .eq("id", id);
   if (error) throw error;
