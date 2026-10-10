@@ -11,7 +11,7 @@ Last updated: 2026-10-08. Checked items are done and verified live.
 - [ ] Decide WS-SET-000001 (approved test settlement, ₦2,250 payable): void or delete in the sweep
 
 ## 2. Money: Paystack live
-- [ ] Paystack dashboard: activate the business FIRST (Settings → Your Business; legal entity YUEC AVIVAR GROUP LTD) — live keys only work after activation
+- [ ] Paystack dashboard: activate the business FIRST (Settings → Your Business; legal entity Yuec Avivar Limited) — live keys only work after activation
 - [ ] Vercel → washsmart → Production env: `PAYSTACK_SECRET_KEY` (`sk_test_` → `sk_live_`) + `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` (`pk_test_` → `pk_live_`); redeploy. Keep test keys in Preview env. (No code change needed — verified.)
 - [ ] One real-card purchase (Basic ₦8,000, cheapest), confirm 4 washes mint; refund via Paystack dashboard if desired
 
