@@ -26,7 +26,7 @@ const isBrowser = () => typeof window !== "undefined";
 
 export type AgentLoginResult =
   | { ok: true; agent: Agent }
-  | { ok: false; reason: "unknown-code" | "wrong-password" | "no-password" };
+  | { ok: false; reason: "unknown-identity" | "wrong-password" | "no-password" };
 
 function mapAgent(r: any): Agent {
   return {
@@ -41,18 +41,19 @@ function mapAgent(r: any): Agent {
   };
 }
 
-/** Agent login. The username is the agent code (e.g. "AGT-001"). */
+/** Agent login. Identifier is the agent's email or phone number
+ *  (the agent code is still accepted as well). */
 export async function agentLogin(
-  code: string,
+  identifier: string,
   password: string
 ): Promise<AgentLoginResult> {
   const sb = getSupabase();
   const { data: lookup, error: lookupError } = await sb.rpc(
-    "agent_login_lookup",
-    { p_code: code.trim().toUpperCase() }
+    "agent_login_lookup_identity",
+    { p_identity: identifier.trim() }
   );
   if (lookupError || !lookup || lookup.length === 0) {
-    return { ok: false, reason: "unknown-code" };
+    return { ok: false, reason: "unknown-identity" };
   }
   const { email, id } = lookup[0] as { email: string; id: string };
   if (!email) return { ok: false, reason: "no-password" };
@@ -69,7 +70,7 @@ export async function agentLogin(
     }
   }
   const agent = await getAgent(id);
-  if (!agent) return { ok: false, reason: "unknown-code" };
+  if (!agent) return { ok: false, reason: "unknown-identity" };
   return { ok: true, agent };
 }
 

@@ -161,7 +161,7 @@ function agentWelcomeHtml(opts: { name: string; code: string }): string {
 <h2 style="margin:0 0 12px;font-size:22px;">Welcome to WashSMART, ${opts.name} 🤝</h2>
 <p>You're now a WashSMART field agent — you earn by bringing car washes onto the network.</p>
 <p><strong>Your agent code:</strong> <span style="font-family:monospace;font-size:16px;background:#eef4f0;padding:4px 10px;border-radius:8px;">${opts.code}</span><br/>
-Sign in to the Agent App with this code and your password.</p>
+Sign in to the Agent App with your email or phone number and your password.</p>
 <p><strong>How it works:</strong></p>
 <ol style="padding-left:20px;">
 <li>Share your agent code with car-wash owners you recruit.</li>

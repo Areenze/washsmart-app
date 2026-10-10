@@ -1,8 +1,8 @@
 "use client";
 
 /* /agent — Field Agent login.
- * Username is the agent code (e.g. "AGT-001") issued by WashSMART,
- * plus the agent password. */
+ * Sign in with the email or phone number on the agent account,
+ * plus the agent password. (Agent code still accepted.) */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -12,7 +12,7 @@ import { agentLogin, currentAgentSession } from "@/lib/db/agents";
 
 export default function AgentLogin() {
   const router = useRouter();
-  const [code, setCode] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,23 +27,23 @@ export default function AgentLogin() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!code.trim() || !password) {
-      setError("Enter your agent code and password to continue.");
+    if (!identifier.trim() || !password) {
+      setError("Enter your email or phone number and password to continue.");
       return;
     }
     setBusy(true);
-    const res = await agentLogin(code, password);
+    const res = await agentLogin(identifier, password);
     setBusy(false);
     if (res.ok) {
       router.push("/agent/dashboard");
       return;
     }
     setError(
-      res.reason === "unknown-code"
-        ? "We don't recognise that agent code. Codes look like AGT-001."
+      res.reason === "unknown-identity"
+        ? "We don't recognise that email or phone number. Check it and try again."
         : res.reason === "no-password"
           ? "This agent account isn't activated yet — ask your WashSMART contact."
-          : "Incorrect password for that agent code. Try again."
+          : "Incorrect password for that account. Try again."
     );
   };
 
@@ -66,7 +66,7 @@ export default function AgentLogin() {
           <p className="text-sm text-white/60">WASHSMART FIELD AGENT</p>
           <h1 className="mt-2 text-3xl font-bold">Agent Login</h1>
           <p className="mt-2 text-sm text-white/70">
-            Sign in with your agent code and password.
+            Sign in with your email or phone number and password.
           </p>
         </div>
 
@@ -74,20 +74,19 @@ export default function AgentLogin() {
           onSubmit={submit}
           className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8"
         >
-          <label className="block text-sm font-bold" htmlFor="agent-code">
-            Agent code
+          <label className="block text-sm font-bold" htmlFor="agent-identity">
+            Email or phone number
           </label>
           <input
-            id="agent-code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="e.g. AGT-001"
+            id="agent-identity"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="e.g. you@example.com or 0803 123 4567"
             autoComplete="username"
-            autoCapitalize="characters"
-            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm uppercase outline-none focus:border-[#20a957]"
+            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Your agent code was issued when you joined the program.
+            The email or phone number on your agent account.
           </p>
 
           <label className="mt-5 block text-sm font-bold" htmlFor="password">
