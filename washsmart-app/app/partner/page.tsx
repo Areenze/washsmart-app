@@ -1,8 +1,8 @@
 "use client";
 
 /* /partner — Partner App login.
- * Username is the Partner ID (e.g. "WS-2026-0001") issued at approval,
- * plus the partner password. Demo credentials are shown on the page. */
+ * Sign in with your Partner ID, email or phone number,
+ * plus the partner password. */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -18,7 +18,7 @@ import type { Partner } from "@/lib/db/types";
 export default function PartnerLogin() {
   const router = useRouter();
   const [partners, setPartners] = useState<Partner[]>([]);
-  const [partnerId, setPartnerId] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,28 +35,28 @@ export default function PartnerLogin() {
   }, [router]);
 
   const fill = (p: Partner) => {
-    setPartnerId(p.partnerId);
+    setIdentifier(p.partnerId);
     setError(null);
   };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!partnerId.trim() || !password) {
-      setError("Enter your Partner ID and password to continue.");
+    if (!identifier.trim() || !password) {
+      setError("Enter your Partner ID, email or phone number and password to continue.");
       return;
     }
     setBusy(true);
-    const res = await partnerLogin(partnerId, password);
+    const res = await partnerLogin(identifier, password);
     setBusy(false);
     if (res.ok) {
       router.push("/partner/dashboard");
       return;
     }
     setError(
-      res.reason === "unknown-id"
-        ? "We don't recognise that Partner ID. Check it and try again — IDs look like WS-2026-0001."
-        : "Incorrect password for that Partner ID. Try again."
+      res.reason === "unknown-identity"
+        ? "We don't recognise that Partner ID, email or phone number. Check it and try again."
+        : "Incorrect password for that account. Try again."
     );
   };
 
@@ -79,7 +79,7 @@ export default function PartnerLogin() {
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Partner Login</h1>
           <p className="mt-2 text-sm text-white/70">
-            Sign in with your Partner ID and password.
+            Sign in with your Partner ID, email or phone number and password.
           </p>
         </div>
 
@@ -88,19 +88,19 @@ export default function PartnerLogin() {
           className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8"
         >
           <label className="block text-sm font-bold" htmlFor="partner-id">
-            Partner ID
+            Partner ID, email or phone number
           </label>
           <input
             id="partner-id"
-            value={partnerId}
-            onChange={(e) => setPartnerId(e.target.value)}
-            placeholder="e.g. WS-2026-0001"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="e.g. WS-2026-0001, you@example.com or 0803 123 4567"
             autoComplete="username"
-            autoCapitalize="characters"
-            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
+            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Your Partner ID was issued when your application was approved.
+            Your Partner ID was issued when your application was approved —
+            or use the email or phone number on your account.
           </p>
 
           <label className="mt-5 block text-sm font-bold" htmlFor="password">

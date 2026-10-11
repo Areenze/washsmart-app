@@ -253,7 +253,7 @@ export interface PendingSettlement {
 
 export type PartnerLoginResult =
   | { ok: true; partner: Partner }
-  | { ok: false; reason: "unknown-id" | "wrong-password" };
+  | { ok: false; reason: "unknown-identity" | "wrong-password" };
 
 export type RedeemFailure =
   | "bad-token"

@@ -1,8 +1,9 @@
 "use client";
 
 /* /app/login — returning subscriber sign-in.
- * Email + password (email is verified once, at sign-up). A magic-link
- * alternative remains for accounts created before passwords existed. */
+ * Email or phone number + password (email is verified once, at sign-up).
+ * A magic-link alternative remains for accounts created before
+ * passwords existed (email only). */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -13,14 +14,16 @@ import {
   resendConfirmationEmail,
   sendSignInLink,
   setVerifyPending,
-  signInWithPassword,
+  signInWithIdentifier,
 } from "@/lib/db/store";
 
 type Step = "form" | "checking" | "sent" | "unknown" | "verify";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");  const [password, setPassword] = useState("");
+  const [identifier, setIdentifier] = useState("");
+  const [resolvedEmail, setResolvedEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState(false);
   const [step, setStep] = useState<Step>("form");
@@ -73,27 +76,32 @@ export default function LoginPage() {
     return () => window.clearTimeout(t);
   }, [resendCooldown]);
 
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier.trim());
+  const phoneOk = identifier.replace(/\D/g, "").length >= 7;
+  const identifierOk = emailOk || phoneOk;
 
   const submitPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
-    if (!emailOk || !password) return;
+    if (!identifierOk || !password) return;
     setStep("checking");
     setError(null);
-    const res = await signInWithPassword(email, password);
+    const res = await signInWithIdentifier(identifier, password);
     if (res.ok) {
       router.replace(nextPath());
       return;
     }
     if (res.reason === "not-confirmed") {
+      setResolvedEmail(res.resolvedEmail ?? identifier.trim());
       setStep("verify");
       return;
     }
     setError(
-      res.reason === "wrong-credentials"
-        ? "Incorrect email or password. Try again."
-        : (res.error ?? "Could not sign you in. Please try again.")
+      res.reason === "unknown-identity"
+        ? "We don't recognise that email or phone number. Check it and try again."
+        : res.reason === "wrong-credentials"
+          ? "Incorrect password. Try again."
+          : (res.error ?? "Could not sign you in. Please try again.")
     );
     setStep("form");
   };
@@ -101,7 +109,7 @@ export default function LoginPage() {
   const resendVerification = async () => {
     if (resendCooldown > 0) return;
     const redirectTo = `${window.location.origin}/app/auth/callback?mode=signup`;
-    const res = await resendConfirmationEmail(email, redirectTo);
+    const res = await resendConfirmationEmail(resolvedEmail || identifier, redirectTo);
     setResendCooldown(60);
     if (res.ok) {
       setResent(true);
@@ -114,11 +122,14 @@ export default function LoginPage() {
   const submitMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched(true);
-    if (!emailOk) return;
+    if (!emailOk) {
+      setError("Enter your email address above to receive a magic link.");
+      return;
+    }
     setStep("checking");
     setError(null);
     try {
-      const registered = await isEmailRegistered(email);
+      const registered = await isEmailRegistered(identifier);
       if (!registered) {
         setStep("unknown");
         return;
@@ -127,13 +138,13 @@ export default function LoginPage() {
       const redirectTo =
         `${window.location.origin}/app/auth/callback?mode=login` +
         (next !== "/app" ? `&next=${encodeURIComponent(next)}` : "");
-      const res = await sendSignInLink(email, "", "", redirectTo);
+      const res = await sendSignInLink(identifier, "", "", redirectTo);
       if (!res.ok) {
         setError(res.error ?? "Could not send the sign-in link.");
         setStep("form");
         return;
       }
-      setVerifyPending(email.trim());
+      setVerifyPending(identifier.trim());
       setStep("sent");
     } catch {
       setError("Something went wrong. Please try again.");
@@ -164,7 +175,7 @@ export default function LoginPage() {
             <h1 className="mt-4 text-2xl font-bold">Check your inbox</h1>
             <p className="mt-2 text-sm text-gray-400">
               We sent a sign-in link to{" "}
-              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
+              <span className="font-bold text-[#e9f2ec]">{identifier.trim()}</span>.
               Click it to log in to WashSMART.
             </p>
             <p className="mt-2 text-xs text-gray-500">
@@ -185,7 +196,7 @@ export default function LoginPage() {
             <h1 className="mt-4 text-2xl font-bold">No account found</h1>
             <p className="mt-2 text-sm text-gray-400">
               We couldn&apos;t find a WashSMART account for{" "}
-              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>.
+              <span className="font-bold text-[#e9f2ec]">{identifier.trim()}</span>.
             </p>
             <Link
               href="/app/signup"
@@ -212,7 +223,7 @@ export default function LoginPage() {
             <p className="mt-2 text-sm text-gray-400">
               This email address hasn&apos;t been verified yet. Click the
               one-time link we sent to{" "}
-              <span className="font-bold text-[#e9f2ec]">{email.trim()}</span>{" "}
+              <span className="font-bold text-[#e9f2ec]">{resolvedEmail || identifier.trim()}</span>{" "}
               — after that, you&apos;ll log in with your password.
             </p>
             {error && (
@@ -231,7 +242,7 @@ export default function LoginPage() {
             </button>
             {resent && (
               <p className="mt-2 text-xs font-semibold text-[#48d87c]">
-                A new verification link was sent to {email.trim()}.
+                A new verification link was sent to {resolvedEmail || identifier.trim()}.
               </p>
             )}
             <button
@@ -249,7 +260,7 @@ export default function LoginPage() {
             <p className="text-sm font-semibold text-[#48d87c]">{greet} 👋</p>
             <h1 className="mt-1 text-2xl font-bold">Welcome back</h1>
             <p className="mt-1 text-sm text-gray-400">
-              Log in with your email and password.
+              Log in with your email or phone number and password.
             </p>
 
             {error && (
@@ -261,20 +272,19 @@ export default function LoginPage() {
             <form onSubmit={submitPassword} className="mt-6 space-y-4">
               <div>
                 <label className="mb-1 block text-sm font-semibold">
-                  Email address
+                  Email or phone number
                 </label>
                 <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   onBlur={() => setTouched(true)}
-                  placeholder="e.g. adaeze@example.com"
-                  inputMode="email"
-                  autoComplete="email"
-                  className={inputClass(touched && !emailOk)}
+                  placeholder="e.g. adaeze@example.com or 0803 123 4567"
+                  autoComplete="username"
+                  className={inputClass(touched && !identifierOk)}
                 />
-                {touched && !emailOk && (
+                {touched && !identifierOk && (
                   <p className="mt-1 text-xs text-red-400">
-                    Please enter a valid email address.
+                    Please enter a valid email address or phone number.
                   </p>
                 )}
               </div>

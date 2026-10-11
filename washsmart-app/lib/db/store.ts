@@ -300,7 +300,7 @@ export type PasswordSignInResult =
   | { ok: true }
   | {
       ok: false;
-      reason: "wrong-credentials" | "not-confirmed" | "error";
+      reason: "wrong-credentials" | "not-confirmed" | "unknown-identity" | "error";
       error?: string;
     };
 
@@ -320,6 +320,34 @@ export async function signInWithPassword(
   if (msg.includes("invalid login credentials"))
     return { ok: false, reason: "wrong-credentials" };
   return { ok: false, reason: "error", error: error.message };
+}
+
+/**
+ * Sign in with email or phone number + password.
+ * A phone number is resolved to the account email via
+ * subscriber_login_lookup_identity, then signed in normally.
+ * Returns the resolved email so callers can show email-specific
+ * follow-ups (e.g. the "verify your email" step).
+ */
+export async function signInWithIdentifier(
+  identifier: string,
+  password: string
+): Promise<PasswordSignInResult & { resolvedEmail?: string }> {
+  const idf = identifier.trim();
+  if (idf.includes("@")) {
+    const res = await signInWithPassword(idf, password);
+    return { ...res, resolvedEmail: idf.toLowerCase() };
+  }
+  const { data, error } = await getSupabase().rpc(
+    "subscriber_login_lookup_identity",
+    { p_identity: idf }
+  );
+  if (error || !data || data.length === 0)
+    return { ok: false, reason: "unknown-identity" };
+  const email = (data[0] as { email: string }).email;
+  if (!email) return { ok: false, reason: "unknown-identity" };
+  const res = await signInWithPassword(email, password);
+  return { ...res, resolvedEmail: email };
 }
 
 /** Resend the one-time signup confirmation email. */
@@ -1494,16 +1522,16 @@ export async function lifetimeSettled(
  * Auth verifies the password — no plain-text passwords anywhere.
  */
 export async function partnerLogin(
-  partnerId: string,
+  identifier: string,
   password: string
 ): Promise<PartnerLoginResult> {
   const sb = getSupabase();
   const { data: lookup, error: lookupError } = await sb.rpc(
-    "partner_login_lookup",
-    { p_partner_id: partnerId.trim().toUpperCase() }
+    "partner_login_lookup_identity",
+    { p_identity: identifier.trim() }
   );
   if (lookupError || !lookup || lookup.length === 0) {
-    return { ok: false, reason: "unknown-id" };
+    return { ok: false, reason: "unknown-identity" };
   }
   const { email, id } = lookup[0] as { email: string; id: string };
   const { error: signInError } = await sb.auth.signInWithPassword({
@@ -1519,7 +1547,7 @@ export async function partnerLogin(
     }
   }
   const partner = await getPartner(id);
-  if (!partner) return { ok: false, reason: "unknown-id" };
+  if (!partner) return { ok: false, reason: "unknown-identity" };
   return { ok: true, partner };
 }
 

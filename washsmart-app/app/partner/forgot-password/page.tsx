@@ -1,7 +1,8 @@
 "use client";
 
 /* /partner/forgot-password — partner password reset, step 1.
- * Enter the Partner ID; we look up the account email and send a reset link.
+ * Enter your Partner ID, email or phone number; we look up the account
+ * email and send a reset link.
  * No service-role key needed — the reset email goes through Supabase Auth. */
 
 import { useEffect, useState } from "react";
@@ -12,7 +13,7 @@ import { listApprovedPartners } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
 
 export default function PartnerForgotPassword() {
-  const [partnerId, setPartnerId] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [phase, setPhase] = useState<"form" | "sending" | "sent">("form");
   const [error, setError] = useState<string | null>(null);
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -29,9 +30,9 @@ export default function PartnerForgotPassword() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const id = partnerId.trim().toUpperCase();
+    const id = identifier.trim();
     if (!id) {
-      setError("Enter your Partner ID.");
+      setError("Enter your Partner ID, email or phone number.");
       return;
     }
     setPhase("sending");
@@ -39,12 +40,12 @@ export default function PartnerForgotPassword() {
     try {
       const sb = getSupabase();
       const { data: lookup, error: lookupError } = await sb.rpc(
-        "partner_login_lookup",
-        { p_partner_id: id }
+        "partner_login_lookup_identity",
+        { p_identity: id }
       );
       if (lookupError || !lookup || lookup.length === 0) {
         throw new Error(
-          "We don't recognise that Partner ID. Check it and try again — IDs look like WS-2026-0001."
+          "We don't recognise that Partner ID, email or phone number. Check it and try again."
         );
       }
       const { email } = lookup[0] as { email: string };
@@ -77,8 +78,8 @@ export default function PartnerForgotPassword() {
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Reset your password</h1>
           <p className="mt-2 text-sm text-white/70">
-            Enter your Partner ID and we&apos;ll email you a link to set a new
-            password.
+            Enter your Partner ID, email or phone number and we&apos;ll email
+            you a link to set a new password.
           </p>
         </div>
 
@@ -90,7 +91,7 @@ export default function PartnerForgotPassword() {
               </div>
               <h2 className="mt-4 text-xl font-bold">Check your inbox</h2>
               <p className="mt-2 text-sm text-gray-400">
-                If that Partner ID exists, a password-reset link is on its way.
+                If that account exists, a password-reset link is on its way.
                 It expires soon, so use it promptly.
               </p>
               <Link
@@ -103,16 +104,15 @@ export default function PartnerForgotPassword() {
           ) : (
             <form onSubmit={submit}>
               <label className="block text-sm font-bold" htmlFor="partner-id">
-                Partner ID
+                Partner ID, email or phone number
               </label>
               <input
                 id="partner-id"
-                value={partnerId}
-                onChange={(e) => setPartnerId(e.target.value)}
-                placeholder="e.g. WS-2026-0001"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="e.g. WS-2026-0001, you@example.com or 0803 123 4567"
                 autoComplete="username"
-                autoCapitalize="characters"
-                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 font-mono text-sm outline-none focus:border-[#20a957]"
+                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
               />
 
               {error && (
@@ -148,7 +148,7 @@ export default function PartnerForgotPassword() {
                     key={p.id}
                     type="button"
                     onClick={() => {
-                      setPartnerId(p.partnerId);
+                      setIdentifier(p.partnerId);
                       setError(null);
                     }}
                     className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
