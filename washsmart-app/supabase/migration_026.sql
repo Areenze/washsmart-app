@@ -5,10 +5,13 @@
 
 -- Normalize a Nigerian phone number to 0XXXXXXXXXX for comparison,
 -- so 0803..., +234803... and 234803... all match the stored number.
+-- Returns null when there are no digits, so empty/missing phones never
+-- match each other.
 create or replace function public.normalize_ng_phone(p text)
 returns text
 language sql immutable set search_path = public as $$
   select case
+    when _d is null or _d = '' then null
     when _d like '234%' and length(_d) > 10 then '0' || substr(_d, 4)
     else _d
   end
