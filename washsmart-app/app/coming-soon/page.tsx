@@ -38,6 +38,58 @@ const PERKS = [
   { icon: "📱", text: "Scan-and-go with a QR code" },
 ];
 
+const HOW_IT_WORKS = [
+  {
+    step: "1",
+    title: "Choose a plan",
+    text: "Subscribe once and pay upfront — no paying cash at the car wash every single time.",
+  },
+  {
+    step: "2",
+    title: "Get wash credits",
+    text: "Your plan gives you wash credits, valid for 30 days, for the car(s) you register on your account.",
+  },
+  {
+    step: "3",
+    title: "Find a partner near you",
+    text: "Pick any approved WashSMART partner close to home, work, or wherever you are in Lagos.",
+  },
+  {
+    step: "4",
+    title: "Arrive. Verify. Wash.",
+    text: "Show your Wash QR, the partner verifies it, one credit is deducted — and you drive off clean.",
+  },
+];
+
+const PLANS = [
+  { name: "Basic", price: "₦8,000", washes: "4 washes", note: "For keeping one car clean" },
+  { name: "Standard", price: "₦12,000", washes: "6 washes", note: "Our most popular plan", featured: true },
+  { name: "Premium", price: "₦18,000", washes: "8 washes", note: "For frequent drivers & families" },
+];
+
+const WHY = [
+  {
+    icon: "📍",
+    title: "Not tied to one car wash",
+    text: "Your subscription works across the whole network, not just one location. If you move, travel across town, or your usual spot is busy, use another approved partner.",
+  },
+  {
+    icon: "✅",
+    title: "Approved, professional partners",
+    text: "Every centre in the network is a real, approved WashSMART partner — checked to WashSMART standards so you know what you're getting before you arrive.",
+  },
+  {
+    icon: "📱",
+    title: "Simple verification, no cash",
+    text: "No paper vouchers, no haggling, no cash at the gate. Your Wash QR verifies your wash in seconds.",
+  },
+  {
+    icon: "🚗",
+    title: "One pool for your cars",
+    text: "Register your car(s) once. Every wash comes from the same subscription pool, whichever registered car you bring.",
+  },
+];
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ComingSoonPage() {
@@ -81,7 +133,7 @@ export default function ComingSoonPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-white px-6 py-14 text-[#101613]">
-      <div className="flex w-full max-w-md flex-col items-center text-center">
+      <div className="flex w-full max-w-3xl flex-col items-center text-center">
         <Logo size={68} />
         <p className="mt-4 text-lg font-bold tracking-tight">
           Wash<span className="text-[#20a957]">SMART</span>
@@ -100,14 +152,16 @@ export default function ComingSoonPage() {
           <br />
           <span className="text-[#20a957]">Multiple washes.</span>
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-[#4b5751]">
-          We&apos;re opening WashSMART&apos;s network of approved car-wash
-          partners across Lagos — and early subscribers get an{" "}
-          <strong className="text-[#101613]">early-bird offer</strong> at
-          launch.
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-[#4b5751]">
+          WashSMART is a <strong className="text-[#101613]">car wash subscription network</strong> for
+          Lagos. Instead of paying cash at one car wash every time, you subscribe
+          once — and use your washes at <strong className="text-[#101613]">any approved WashSMART
+          partner near you</strong>, at home, at work, or on the move. We&apos;re opening
+          the network across Lagos, and early subscribers get an{" "}
+          <strong className="text-[#101613]">early-bird offer</strong> at launch.
         </p>
 
-        <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
+        <div className="mt-6 flex w-full max-w-md flex-col gap-2 sm:flex-row">
           {PERKS.map((p) => (
             <div
               key={p.text}
@@ -119,7 +173,7 @@ export default function ComingSoonPage() {
           ))}
         </div>
 
-        <div className="mt-8 w-full rounded-3xl border border-[#e4ede7] bg-white p-6 text-left shadow-[0_8px_30px_rgba(32,169,87,0.08)] sm:p-8">
+        <div className="mt-8 w-full max-w-md rounded-3xl border border-[#e4ede7] bg-white p-6 text-left shadow-[0_8px_30px_rgba(32,169,87,0.08)] sm:p-8">
           {done ? (
             <div className="py-4 text-center">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#e7f7ee] text-2xl">
@@ -243,9 +297,100 @@ export default function ComingSoonPage() {
           )}
         </div>
 
-        <div className="mt-8 w-full rounded-3xl bg-[#101613] p-6 text-left text-white">
-          <p className="text-sm font-bold">Own a car wash?</p>
-          <p className="mt-1 text-sm leading-relaxed text-white/70">
+        {/* What WashSMART is */}
+        <section className="mt-14 w-full text-left">
+          <h2 className="text-center text-2xl font-extrabold tracking-tight sm:text-3xl">
+            What is the WashSMART network?
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-center text-base leading-relaxed text-[#4b5751]">
+            WashSMART connects car owners with a growing network of approved
+            car wash centres across Lagos — all under one subscription.
+          </p>
+          <p className="mx-auto mt-3 max-w-xl text-center text-base leading-relaxed text-[#4b5751]">
+            The partners are independent car wash businesses in your neighbourhood.
+            They keep their own name and business, and join WashSMART as approved
+            partners. You don&apos;t buy a wash from just one place — you join a
+            network, so your subscription travels with you wherever you are in the city.
+          </p>
+        </section>
+
+        {/* How it works */}
+        <section className="mt-12 w-full text-left">
+          <h2 className="text-center text-2xl font-extrabold tracking-tight sm:text-3xl">
+            How it works
+          </h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {HOW_IT_WORKS.map((s) => (
+              <div key={s.step} className="rounded-3xl bg-[#f4f8f5] p-5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#20a957] text-sm font-extrabold text-white">
+                  {s.step}
+                </div>
+                <p className="mt-3 font-bold">{s.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#4b5751]">{s.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Plans */}
+        <section className="mt-12 w-full text-left">
+          <h2 className="text-center text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Simple plans, no surprises
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-[#4b5751]">
+            Every plan gives you wash credits to use at any approved partner in
+            the network. Credits are valid for 30 days from purchase.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {PLANS.map((plan) => (
+              <div
+                key={plan.name}
+                className={`rounded-3xl p-5 text-center ${
+                  plan.featured
+                    ? "border-2 border-[#20a957] bg-[#e7f7ee]"
+                    : "border border-[#e4ede7] bg-white"
+                }`}
+              >
+                <p className="text-sm font-bold text-[#157a3d]">{plan.name}</p>
+                <p className="mt-2 text-3xl font-extrabold">{plan.price}</p>
+                <p className="mt-1 text-sm font-semibold">{plan.washes} <span className="font-normal text-[#4b5751]">/ 30 days</span></p>
+                <p className="mt-2 text-xs leading-relaxed text-[#4b5751]">{plan.note}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Why WashSMART */}
+        <section className="mt-12 w-full text-left">
+          <h2 className="text-center text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Why car owners join WashSMART
+          </h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {WHY.map((w) => (
+              <div key={w.title} className="rounded-3xl border border-[#e4ede7] bg-white p-5">
+                <p className="text-xl">{w.icon}</p>
+                <p className="mt-2 font-bold">{w.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#4b5751]">{w.text}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mx-auto mt-6 max-w-xl text-center text-sm leading-relaxed text-[#4b5751]">
+            We&apos;re opening area by area across Lagos — starting where demand
+            is highest. Joining the waitlist above tells us where to bring the
+            network first: Lekki, Ajah, Victoria Island, Ikoyi, Ikeja, Yaba,
+            Surulere, Gbagada and beyond.
+          </p>
+        </section>
+
+        <div className="mt-12 w-full rounded-3xl bg-[#101613] p-6 text-left text-white sm:p-8">
+          <p className="text-base font-bold">Own a car wash?</p>
+          <p className="mt-2 text-sm leading-relaxed text-white/70">
+            Join WashSMART as an approved partner — keep your own name and
+            business, and get discovered by subscribers looking for a wash near
+            them. Partners receive verified wash redemptions from subscribers
+            and are paid through WashSMART&apos;s settlement cycle.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-white/70">
             Partner applications open at launch. Join the waitlist above and
             we&apos;ll invite you to apply first.
           </p>
@@ -253,7 +398,10 @@ export default function ComingSoonPage() {
       </div>
 
       <footer className="mt-12 text-center text-xs text-[#8a948e]">
-        © 2026 WashSMART · support@washsmart.ng
+        <p className="text-sm font-semibold text-[#4b5751]">
+          Powered by <span className="text-[#101613]">Yuec Avivar Limited</span>
+        </p>
+        <p className="mt-2">© 2026 WashSMART · support@washsmart.ng</p>
       </footer>
     </main>
   );
