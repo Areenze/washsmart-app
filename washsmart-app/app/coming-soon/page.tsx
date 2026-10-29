@@ -61,12 +61,6 @@ const HOW_IT_WORKS = [
   },
 ];
 
-const PLANS = [
-  { name: "Basic", price: "₦8,000", washes: "4 washes", note: "For keeping one car clean" },
-  { name: "Standard", price: "₦12,000", washes: "6 washes", note: "Our most popular plan", featured: true },
-  { name: "Premium", price: "₦18,000", washes: "8 washes", note: "For frequent drivers & families" },
-];
-
 const WHY = [
   {
     icon: "📍",
@@ -327,34 +321,6 @@ export default function ComingSoonPage() {
                 </div>
                 <p className="mt-3 font-bold">{s.title}</p>
                 <p className="mt-1 text-sm leading-relaxed text-[#4b5751]">{s.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Plans */}
-        <section className="mt-12 w-full text-left">
-          <h2 className="text-center text-2xl font-extrabold tracking-tight sm:text-3xl">
-            Simple plans, no surprises
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-sm leading-relaxed text-[#4b5751]">
-            Every plan gives you wash credits to use at any approved partner in
-            the network. Credits are valid for 30 days from purchase.
-          </p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-3xl p-5 text-center ${
-                  plan.featured
-                    ? "border-2 border-[#20a957] bg-[#e7f7ee]"
-                    : "border border-[#e4ede7] bg-white"
-                }`}
-              >
-                <p className="text-sm font-bold text-[#157a3d]">{plan.name}</p>
-                <p className="mt-2 text-3xl font-extrabold">{plan.price}</p>
-                <p className="mt-1 text-sm font-semibold">{plan.washes} <span className="font-normal text-[#4b5751]">/ 30 days</span></p>
-                <p className="mt-2 text-xs leading-relaxed text-[#4b5751]">{plan.note}</p>
               </div>
             ))}
           </div>
