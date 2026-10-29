@@ -112,7 +112,7 @@ export interface AgentOverviewRow extends Agent {
 export interface Plan {
   id: string;
   name: string;
-  price: string; // display, e.g. "₦12,000"
+  price: string; // display, e.g. "₦15,000"
   amount: number; // kobo-free naira integer
   washes: number;
   popular?: boolean;

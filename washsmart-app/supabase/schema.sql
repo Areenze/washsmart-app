@@ -282,10 +282,10 @@ create policy "own ledger" on ledger_entries
 -- TODO: add is_admin() helper checking a staff table or JWT claim.
 
 -- ============================================================================
--- Seed: plans (₦8,000/2 · ₦12,000/4 · ₦18,000/8)
+-- Seed: plans (₦10,000/4 · ₦15,000/6 · ₦20,000/8 — flat ₦2,500/wash, 2026-10-29)
 -- ============================================================================
 insert into plans (id, name, amount, washes, popular) values
-  ('basic',    'Basic',    8000,  2, false),
-  ('standard', 'Standard', 12000, 4, true),
-  ('premium',  'Premium',  18000, 8, false)
+  ('basic',    'Basic',    10000, 4, false),
+  ('standard', 'Standard', 15000, 6, true),
+  ('premium',  'Premium',  20000, 8, false)
 on conflict (id) do nothing;

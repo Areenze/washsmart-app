@@ -455,7 +455,7 @@ export default function EntryPage() {
           <Reveal delay={150}>
             <div className="rounded-3xl border border-white/5 bg-[#111a14] p-8">
               {[
-                ["💳", "Subscribe", "₦12,000 / 30 days"],
+                ["💳", "Subscribe", "₦15,000 / 30 days"],
                 ["🎟️", "Get credits", "6 wash credits"],
                 ["📱", "Show QR", "Partner scans to verify"],
                 ["🚗", "Get washed", "1 credit deducted"],
