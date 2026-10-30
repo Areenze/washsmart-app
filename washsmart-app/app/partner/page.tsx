@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Brand, Logo } from "@/components/ui";
+import PartnerInstallPrompt from "@/components/partner-install-prompt";
 import {
   currentPartnerSession,
   listApprovedPartners,
@@ -148,6 +149,10 @@ export default function PartnerLogin() {
             </Link>
           </p>
         </form>
+
+        <div className="mt-6">
+          <PartnerInstallPrompt />
+        </div>
 
         <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
           <p className="text-sm font-bold text-[#48d87c]">
