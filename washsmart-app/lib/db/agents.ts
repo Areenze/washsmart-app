@@ -37,7 +37,10 @@ function mapAgent(r: any): Agent {
     email: r.email ?? "",
     status: r.status,
     createdAt: r.created_at,
-    linked: r.user_id != null,
+    // admin_agent_overview returns a boolean `linked`; raw agents rows
+    // carry `user_id` instead. Accept either — reading only user_id made
+    // every agent show "NO LOGIN" in /admin/agents even when linked.
+    linked: r.linked ?? (r.user_id != null),
   };
 }
 
