@@ -1,21 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-/* Public-domain holding page + partner door.
+/* Public-domain holding page + role doors.
  * washsmart.ng (and www) show "coming soon" while the app is still in
  * testing. All *.vercel.app hosts keep serving the full app.
  * Emailed auth-link landing pages stay exempt so those links keep working.
- * /partner stays reachable on the public domain (it is login-gated) so
- * approved partners are never stuck behind the holding page, and
- * partner.washsmart.ng is the partners' own door: it serves the partner
- * experience directly (short paths map into /partner/*) and is never
- * gated. */
+ * /partner and /agent stay reachable on the public domain (login-gated) so
+ * partners and agents are never stuck behind the holding page, and
+ * partner.washsmart.ng / agent.washsmart.ng are their own doors: each
+ * serves its experience directly (short paths map into the segment) and
+ * is never gated. */
 
 const PUBLIC_HOSTS = new Set(["washsmart.ng", "www.washsmart.ng"]);
-const PARTNER_HOST = "partner.washsmart.ng";
+
+// Role doors: each subdomain serves its segment directly (short paths map
+// into the segment) and is never gated.
+const ROLE_DOORS: Record<string, string> = {
+  "partner.washsmart.ng": "/partner",
+  "agent.washsmart.ng": "/agent",
+};
 
 // Full pages that must keep working on the public domain (auth links,
-// plus the login-gated partner experience).
+// plus the login-gated partner and agent experiences).
 const EXEMPT_PAGES = [
   "/coming-soon",
   "/app/auth/callback",
@@ -23,6 +29,7 @@ const EXEMPT_PAGES = [
   "/agent/reset-password",
   "/partner/reset-password",
   "/partner",
+  "/agent",
 ];
 
 // Static asset prefixes the holding page (or auth pages) may need.
@@ -33,6 +40,7 @@ const EXEMPT_EXACT = new Set([
   "/manifest.webmanifest",
   "/manifest.json",
   "/manifest-partner.json",
+  "/manifest-agent.json",
   "/sw.js",
   "/robots.txt",
 ]);
@@ -41,18 +49,20 @@ export function proxy(req: NextRequest) {
   const host = (req.headers.get("host") || "").split(":")[0].toLowerCase();
   const { pathname, searchParams } = req.nextUrl;
 
-  // Partner door: partner.washsmart.ng serves /partner/* directly.
-  if (host === PARTNER_HOST) {
+  // Role doors: partner.washsmart.ng serves /partner/* directly,
+  // agent.washsmart.ng serves /agent/* directly.
+  const doorBase = ROLE_DOORS[host];
+  if (doorBase) {
     if (
       EXEMPT_EXACT.has(pathname) ||
       EXEMPT_PREFIXES.some((p) => pathname.startsWith(p)) ||
       pathname.startsWith("/api/") ||
-      pathname === "/partner" ||
-      pathname.startsWith("/partner/")
+      pathname === doorBase ||
+      pathname.startsWith(doorBase + "/")
     )
       return NextResponse.next();
     const url = req.nextUrl.clone();
-    url.pathname = pathname === "/" ? "/partner" : `/partner${pathname}`;
+    url.pathname = pathname === "/" ? doorBase : `${doorBase}${pathname}`;
     return NextResponse.rewrite(url);
   }
 

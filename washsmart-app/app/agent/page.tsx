@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Brand, Logo } from "@/components/ui";
+import AgentInstallPrompt from "@/components/agent-install-prompt";
 import { agentLogin, currentAgentSession } from "@/lib/db/agents";
 
 export default function AgentLogin() {
@@ -125,6 +126,10 @@ export default function AgentLogin() {
             {busy ? "Signing in…" : "Sign In"}
           </button>
         </form>
+
+        <div className="mt-6">
+          <AgentInstallPrompt />
+        </div>
       </section>
     </main>
   );
