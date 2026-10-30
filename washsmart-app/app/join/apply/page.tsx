@@ -5,8 +5,9 @@
  * review → success (ref WS-2026-XXXX, Pending Review).
  */
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Brand,
   Card,
@@ -57,6 +58,8 @@ const emptyDraft: Draft = {
   services: [],
   otherService: "",
   agentCode: "",
+  cacType: "",
+  cacNumber: "",
   photos: { business: [], location: [] },
 };
 
@@ -136,9 +139,30 @@ function PhotoPicker({
   );
 }
 
-export default function ApplyWizard() {
+export default function ApplyPage() {
+  return (
+    <Suspense
+      fallback={
+        <p className="p-10 text-center text-gray-400">
+          Loading the application form…
+        </p>
+      }
+    >
+      <ApplyWizard />
+    </Suspense>
+  );
+}
+
+function ApplyWizard() {
+  const search = useSearchParams();
+  // An agent's personal link (?agent=AGT-001) pre-fills their code and
+  // locks it, so the referral can never be lost to a typo.
+  const agentFromLink = (search.get("agent") ?? "").trim().toUpperCase();
   const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const [draft, setDraft] = useState<Draft>(() => ({
+    ...emptyDraft,
+    agentCode: agentFromLink,
+  }));
   const [touched, setTouched] = useState(false);
   const [done, setDone] = useState<PartnerApplication | null>(null);
   const [uploading, setUploading] = useState<"" | "business" | "location">("");
@@ -426,20 +450,70 @@ export default function ApplyWizard() {
                       className={inputClass(touched && !emailOk(draft.business.email))}
                     />
                   </Field>
+                  {agentFromLink ? (
+                    <Field
+                      label="Agent code"
+                      hint={`Added automatically from your agent's link — agent ${agentFromLink} gets credit for this application.`}
+                    >
+                      <input
+                        value={agentFromLink}
+                        readOnly
+                        className={`${inputClass(false)} opacity-70`}
+                      />
+                    </Field>
+                  ) : (
+                    <Field
+                      label="Agent code"
+                      hint="Optional — if a WashSMART field agent referred you, enter the code they gave you."
+                    >
+                      <input
+                        value={draft.agentCode}
+                        onChange={(e) =>
+                          setDraft((d) => ({ ...d, agentCode: e.target.value }))
+                        }
+                        placeholder="e.g. AGT-042"
+                        autoComplete="off"
+                        className={inputClass(false)}
+                      />
+                    </Field>
+                  )}
                   <Field
-                    label="Agent code"
-                    hint="Optional — if a WashSMART field agent referred you, enter the code they gave you."
+                    label="CAC registration"
+                    hint="Optional — registered businesses get a Verified Business badge in the WashSMART app."
                   >
-                    <input
-                      value={draft.agentCode}
+                    <select
+                      value={draft.cacType}
                       onChange={(e) =>
-                        setDraft((d) => ({ ...d, agentCode: e.target.value }))
+                        setDraft((d) => ({ ...d, cacType: e.target.value }))
                       }
-                      placeholder="e.g. AGT-042"
-                      autoComplete="off"
                       className={inputClass(false)}
-                    />
+                    >
+                      <option value="">Not registered yet</option>
+                      <option value="BN">Business Name (BN)</option>
+                      <option value="RC">Limited Company (RC)</option>
+                    </select>
                   </Field>
+                  {draft.cacType && (
+                    <Field
+                      label={
+                        draft.cacType === "BN" ? "BN number" : "RC number"
+                      }
+                      hint="Your CAC registration number, e.g. BN 1234567 or RC 1234567."
+                    >
+                      <input
+                        value={draft.cacNumber}
+                        onChange={(e) =>
+                          setDraft((d) => ({
+                            ...d,
+                            cacNumber: e.target.value,
+                          }))
+                        }
+                        placeholder="e.g. 1234567"
+                        autoComplete="off"
+                        className={inputClass(false)}
+                      />
+                    </Field>
+                  )}
                 </div>
               )}
 
@@ -757,6 +831,12 @@ function ReviewScreen({
     ["WhatsApp", draft.business.whatsapp || "—"],
     ["Email", draft.business.email],
     ["Agent code", draft.agentCode.trim() || "—"],
+    [
+      "CAC registration",
+      draft.cacNumber.trim()
+        ? `${draft.cacType} ${draft.cacNumber.trim()}`
+        : "Not registered",
+    ],
     ["Address", `${draft.location.address}, ${draft.location.area}`],
     ["LGA / State", `${draft.location.lga}, ${draft.location.state}`],
     ["GPS", draft.location.gps || "—"],

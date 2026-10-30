@@ -2,7 +2,9 @@
 
 /* /join — "Become a WashSMART Partner" landing (funnel step 1). */
 
+import { Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Brand, Logo } from "@/components/ui";
 
 const benefits = [
@@ -22,6 +24,19 @@ const steps = [
 ];
 
 export default function JoinLanding() {
+  return (
+    <Suspense fallback={null}>
+      <JoinLandingInner />
+    </Suspense>
+  );
+}
+
+function JoinLandingInner() {
+  // Preserve an agent's ?agent= code through to the application form.
+  const agent = (useSearchParams().get("agent") ?? "").trim().toUpperCase();
+  const applyHref = agent
+    ? `/join/apply?agent=${encodeURIComponent(agent)}`
+    : "/join/apply";
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
       <header className="border-b bg-[#111a14] px-5 py-4">
@@ -57,7 +72,7 @@ export default function JoinLanding() {
             empty time.
           </p>
           <Link
-            href="/join/apply"
+            href={applyHref}
             className="mt-7 inline-block rounded-full bg-[#28c866] px-8 py-3.5 font-bold text-white"
           >
             Start Application →
@@ -97,7 +112,7 @@ export default function JoinLanding() {
             Applications are reviewed within 48 hours.
           </p>
           <Link
-            href="/join/apply"
+            href={applyHref}
             className="mt-6 inline-block rounded-full bg-[#20a957] px-8 py-3.5 font-bold text-white"
           >
             Apply Now →

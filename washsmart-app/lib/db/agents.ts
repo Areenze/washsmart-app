@@ -11,7 +11,12 @@
 
 import { getSupabase } from "./supabase";
 import { signOut } from "./store";
-import type { Agent, AgentOverviewRow, AgentReferral } from "./types";
+import type {
+  Agent,
+  AgentApplication,
+  AgentOverviewRow,
+  AgentReferral,
+} from "./types";
 
 /* ------------------------------------------------------------------ */
 /* Compensation — PROPOSED figures only. Mm has not approved these.    */
@@ -138,6 +143,20 @@ export async function getAgentReferrals(): Promise<AgentReferral[]> {
   const { data, error } = await getSupabase().rpc("agent_referrals");
   if (error) throw error;
   return (data ?? []) as AgentReferral[];
+}
+
+/** Applications carrying the signed-in agent's code, any status
+ *  (pending / approved / rejected) — the agent's pipeline view. */
+export async function getAgentApplications(): Promise<AgentApplication[]> {
+  const { data, error } = await getSupabase().rpc("agent_my_applications");
+  if (error) throw error;
+  return ((data ?? []) as any[]).map((r) => ({
+    ref: r.ref,
+    businessName: r.business_name,
+    area: r.area ?? "",
+    status: r.status,
+    submittedAt: r.submitted_at,
+  }));
 }
 
 /* ---------------- admin ---------------- */

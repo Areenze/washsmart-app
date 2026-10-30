@@ -187,6 +187,12 @@ export default function ApplicationDetailPage() {
             ["WhatsApp", app.business.whatsapp || "—"],
             ["Email", app.business.email],
             ["Agent code", app.agentCode || "—"],
+            [
+              "CAC registration",
+              app.cacNumber
+                ? `${app.cacType} ${app.cacNumber} (check on CAC public search)`
+                : "Not registered",
+            ],
           ]}
         />
         <Section h="Location" />

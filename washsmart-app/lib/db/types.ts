@@ -42,6 +42,18 @@ export interface Partner {
   approvedAt?: string;
   /** Public gallery photo URLs (Supabase Storage) */
   photos: string[];
+  /** CAC registration copied from the application at approval (optional). */
+  cacType?: string;
+  cacNumber?: string;
+}
+
+/** One application carrying the signed-in agent's code (agent dashboard). */
+export interface AgentApplication {
+  ref: string;
+  businessName: string;
+  area: string;
+  status: string; // pending | approved | rejected | suspended
+  submittedAt: string;
 }
 
 export interface PartnerApplication {
@@ -75,6 +87,10 @@ export interface PartnerApplication {
   otherService: string;
   /** Field-agent referral code entered by the applicant (optional, Phase 1). */
   agentCode: string;
+  /** Optional CAC registration: "BN" (Business Name) or "RC" (Limited
+   *  company); empty when unregistered. Powers the Verified Business badge. */
+  cacType: string;
+  cacNumber: string;
   photos: {
     business: string[];
     location: string[];

@@ -123,6 +123,8 @@ function mapPartner(r: any): Partner {
     appliedAt: r.created_at,
     approvedAt: r.approved_at ?? undefined,
     photos: r.photos ?? [],
+    cacType: r.cac_type ?? undefined,
+    cacNumber: r.cac_number ?? undefined,
   };
 }
 
@@ -157,6 +159,8 @@ function mapApplication(r: any): PartnerApplication {
     services: r.services ?? [],
     otherService: r.other_service ?? "",
     agentCode: r.agent_code ?? "",
+    cacType: r.cac_type ?? "",
+    cacNumber: r.cac_number ?? "",
     photos: {
       business: r.business_photos ?? [],
       location: r.location_photos ?? [],
@@ -741,6 +745,8 @@ export async function submitApplication(
       services: input.services,
       other_service: input.otherService || null,
       agent_code: input.agentCode.trim() || null,
+      cac_type: input.cacType || null,
+      cac_number: input.cacNumber.trim() || null,
       business_photos: input.photos.business,
       location_photos: input.photos.location,
     });
@@ -775,6 +781,8 @@ export async function submitApplication(
         services: input.services,
         otherService: input.otherService || "",
         agentCode: input.agentCode.trim() || "",
+        cacType: input.cacType || "",
+        cacNumber: input.cacNumber.trim() || "",
         photos: {
           business: input.photos.business,
           location: input.photos.location,
@@ -826,6 +834,8 @@ export async function getApplication(
     services: [],
     otherService: "",
     agentCode: "",
+    cacType: "",
+    cacNumber: "",
     photos: { business: [], location: [] },
   };
 }

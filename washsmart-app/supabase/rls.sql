@@ -213,6 +213,7 @@ begin
          partner_id, settlement_rate,
          address, area, lga, state, gps, hours, services,
          bays, daily_capacity, years_operating, staff_count,
+         cac_type, cac_number,
          status, approved_at)
   values
         (v_pid, v_app.ref, v_app.car_wash_name, v_app.owner_name, v_app.phone,
@@ -222,6 +223,7 @@ begin
          v_app.opening_hours, v_app.services,
          coalesce(v_app.wash_bays, 1), v_app.daily_capacity,
          v_app.years_operating, v_app.staff_count,
+         v_app.cac_type, v_app.cac_number,
          'approved', now());
 
   update partner_applications

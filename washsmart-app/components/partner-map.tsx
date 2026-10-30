@@ -168,6 +168,18 @@ export function PartnerMap({
                         ? ` · ★ ${p.rating.toFixed(1)} (${p.reviews})`
                         : ""}
                     </p>
+                    {p.cacNumber ? (
+                      <p
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: "#1c8a49",
+                          margin: "0 0 6px",
+                        }}
+                      >
+                        ✓ Verified Business
+                      </p>
+                    ) : null}
                     <Link
                       href={`${detailBase}/${p.id}`}
                       style={{

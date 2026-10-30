@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Partner } from "@/lib/db/types";
+import VerifiedBadge from "@/components/verified-badge";
 
 export default function PartnerCard({
   partner,
@@ -16,6 +17,12 @@ export default function PartnerCard({
         <div>
           <h3 className="font-bold">{partner.name}</h3>
           <p className="mt-1 text-sm text-gray-400">{partner.location}</p>
+          <div className="mt-1.5">
+            <VerifiedBadge
+              cacType={partner.cacType}
+              cacNumber={partner.cacNumber}
+            />
+          </div>
         </div>
         <span className="rounded-full bg-[#20a957]/15 px-2 py-1 text-xs font-bold text-green-400">
           Approved

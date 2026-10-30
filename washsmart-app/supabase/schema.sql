@@ -70,6 +70,10 @@ create table if not exists partner_applications (
   -- field-agent program (Phase 1): optional referral code entered by applicant
   agent_code        text,
 
+  -- optional CAC registration (migration_030): 'BN' | 'RC' + number
+  cac_type          text,
+  cac_number        text,
+
   created_at        timestamptz not null default now()
 );
 create index if not exists idx_applications_status on partner_applications (status);
@@ -122,6 +126,9 @@ create table if not exists partners (
   daily_capacity  integer,
   years_operating integer,
   staff_count     integer,
+  -- optional CAC registration copied from the application (migration_030)
+  cac_type        text,
+  cac_number      text,
   rating          numeric(2,1) not null default 5.0,
   reviews         integer not null default 0,
   open_now        boolean not null default true,

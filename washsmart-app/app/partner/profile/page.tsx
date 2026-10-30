@@ -11,6 +11,7 @@ import {
   updatePartner,
 } from "@/lib/db/store";
 import { deletePhoto, uploadPhoto } from "@/lib/db/photos";
+import VerifiedBadge from "@/components/verified-badge";
 import type { Partner } from "@/lib/db/types";
 
 const ALL_SERVICES = [
@@ -153,6 +154,10 @@ export default function PartnerProfilePage() {
           <span className="inline-flex items-center gap-1 rounded-full bg-[#ffffff]/15 px-3 py-1 text-xs font-bold text-[#48d87c]">
             ✓ WashSMART Approved Partner
           </span>
+          <VerifiedBadge
+            cacType={partner.cacType}
+            cacNumber={partner.cacNumber}
+          />
           <Badge tone={partner.status === "Open" ? "green" : "gray"}>
             {partner.status === "Open" ? "OPEN NOW" : "CLOSED"}
           </Badge>

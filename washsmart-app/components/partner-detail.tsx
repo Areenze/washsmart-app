@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Badge, EmptyState } from "@/components/ui";
 import { PartnerReviews } from "@/components/partner-reviews";
+import VerifiedBadge from "@/components/verified-badge";
 import { getPartner } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
 
@@ -71,6 +72,12 @@ export default function PartnerDetail({
           <div>
             <h1 className="text-3xl font-bold">{partner.name}</h1>
             <p className="mt-1 text-gray-400">{partner.location}</p>
+            <div className="mt-2">
+              <VerifiedBadge
+                cacType={partner.cacType}
+                cacNumber={partner.cacNumber}
+              />
+            </div>
           </div>
           <Badge>Approved</Badge>
         </div>
