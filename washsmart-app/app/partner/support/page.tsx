@@ -42,7 +42,7 @@ export default function PartnerSupportPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
@@ -55,7 +55,7 @@ export default function PartnerSupportPage() {
         </div>
         <Link
           href="/partner/support/new"
-          className="rounded-full bg-[#2ed06a] px-5 py-2.5 font-bold text-white"
+          className="rounded-full bg-[#f5f5f5] px-5 py-2.5 font-bold text-[#0a0a0a]"
         >
           + New Ticket
         </Link>
@@ -64,7 +64,7 @@ export default function PartnerSupportPage() {
       {tickets === null ? (
         <p className="mt-6 text-gray-400">Loading…</p>
       ) : tickets.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-[#111a14] p-8 text-center">
+        <div className="mt-6 rounded-2xl bg-[#151515] p-8 text-center">
           <p className="font-bold">No tickets yet</p>
           <p className="mt-2 text-sm text-gray-400">
             Redemption problems, payout questions, technical issues — file them
@@ -74,7 +74,7 @@ export default function PartnerSupportPage() {
       ) : (
         <div className="mt-6 space-y-3">
           {tickets.map((t) => (
-            <div key={t.id} className="rounded-2xl bg-[#111a14] p-5">
+            <div key={t.id} className="rounded-2xl bg-[#151515] p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="truncate font-bold">{t.subject}</p>

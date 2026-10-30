@@ -62,21 +62,21 @@ export default function PartnerLogin() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
-      <header className="border-b bg-[#111a14] px-5 py-4">
+    <main className="min-h-screen bg-[#0a0a0a] text-[#f2f2f2]">
+      <header className="border-b bg-[#151515] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">
+          <span className="rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff]">
             PARTNER PORTAL
           </span>
         </div>
       </header>
 
       <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+        <div className="rounded-3xl bg-[#101010] p-8 text-center text-white">
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Partner Login</h1>
           <p className="mt-2 text-sm text-white/70">
@@ -86,7 +86,7 @@ export default function PartnerLogin() {
 
         <form
           onSubmit={submit}
-          className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8"
+          className="mt-6 rounded-3xl bg-[#151515] p-6 shadow-sm md:p-8"
         >
           <label className="block text-sm font-bold" htmlFor="partner-id">
             Partner ID, email or phone number
@@ -97,7 +97,7 @@ export default function PartnerLogin() {
             onChange={(e) => setIdentifier(e.target.value)}
             placeholder="e.g. WS-2026-0001, you@example.com or 0803 123 4567"
             autoComplete="username"
-            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
+            className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#ffffff]"
           />
           <p className="mt-1 text-xs text-gray-500">
             Your Partner ID was issued when your application was approved —
@@ -115,12 +115,12 @@ export default function PartnerLogin() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your partner password"
               autoComplete="current-password"
-              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
+              className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#ffffff]"
             />
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#ffffff]"
             >
               {showPassword ? "Hide" : "Show"}
             </button>
@@ -135,7 +135,7 @@ export default function PartnerLogin() {
           <button
             type="submit"
             disabled={busy}
-            className="mt-6 w-full rounded-xl bg-[#168846] py-4 text-lg font-bold text-white disabled:opacity-60"
+            className="mt-6 w-full rounded-xl bg-[#f5f5f5] py-4 text-lg font-bold text-[#0a0a0a] disabled:opacity-60"
           >
             {busy ? "Signing in…" : "Sign In"}
           </button>
@@ -143,7 +143,7 @@ export default function PartnerLogin() {
           <p className="mt-3 text-center text-sm">
             <Link
               href="/partner/forgot-password"
-              className="font-bold text-[#48d87c]"
+              className="font-bold text-[#ffffff]"
             >
               Forgot password?
             </Link>
@@ -154,8 +154,8 @@ export default function PartnerLogin() {
           <PartnerInstallPrompt />
         </div>
 
-        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
-          <p className="text-sm font-bold text-[#48d87c]">
+        <div className="mt-6 rounded-3xl border-2 border-dashed border-[#ffffff]/30 bg-[#ffffff]/10 p-6">
+          <p className="text-sm font-bold text-[#ffffff]">
             🔑 Approved partners — tap to fill your Partner ID
           </p>
           <p className="mt-1 text-xs text-gray-400">
@@ -163,7 +163,7 @@ export default function PartnerLogin() {
             approved.{" "}
             <Link
               href="/partner/forgot-password"
-              className="font-bold text-[#48d87c]"
+              className="font-bold text-[#ffffff]"
             >
               Reset it here
             </Link>{" "}
@@ -175,7 +175,7 @@ export default function PartnerLogin() {
                 key={p.id}
                 type="button"
                 onClick={() => fill(p)}
-                className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
+                className="w-full rounded-2xl bg-[#151515] p-4 text-left shadow-sm hover:border hover:border-[#ffffff]"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
@@ -184,7 +184,7 @@ export default function PartnerLogin() {
                       ID: {p.partnerId}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-bold text-[#48d87c]">
+                  <span className="shrink-0 text-xs font-bold text-[#ffffff]">
                     Fill →
                   </span>
                 </div>
@@ -195,7 +195,7 @@ export default function PartnerLogin() {
 
         <p className="mt-6 text-center text-xs text-gray-500">
           Not a partner yet?{" "}
-          <Link href="/join" className="font-bold text-[#48d87c]">
+          <Link href="/join" className="font-bold text-[#ffffff]">
             Apply here
           </Link>
         </p>

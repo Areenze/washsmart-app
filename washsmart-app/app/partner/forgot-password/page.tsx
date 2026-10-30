@@ -62,19 +62,19 @@ export default function PartnerForgotPassword() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
-      <header className="border-b bg-[#111a14] px-5 py-4">
+    <main className="min-h-screen bg-[#0a0a0a] text-[#f2f2f2]">
+      <header className="border-b bg-[#151515] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">PARTNER PORTAL</span>
+          <span className="rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff]">PARTNER PORTAL</span>
         </div>
       </header>
 
       <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+        <div className="rounded-3xl bg-[#101010] p-8 text-center text-white">
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Reset your password</h1>
           <p className="mt-2 text-sm text-white/70">
@@ -83,10 +83,10 @@ export default function PartnerForgotPassword() {
           </p>
         </div>
 
-        <div className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8">
+        <div className="mt-6 rounded-3xl bg-[#151515] p-6 shadow-sm md:p-8">
           {phase === "sent" ? (
             <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#20a957]/10 text-3xl">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#ffffff]/10 text-3xl">
                 ✉️
               </div>
               <h2 className="mt-4 text-xl font-bold">Check your inbox</h2>
@@ -96,7 +96,7 @@ export default function PartnerForgotPassword() {
               </p>
               <Link
                 href="/partner"
-                className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
+                className="mt-6 inline-block rounded-full bg-[#ffffff] px-6 py-3 font-bold text-[#0a0a0a]"
               >
                 Back to login
               </Link>
@@ -112,7 +112,7 @@ export default function PartnerForgotPassword() {
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder="e.g. WS-2026-0001, you@example.com or 0803 123 4567"
                 autoComplete="username"
-                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
+                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#ffffff]"
               />
 
               {error && (
@@ -124,13 +124,13 @@ export default function PartnerForgotPassword() {
               <button
                 type="submit"
                 disabled={phase === "sending"}
-                className="mt-6 w-full rounded-xl bg-[#168846] py-4 text-lg font-bold text-white disabled:opacity-60"
+                className="mt-6 w-full rounded-xl bg-[#f5f5f5] py-4 text-lg font-bold text-[#0a0a0a] disabled:opacity-60"
               >
                 {phase === "sending" ? "Sending…" : "Email me a reset link"}
               </button>
 
               <p className="mt-4 text-center text-sm">
-                <Link href="/partner" className="font-bold text-[#48d87c]">
+                <Link href="/partner" className="font-bold text-[#ffffff]">
                   ← Back to login
                 </Link>
               </p>
@@ -138,8 +138,8 @@ export default function PartnerForgotPassword() {
           )}
 
           {partners.length > 0 && phase !== "sent" && (
-            <div className="mt-6 rounded-3xl border-2 border-dashed border-[#20a957]/30 bg-[#20a957]/10 p-6">
-              <p className="text-sm font-bold text-[#48d87c]">
+            <div className="mt-6 rounded-3xl border-2 border-dashed border-[#ffffff]/30 bg-[#ffffff]/10 p-6">
+              <p className="text-sm font-bold text-[#ffffff]">
                 🔑 Approved partners — tap to fill your Partner ID
               </p>
               <div className="mt-4 space-y-2">
@@ -151,7 +151,7 @@ export default function PartnerForgotPassword() {
                       setIdentifier(p.partnerId);
                       setError(null);
                     }}
-                    className="w-full rounded-2xl bg-[#111a14] p-4 text-left shadow-sm hover:border hover:border-[#20a957]"
+                    className="w-full rounded-2xl bg-[#151515] p-4 text-left shadow-sm hover:border hover:border-[#ffffff]"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
@@ -160,7 +160,7 @@ export default function PartnerForgotPassword() {
                           ID: {p.partnerId}
                         </p>
                       </div>
-                      <span className="shrink-0 text-xs font-bold text-[#48d87c]">
+                      <span className="shrink-0 text-xs font-bold text-[#ffffff]">
                         Fill →
                       </span>
                     </div>

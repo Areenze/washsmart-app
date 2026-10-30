@@ -64,7 +64,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
 
   if (partner === undefined) {
     return (
-      <main className="min-h-screen bg-[#0a0f0c]">
+      <main className="min-h-screen bg-[#0a0a0a]">
         <p className="p-8 text-gray-400">Loading…</p>
       </main>
     );
@@ -76,13 +76,13 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0f0c] text-[#e9f2ec]">
-      <header className="border-b bg-[#111a14] px-5 py-4">
+    <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-[#f2f2f2]">
+      <header className="border-b bg-[#151515] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/partner/dashboard" className="flex items-center gap-2">
             <Logo />
             <Brand />
-            <span className="ml-1 rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">
+            <span className="ml-1 rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff]">
               PARTNER PORTAL
             </span>
           </Link>
@@ -102,7 +102,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <nav className="sticky top-0 z-10 border-b border-white/5 bg-[#111a14]/95 backdrop-blur">
+      <nav className="sticky top-0 z-10 border-b border-white/5 bg-[#151515]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-3 sm:gap-2 sm:px-5">
           {tabs.map((t) => (
             <Link
@@ -110,8 +110,8 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
               href={t.href}
               className={
                 pathname === t.href
-                  ? "border-b-2 border-[#48d87c] px-3 py-3 text-sm font-bold text-[#48d87c]"
-                  : "border-b-2 border-transparent px-3 py-3 text-sm font-semibold text-gray-400 hover:text-[#e9f2ec]"
+                  ? "border-b-2 border-[#ffffff] px-3 py-3 text-sm font-bold text-[#ffffff]"
+                  : "border-b-2 border-transparent px-3 py-3 text-sm font-semibold text-gray-400 hover:text-[#f2f2f2]"
               }
             >
               {t.label}

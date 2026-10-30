@@ -121,7 +121,7 @@ export default function SettlementStatementPage() {
       <section className="mx-auto max-w-3xl py-8">
         <Link
           href="/partner/earnings"
-          className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+          className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
         >
           ← Back to Earnings
         </Link>
@@ -142,7 +142,7 @@ export default function SettlementStatementPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/earnings"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back to Earnings
       </Link>
@@ -155,7 +155,7 @@ export default function SettlementStatementPage() {
         <span
           className={
             data.status === "paid"
-              ? "shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]"
+              ? "shrink-0 rounded-full bg-[#ffffff]/10 px-3 py-1 text-xs font-bold text-[#48d87c]"
               : "shrink-0 rounded-full bg-[#f5b942]/20 px-3 py-1 text-xs font-bold text-[#f5b942]"
           }
         >
@@ -163,7 +163,7 @@ export default function SettlementStatementPage() {
         </span>
       </div>
 
-      <Card className="mt-6 bg-[#063c28] text-white">
+      <Card className="mt-6 bg-[#101010] text-white">
         <div className="divide-y divide-white/10">
           <div className="flex justify-between py-2">
             <p className="text-white/70">Completed washes</p>
@@ -200,7 +200,7 @@ export default function SettlementStatementPage() {
         </p>
         <p className="text-sm text-white/60">{data.refLine}</p>
         {data.note && (
-          <p className="mt-2 rounded-xl bg-[#111a14]/10 p-3 text-sm text-white/80">
+          <p className="mt-2 rounded-xl bg-[#151515]/10 p-3 text-sm text-white/80">
             Note: {data.note}
           </p>
         )}
@@ -220,11 +220,11 @@ export default function SettlementStatementPage() {
           </p>
         </Card>
       ) : (
-        <div className="mt-4 overflow-hidden rounded-2xl bg-[#111a14] shadow-sm">
+        <div className="mt-4 overflow-hidden rounded-2xl bg-[#151515] shadow-sm">
           {otherLines.map((l) => (
             <div
               key={l.id}
-              className="flex items-center justify-between gap-3 border-b bg-[#0a0f0c] p-4"
+              className="flex items-center justify-between gap-3 border-b bg-[#0a0a0a] p-4"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold">{l.label}</p>

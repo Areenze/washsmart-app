@@ -113,7 +113,7 @@ export default function EarningsPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
@@ -124,7 +124,7 @@ export default function EarningsPage() {
       </p>
 
       {/* Pending settlement — the live current cycle */}
-      <Card className="mt-6 bg-[#063c28] text-white">
+      <Card className="mt-6 bg-[#101010] text-white">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-sm text-white/60">
@@ -175,7 +175,7 @@ export default function EarningsPage() {
         </p>
         <Link
           href="/partner/settlements/current"
-          className="mt-4 block rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] text-center font-bold text-white"
+          className="mt-4 block rounded-full bg-[#f5f5f5] py-3 transition-all duration-200 hover:bg-[#d9d9d9] text-center font-bold text-[#0a0a0a]"
         >
           View Statement
         </Link>
@@ -218,7 +218,7 @@ export default function EarningsPage() {
                     </span>
                   </p>
                 </div>
-                <span className="shrink-0 rounded-full bg-[#20a957]/10 px-3 py-1 text-xs font-bold text-[#48d87c]">
+                <span className="shrink-0 rounded-full bg-[#ffffff]/10 px-3 py-1 text-xs font-bold text-[#48d87c]">
                   Paid
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function EarningsPage() {
               </div>
               <Link
                 href={`/partner/settlements/${s.id}`}
-                className="mt-4 block rounded-xl border-2 border-[#20a957]/50 py-2.5 text-center text-sm font-bold text-[#48d87c]"
+                className="mt-4 block rounded-xl border-2 border-[#ffffff]/50 py-2.5 text-center text-sm font-bold text-[#ffffff]"
               >
                 View Statement
               </Link>
@@ -266,10 +266,10 @@ export default function EarningsPage() {
       {/* How the money flows */}
       <h2 className="mt-10 text-xl font-bold">How WashSMART pays you</h2>
       <Card className="mt-4">
-        <ol className="relative space-y-6 border-l-2 border-[#20a957]/30 pl-6">
+        <ol className="relative space-y-6 border-l-2 border-[#ffffff]/30 pl-6">
           {MONEY_FLOW.map((step, i) => (
             <li key={step.title} className="relative">
-              <span className="absolute -left-[34px] flex h-6 w-6 items-center justify-center rounded-full bg-[#168846] text-xs font-bold text-white">
+              <span className="absolute -left-[34px] flex h-6 w-6 items-center justify-center rounded-full bg-[#f5f5f5] text-xs font-bold text-[#0a0a0a]">
                 {i + 1}
               </span>
               <p className="font-bold">{step.title}</p>
@@ -279,8 +279,8 @@ export default function EarningsPage() {
         </ol>
       </Card>
 
-      <Card className="mt-4 bg-[#20a957]/10">
-        <p className="font-bold text-[#48d87c]">
+      <Card className="mt-4 bg-[#ffffff]/10">
+        <p className="font-bold text-[#ffffff]">
           Why monthly settlements — not instant payout
         </p>
         <ul className="mt-3 space-y-2">
@@ -295,7 +295,7 @@ export default function EarningsPage() {
       <p className="mt-6 text-xs text-gray-500">
         Demo figures — production settlements are calculated by WashSMART and
         paid via Paystack transfers to your registered bank account.{" "}
-        <Link href="/partner/ledger" className="font-bold text-[#48d87c]">
+        <Link href="/partner/ledger" className="font-bold text-[#ffffff]">
           View full ledger →
         </Link>
       </p>

@@ -15,7 +15,7 @@ export default function PartnerResetPassword() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-[#0a0f0c] px-5 py-16 text-center text-[#e9f2ec]">
+        <main className="min-h-screen bg-[#0a0a0a] px-5 py-16 text-center text-[#f2f2f2]">
           <p className="text-gray-400">Loading…</p>
         </main>
       }
@@ -91,30 +91,30 @@ function ResetInner() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
-      <header className="border-b bg-[#111a14] px-5 py-4">
+    <main className="min-h-screen bg-[#0a0a0a] text-[#f2f2f2]">
+      <header className="border-b bg-[#151515] px-5 py-4">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Logo />
             <Brand />
           </Link>
-          <span className="rounded-md bg-[#20a957]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">PARTNER PORTAL</span>
+          <span className="rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff]">PARTNER PORTAL</span>
         </div>
       </header>
 
       <section className="mx-auto max-w-xl px-5 py-10">
-        <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+        <div className="rounded-3xl bg-[#101010] p-8 text-center text-white">
           <p className="text-sm text-white/60">WASHSMART PARTNER APP</p>
           <h1 className="mt-2 text-3xl font-bold">Set a new password</h1>
         </div>
 
-        <div className="mt-6 rounded-3xl bg-[#111a14] p-6 shadow-sm md:p-8">
+        <div className="mt-6 rounded-3xl bg-[#151515] p-6 shadow-sm md:p-8">
           {fatal ? (
             <div className="text-center">
               <p className="font-bold text-red-300">{fatal}</p>
               <Link
                 href="/partner/forgot-password"
-                className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
+                className="mt-6 inline-block rounded-full bg-[#ffffff] px-6 py-3 font-bold text-[#0a0a0a]"
               >
                 Request a new link
               </Link>
@@ -136,12 +136,12 @@ function ResetInner() {
                   onChange={(e) => setPw(e.target.value)}
                   placeholder="At least 6 characters"
                   autoComplete="new-password"
-                  className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#20a957]"
+                  className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 pr-16 text-sm outline-none focus:border-[#ffffff]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#48d87c]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 pt-2 text-xs font-bold text-[#ffffff]"
                 >
                   {showPw ? "Hide" : "Show"}
                 </button>
@@ -160,7 +160,7 @@ function ResetInner() {
                 onChange={(e) => setPw2(e.target.value)}
                 placeholder="Repeat the new password"
                 autoComplete="new-password"
-                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#20a957]"
+                className="mt-2 w-full rounded-xl border border-white/10 px-4 py-3 text-sm outline-none focus:border-[#ffffff]"
               />
 
               {error && (
@@ -172,7 +172,7 @@ function ResetInner() {
               <button
                 type="submit"
                 disabled={saving}
-                className="mt-6 w-full rounded-xl bg-[#168846] py-4 text-lg font-bold text-white disabled:opacity-60"
+                className="mt-6 w-full rounded-xl bg-[#f5f5f5] py-4 text-lg font-bold text-[#0a0a0a] disabled:opacity-60"
               >
                 {saving ? "Saving…" : "Set new password"}
               </button>

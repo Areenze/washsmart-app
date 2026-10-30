@@ -107,12 +107,12 @@ function PartnerScanInner() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
 
-      <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+      <div className="rounded-3xl bg-[#101010] p-8 text-center text-white">
         <p className="text-sm text-white/60">PARTNER SCANNER</p>
         <h1 className="mt-2 text-2xl font-bold">Scan Subscriber QR</h1>
 
@@ -120,11 +120,11 @@ function PartnerScanInner() {
           <div id={READER_ID} className="[&>video]:rounded-2xl" />
           {!scanning && (
             <div className="relative h-64">
-              <div className="absolute left-3 top-3 h-8 w-8 rounded-tl-xl border-l-4 border-t-4 border-[#2ed06a]" />
-              <div className="absolute right-3 top-3 h-8 w-8 rounded-tr-xl border-r-4 border-t-4 border-[#2ed06a]" />
-              <div className="absolute bottom-3 left-3 h-8 w-8 rounded-bl-xl border-b-4 border-l-4 border-[#2ed06a]" />
-              <div className="absolute bottom-3 right-3 h-8 w-8 rounded-br-xl border-b-4 border-r-4 border-[#2ed06a]" />
-              <div className="absolute inset-x-8 top-1/2 h-0.5 animate-pulse bg-[#2ed06a]/70" />
+              <div className="absolute left-3 top-3 h-8 w-8 rounded-tl-xl border-l-4 border-t-4 border-[#ffffff]" />
+              <div className="absolute right-3 top-3 h-8 w-8 rounded-tr-xl border-r-4 border-t-4 border-[#ffffff]" />
+              <div className="absolute bottom-3 left-3 h-8 w-8 rounded-bl-xl border-b-4 border-l-4 border-[#ffffff]" />
+              <div className="absolute bottom-3 right-3 h-8 w-8 rounded-br-xl border-b-4 border-r-4 border-[#ffffff]" />
+              <div className="absolute inset-x-8 top-1/2 h-0.5 animate-pulse bg-[#f5f5f5]/70" />
             </div>
           )}
         </div>
@@ -136,7 +136,7 @@ function PartnerScanInner() {
         {!scanning ? (
           <button
             onClick={startScanner}
-            className="mt-6 w-full rounded-full bg-[#2ed06a] py-3 font-bold text-white transition-all duration-200 hover:bg-[#25b856]"
+            className="mt-6 w-full rounded-full bg-[#f5f5f5] py-3 font-bold text-[#0a0a0a] transition-all duration-200 hover:bg-[#d9d9d9]"
           >
             Start Camera Scanner
           </button>
@@ -161,11 +161,11 @@ function PartnerScanInner() {
                 setError("");
               }}
               placeholder="Paste QR token…"
-              className="w-full rounded-xl border border-white/20 bg-[#111a14]/10 px-4 py-3 font-mono text-xs text-white placeholder:text-white/40"
+              className="w-full rounded-xl border border-white/20 bg-[#151515]/10 px-4 py-3 font-mono text-xs text-white placeholder:text-white/40"
             />
             <button
               onClick={() => goVerify(manual)}
-              className="shrink-0 rounded-xl bg-white px-5 font-bold text-[#063c28]"
+              className="shrink-0 rounded-xl bg-white px-5 font-bold text-[#101010]"
             >
               Verify
             </button>

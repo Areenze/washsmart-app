@@ -53,7 +53,7 @@ export default function NewPartnerTicketPage() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/support"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
@@ -72,7 +72,7 @@ export default function NewPartnerTicketPage() {
             id="pcat"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-[#111a14] px-4 py-3"
+            className="w-full rounded-xl border border-white/10 bg-[#151515] px-4 py-3"
           >
             {TICKET_CATEGORIES.map((c) => (
               <option key={c.key} value={c.key}>
@@ -90,7 +90,7 @@ export default function NewPartnerTicketPage() {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="e.g. Subscriber QR wouldn't scan"
-            className="w-full rounded-xl border border-white/10 bg-[#111a14] px-4 py-3"
+            className="w-full rounded-xl border border-white/10 bg-[#151515] px-4 py-3"
           />
         </div>
         <div>
@@ -103,14 +103,14 @@ export default function NewPartnerTicketPage() {
             onChange={(e) => setDescription(e.target.value)}
             rows={5}
             placeholder="What happened, when, and which subscriber if relevant…"
-            className="w-full rounded-xl border border-white/10 bg-[#111a14] px-4 py-3"
+            className="w-full rounded-xl border border-white/10 bg-[#151515] px-4 py-3"
           />
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-xl bg-[#2ed06a] py-4 font-bold text-white disabled:opacity-60"
+          className="w-full rounded-xl bg-[#f5f5f5] py-4 font-bold text-[#0a0a0a] disabled:opacity-60"
         >
           {busy ? "Filing…" : "File Ticket"}
         </button>

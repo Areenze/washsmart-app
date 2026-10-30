@@ -43,7 +43,7 @@ export default function PartnerReviewsPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
@@ -55,7 +55,7 @@ export default function PartnerReviewsPage() {
       {reviews === null ? (
         <p className="mt-6 text-gray-400">Loading…</p>
       ) : reviews.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-[#111a14] p-8 text-center">
+        <div className="mt-6 rounded-2xl bg-[#151515] p-8 text-center">
           <p className="font-bold">No reviews yet</p>
           <p className="mt-2 text-sm text-gray-400">
             Subscribers can rate their wash after redeeming — reviews will show
@@ -64,7 +64,7 @@ export default function PartnerReviewsPage() {
         </div>
       ) : (
         <>
-          <div className="mt-6 flex items-center gap-4 rounded-2xl bg-[#111a14] p-5">
+          <div className="mt-6 flex items-center gap-4 rounded-2xl bg-[#151515] p-5">
             <p className="text-4xl font-bold">{avg.toFixed(1)}</p>
             <div>
               <Stars n={Math.round(avg)} />
@@ -75,7 +75,7 @@ export default function PartnerReviewsPage() {
           </div>
           <div className="mt-4 space-y-3">
             {reviews.map((r) => (
-              <div key={r.id} className="rounded-2xl bg-[#111a14] p-5">
+              <div key={r.id} className="rounded-2xl bg-[#151515] p-5">
                 <div className="flex items-center justify-between gap-3">
                   <Stars n={r.rating} />
                   <p className="text-xs text-gray-500">{fmtDate(r.createdAt)}</p>

@@ -54,7 +54,7 @@ export default function PartnerDashboard() {
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {cards.map((c) => (
-          <div key={c.label} className="rounded-2xl bg-[#063c28] p-4 text-white">
+          <div key={c.label} className="rounded-2xl bg-[#101010] p-4 text-white">
             <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
               {c.label}
             </p>
@@ -66,20 +66,20 @@ export default function PartnerDashboard() {
       </div>
       <Link
         href="/partner/scan"
-        className="mt-4 block w-full rounded-xl bg-[#2ed06a] py-4 text-center text-lg font-bold text-white"
+        className="mt-4 block w-full rounded-xl bg-[#f5f5f5] py-4 text-center text-lg font-bold text-[#0a0a0a]"
       >
         📷 SCAN CUSTOMER QR
       </Link>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
-        <div className="rounded-2xl bg-[#111a14] p-6">
+        <div className="rounded-2xl bg-[#151515] p-6">
           <h2 className="text-xl font-bold">All-time totals</h2>
           <div className="mt-4 grid grid-cols-2 gap-4">
-            <div className="rounded-xl bg-[#0a0f0c] p-4">
+            <div className="rounded-xl bg-[#0a0a0a] p-4">
               <p className="text-sm text-gray-400">Total washes</p>
               <p className="mt-1 text-2xl font-bold">{stats.totalWashes}</p>
             </div>
-            <div className="rounded-xl bg-[#0a0f0c] p-4">
+            <div className="rounded-xl bg-[#0a0a0a] p-4">
               <p className="text-sm text-gray-400">Total earnings</p>
               <p className="mt-1 text-2xl font-bold text-[#48d87c]">
                 {fmtNaira(stats.totalEarnings)}
@@ -88,13 +88,13 @@ export default function PartnerDashboard() {
           </div>
           <Link
             href="/partner/earnings"
-            className="mt-4 inline-block text-sm font-semibold text-[#48d87c]"
+            className="mt-4 inline-block text-sm font-semibold text-[#ffffff]"
           >
             View earnings →
           </Link>
         </div>
 
-        <div className="rounded-2xl bg-[#111a14] p-6">
+        <div className="rounded-2xl bg-[#151515] p-6">
           <h2 className="text-xl font-bold">Recent activity</h2>
           {recent.length === 0 ? (
             <p className="mt-3 text-sm text-gray-400">
@@ -107,7 +107,7 @@ export default function PartnerDashboard() {
                   key={t.id}
                   className="flex items-center gap-3 border-b pb-3 last:border-0"
                 >
-                  <div className="h-3 w-3 shrink-0 rounded-full bg-[#20a957]" />
+                  <div className="h-3 w-3 shrink-0 rounded-full bg-[#ffffff]" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold">
                       Wash confirmed — {t.subscriberName}

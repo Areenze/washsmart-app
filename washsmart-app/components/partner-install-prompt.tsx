@@ -45,7 +45,7 @@ export default function PartnerInstallPrompt() {
   // iOS Safari: no beforeinstallprompt — show manual instructions.
   if (isIOS && !deferred) {
     return (
-      <div className="rounded-3xl bg-[#111a14] p-6">
+      <div className="rounded-3xl bg-[#151515] p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-bold">📲 Put WashSMART Partner on your home screen</p>
@@ -70,7 +70,7 @@ export default function PartnerInstallPrompt() {
   if (!deferred) return null;
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-3xl bg-[#111a14] p-6">
+    <div className="flex items-center justify-between gap-3 rounded-3xl bg-[#151515] p-6">
       <div>
         <p className="font-bold">📲 Install the WashSMART Partner app</p>
         <p className="mt-1 text-sm text-gray-400">
@@ -87,7 +87,7 @@ export default function PartnerInstallPrompt() {
         </button>
         <button
           onClick={install}
-          className="rounded-full bg-[#2ed06a] px-5 py-2 text-sm font-bold text-white"
+          className="rounded-full bg-[#f5f5f5] px-5 py-2 text-sm font-bold text-[#0a0a0a]"
         >
           Install
         </button>

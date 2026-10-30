@@ -43,7 +43,7 @@ export default function PartnerWashDetailPage() {
         <h1 className="text-2xl font-bold">Transaction not found</h1>
         <Link
           href="/partner/history"
-          className="mt-6 inline-block rounded-full bg-[#20a957] px-6 py-3 font-bold text-white"
+          className="mt-6 inline-block rounded-full bg-[#ffffff] px-6 py-3 font-bold text-[#0a0a0a]"
         >
           ← Back to History
         </Link>
@@ -67,13 +67,13 @@ export default function PartnerWashDetailPage() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/history"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back to History
       </Link>
       <h1 className="text-3xl font-bold">Wash Receipt</h1>
 
-      <div className="mt-6 divide-y divide-white/10 rounded-2xl bg-[#111a14]">
+      <div className="mt-6 divide-y divide-white/10 rounded-2xl bg-[#151515]">
         {rows.map(([k, v]) => (
           <div key={k} className="flex items-center justify-between gap-3 px-5 py-3.5 text-sm">
             <span className="shrink-0 text-gray-400">{k}</span>

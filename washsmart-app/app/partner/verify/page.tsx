@@ -105,20 +105,20 @@ function VerifyInner() {
     <section className="mx-auto max-w-xl py-8">
       <Link
         href="/partner/scan"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back to Scanner
       </Link>
 
       {phase === "checking" && (
-        <div className="rounded-3xl bg-[#111a14] p-12 text-center shadow-sm">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
+        <div className="rounded-3xl bg-[#151515] p-12 text-center shadow-sm">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#ffffff]" />
           <p className="mt-5 font-bold">Verifying QR code…</p>
         </div>
       )}
 
       {phase === "checklist" && subscription && (
-        <div className="rounded-3xl bg-[#111a14] p-8 shadow-sm">
+        <div className="rounded-3xl bg-[#151515] p-8 shadow-sm">
           <h1 className="text-2xl font-bold">Verification Checklist</h1>
           <div className="mt-5 space-y-3">
             {[
@@ -129,9 +129,9 @@ function VerifyInner() {
             ].map((label) => (
               <div
                 key={label}
-                className="flex items-center gap-3 rounded-xl bg-[#20a957]/10 px-4 py-3"
+                className="flex items-center gap-3 rounded-xl bg-[#ffffff]/10 px-4 py-3"
               >
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#20a957] font-bold text-white">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#ffffff] font-bold text-[#0a0a0a]">
                   ✓
                 </span>
                 <span className="text-sm font-semibold">{label}</span>
@@ -139,7 +139,7 @@ function VerifyInner() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-2xl bg-[#0a0f0c] p-5">
+          <div className="mt-6 rounded-2xl bg-[#0a0a0a] p-5">
             <div className="flex items-center justify-between gap-3 py-1 text-sm">
               <span className="shrink-0 text-gray-400">Plan</span>
               <span className="min-w-0 truncate text-right font-bold">
@@ -163,7 +163,7 @@ function VerifyInner() {
             </Link>
             <button
               onClick={approve}
-              className="flex-1 rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
+              className="flex-1 rounded-full bg-[#ffffff] py-3 transition-all duration-200 hover:bg-[#d9d9d9] font-bold text-[#0a0a0a]"
             >
               Approve Wash
             </button>
@@ -172,14 +172,14 @@ function VerifyInner() {
       )}
 
       {phase === "approving" && (
-        <div className="rounded-3xl bg-[#111a14] p-12 text-center shadow-sm">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#20a957]" />
+        <div className="rounded-3xl bg-[#151515] p-12 text-center shadow-sm">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#ffffff]" />
           <p className="mt-5 font-bold">Recording wash…</p>
         </div>
       )}
 
       {phase === "approved" && tx && (
-        <div className="rounded-3xl bg-[#063c28] p-8 text-center text-white">
+        <div className="rounded-3xl bg-[#101010] p-8 text-center text-white">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#2ed06a] text-4xl">
             ✓
           </div>
@@ -188,11 +188,11 @@ function VerifyInner() {
             {tx.subscriberName} · {tx.type}
           </p>
           <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3">
-            <div className="rounded-2xl bg-[#111a14]/10 p-4">
+            <div className="rounded-2xl bg-[#151515]/10 p-4">
               <p className="text-xs text-white/60">Subscriber washes left</p>
               <p className="mt-1 text-2xl font-bold text-[#65e28e]">{washesLeft}</p>
             </div>
-            <div className="rounded-2xl bg-[#111a14]/10 p-4">
+            <div className="rounded-2xl bg-[#151515]/10 p-4">
               <p className="text-xs text-white/60">Your washes today</p>
               <p className="mt-1 text-2xl font-bold">{stats?.todayWashes ?? "—"}</p>
             </div>
@@ -200,7 +200,7 @@ function VerifyInner() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/partner/scan"
-              className="flex-1 rounded-full bg-[#2ed06a] py-3 transition-all duration-200 hover:bg-[#25b856] text-center font-bold text-white"
+              className="flex-1 rounded-full bg-[#f5f5f5] py-3 transition-all duration-200 hover:bg-[#d9d9d9] text-center font-bold text-[#0a0a0a]"
             >
               Scan Next Customer
             </Link>
@@ -215,7 +215,7 @@ function VerifyInner() {
       )}
 
       {phase === "rejected" && failure && (
-        <div className="rounded-3xl bg-[#111a14] p-8 text-center shadow-sm">
+        <div className="rounded-3xl bg-[#151515] p-8 text-center shadow-sm">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-500/15 text-4xl">
             ✕
           </div>
@@ -226,7 +226,7 @@ function VerifyInner() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/partner/scan"
-              className="flex-1 rounded-full bg-[#20a957] py-3 transition-all duration-200 hover:bg-[#1a8a47] text-center font-bold text-white"
+              className="flex-1 rounded-full bg-[#ffffff] py-3 transition-all duration-200 hover:bg-[#d9d9d9] text-center font-bold text-[#0a0a0a]"
             >
               Scan Again
             </Link>

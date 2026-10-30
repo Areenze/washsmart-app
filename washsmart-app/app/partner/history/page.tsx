@@ -34,7 +34,7 @@ export default function PartnerHistoryPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/dashboard"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
@@ -45,13 +45,13 @@ export default function PartnerHistoryPage() {
             Every subscriber wash verified at your car wash.
           </p>
         </div>
-        <div className="flex rounded-full bg-[#111a14] p-1 text-sm font-bold">
+        <div className="flex rounded-full bg-[#151515] p-1 text-sm font-bold">
           {(["today", "all"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={`rounded-full px-4 py-1.5 ${
-                filter === f ? "bg-[#20a957] text-white" : "text-gray-400"
+                filter === f ? "bg-[#ffffff] text-[#0a0a0a]" : "text-gray-400"
               }`}
             >
               {f === "today" ? "Today" : "All"}
@@ -69,7 +69,7 @@ export default function PartnerHistoryPage() {
             action={
               <Link
                 href="/partner/scan"
-                className="inline-block rounded-full bg-[#20a957] px-6 py-3 transition-all duration-200 hover:bg-[#1a8a47] font-bold text-white"
+                className="inline-block rounded-full bg-[#ffffff] px-6 py-3 transition-all duration-200 hover:bg-[#d9d9d9] font-bold text-[#0a0a0a]"
               >
                 Scan Customer QR
               </Link>
@@ -77,7 +77,7 @@ export default function PartnerHistoryPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-2xl bg-[#111a14] shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-2xl bg-[#151515] shadow-sm">
           {shown.map((t) => (
             <Link
               key={t.id}

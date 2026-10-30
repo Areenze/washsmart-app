@@ -45,7 +45,7 @@ export default function PartnerLedgerPage() {
     <section className="mx-auto max-w-3xl py-8">
       <Link
         href="/partner/earnings"
-        className="mb-5 inline-block text-sm font-semibold text-[#48d87c]"
+        className="mb-5 inline-block text-sm font-semibold text-[#ffffff]"
       >
         ← Back
       </Link>
@@ -57,14 +57,14 @@ export default function PartnerLedgerPage() {
       {entries === null ? (
         <p className="mt-6 text-gray-400">Loading…</p>
       ) : withBalance.length === 0 ? (
-        <div className="mt-6 rounded-2xl bg-[#111a14] p-8 text-center">
+        <div className="mt-6 rounded-2xl bg-[#151515] p-8 text-center">
           <p className="font-bold">No ledger entries yet</p>
           <p className="mt-2 text-sm text-gray-400">
             Verified washes will appear here automatically.
           </p>
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-2xl bg-[#111a14]">
+        <div className="mt-6 overflow-hidden rounded-2xl bg-[#151515]">
           <div className="hidden grid-cols-[1fr_auto_auto] gap-4 border-b border-white/10 px-5 py-3 text-xs font-bold uppercase text-gray-500 sm:grid">
             <span>Entry</span>
             <span className="w-28 text-right">Amount</span>
