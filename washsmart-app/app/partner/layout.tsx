@@ -10,6 +10,10 @@ import PartnerShell from "@/components/partner-shell";
 export const metadata: Metadata = {
   title: "WashSMART Partner",
   manifest: "/manifest-partner.json",
+  icons: {
+    icon: "/icons/partner/icon-192.png",
+    apple: "/icons/partner/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
     title: "WS Partner",

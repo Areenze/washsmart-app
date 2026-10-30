@@ -10,6 +10,10 @@ import AgentShell from "@/components/agent-shell";
 export const metadata: Metadata = {
   title: "WashSMART Agent",
   manifest: "/manifest-agent.json",
+  icons: {
+    icon: "/icons/agent/icon-192.png",
+    apple: "/icons/agent/apple-touch-icon.png",
+  },
   appleWebApp: {
     capable: true,
     title: "WS Agent",
