@@ -99,8 +99,8 @@ export default function PartnerLedgerPage() {
         </div>
       )}
       <p className="mt-4 text-xs text-gray-500">
-        Earnings accrue per verified wash and pay out in the monthly settlement —
-        never per wash.
+        Earnings accrue per verified wash and pay out in twice-monthly
+        settlements — never per wash.
       </p>
     </section>
   );

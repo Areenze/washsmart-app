@@ -2,8 +2,8 @@
 
 /* /partner/earnings — Earnings & Settlements.
  * Partners are NOT paid per wash. Verified washes accrue on the WashSMART
- * ledger, then each monthly settlement nets them out (gross − commission ±
- * adjustments) and pays the partner by bank transfer. */
+ * ledger, then each twice-monthly settlement nets them out (gross −
+ * commission ± adjustments) and pays the partner by bank transfer. */
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -42,8 +42,8 @@ const MONEY_FLOW: { title: string; body: string }[] = [
     body: "Each verified wash adds one ledger line at your agreed settlement rate. Nothing is paid out yet.",
   },
   {
-    title: "Monthly settlement",
-    body: "WashSMART verifies the month's washes, checks for duplicate or fraudulent QR redemptions, applies refunds/disputes, deducts the WashSMART commission and produces your settlement statement.",
+    title: "Twice-monthly settlement",
+    body: "Settlements run twice a month: washes from the 1st–15th are paid around the 20th, and washes from the 16th–month-end around the 5th. WashSMART verifies the period's washes, checks for duplicate or fraudulent QR redemptions, applies refunds/disputes, deducts the WashSMART commission and produces your settlement statement.",
   },
   {
     title: "WashSMART pays you",
@@ -119,8 +119,8 @@ export default function EarningsPage() {
       </Link>
       <h1 className="text-3xl font-bold">Earnings &amp; Settlements</h1>
       <p className="mt-2 text-gray-400">
-        Verified washes accrue on your ledger and pay out in a monthly
-        settlement — never per wash.
+        Verified washes accrue on your ledger and pay out in twice-monthly
+        settlements — never per wash.
       </p>
 
       {/* Pending settlement — the live current cycle */}
@@ -193,7 +193,7 @@ export default function EarningsPage() {
         <Card className="mt-4">
           <p className="text-gray-400">
             No closed settlements yet. Your first payout will appear here after
-            the monthly cycle runs.
+            the first settlement cycle runs.
           </p>
         </Card>
       ) : (
@@ -281,7 +281,7 @@ export default function EarningsPage() {
 
       <Card className="mt-4 bg-[#ffffff]/10">
         <p className="font-bold text-[#ffffff]">
-          Why monthly settlements — not instant payout
+          Why settlements — not instant payout
         </p>
         <ul className="mt-3 space-y-2">
           {WHY_MONTHLY.map((w) => (

@@ -354,7 +354,8 @@ export default function ComingSoonPage() {
             Join WashSMART as an approved partner — keep your own name and
             business, and get discovered by subscribers looking for a wash near
             them. Partners receive verified wash redemptions from subscribers
-            and are paid through WashSMART&apos;s settlement cycle.
+            and are paid through WashSMART&apos;s twice-monthly settlement
+            cycle.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-white/70">
             Partner applications open at launch. Join the waitlist above and

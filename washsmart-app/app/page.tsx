@@ -681,7 +681,7 @@ export default function EntryPage() {
             <p className="mx-auto mt-4 max-w-2xl text-gray-400">
               WashSMART connects approved car-wash businesses with subscribers,
               handles digital verification, and tracks your earnings — with
-              monthly settlements, never per-wash payouts.
+              twice-monthly settlements, never per-wash payouts.
             </p>
           </Reveal>
           <Reveal delay={100}>

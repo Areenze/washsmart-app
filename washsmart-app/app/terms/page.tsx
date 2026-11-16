@@ -72,7 +72,7 @@ const PARTNER_SECTIONS: [string, string][] = [
   ],
   [
     "Earnings and the settlement cycle",
-    "Partners are not paid at the bay and are not paid immediately after each wash. Every verified wash creates an earning in your WashSMART ledger at your agreed per-wash rate, held in pending settlement. WashSMART runs a settlement cycle (weekly or monthly) in which completed washes are verified, duplicate or fraudulent redemptions are removed, refunds and disputes are accounted for, and WashSMART's commission is calculated. You receive a settlement statement, and once the settlement is approved the amount is paid to the bank account you registered with us. WashSMART calculates what you earn, based on your verified washes and this agreement — the payment provider only moves the money.",
+    "Partners are not paid at the bay and are not paid immediately after each wash. Every verified wash creates an earning in your WashSMART ledger at your agreed per-wash rate, held in pending settlement. WashSMART runs two settlement cycles each month — washes redeemed from the 1st to the 15th are settled around the 20th of that month, and washes redeemed from the 16th to the end of the month are settled around the 5th of the following month. In each cycle, completed washes are verified, duplicate or fraudulent redemptions are removed, refunds and disputes are accounted for, and WashSMART's commission is calculated. You receive a settlement statement, and once the settlement is approved the amount is paid to the bank account you registered with us. WashSMART calculates what you earn, based on your verified washes and this agreement — the payment provider only moves the money.",
   ],
   [
     "Your rate",
