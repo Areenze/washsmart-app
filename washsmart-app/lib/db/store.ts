@@ -134,6 +134,7 @@ function mapApplication(r: any): PartnerApplication {
     ref: r.ref,
     status: r.status,
     submittedAt: r.submitted_at,
+    termsAcceptedAt: r.terms_accepted_at ?? undefined,
     business: {
       carWashName: r.car_wash_name,
       ownerName: r.owner_name,

@@ -163,6 +163,12 @@ export default function ApplicationDetailPage() {
           <p className="mt-1 text-sm text-gray-400">
             Submitted {fmtDate(app.submittedAt)}
           </p>
+          {app.termsAcceptedAt && (
+            <p className="mt-1 text-sm text-gray-400">
+              <span className="font-bold text-[#48d87c]">✓</span> Agreed to
+              the partner terms {fmtDate(app.termsAcceptedAt)}
+            </p>
+          )}
         </div>
         <Badge
           tone={

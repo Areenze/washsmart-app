@@ -886,7 +886,10 @@ function ReviewScreen({
       </div>
       <p className="mt-3 text-center text-xs text-gray-500">
         By submitting you agree to the{" "}
-        <Link href="/terms" className="underline hover:text-gray-300">
+        <Link
+          href="/terms#partner-terms"
+          className="underline hover:text-gray-300"
+        >
           WashSMART partner terms
         </Link>
         .

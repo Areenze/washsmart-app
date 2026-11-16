@@ -62,6 +62,9 @@ export interface PartnerApplication {
   ref: string; // WS-2026-XXXX
   status: PartnerStatus;
   submittedAt: string;
+  /** When the applicant agreed to the partner terms (migration_034);
+   *  undefined for applications submitted before the column existed. */
+  termsAcceptedAt?: string;
   business: {
     carWashName: string;
     ownerName: string;

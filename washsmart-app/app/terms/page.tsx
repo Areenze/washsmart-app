@@ -53,6 +53,49 @@ const SECTIONS: [string, string][] = [
   ],
 ];
 
+/* Partner terms — the sections a car wash business agrees to by
+   submitting an application at /join/apply (the form links here).
+   Deliberately no payout figures: the per-wash rate is whatever is
+   confirmed in writing at approval. */
+const PARTNER_SECTIONS: [string, string][] = [
+  [
+    "Joining the network",
+    "Car wash businesses join WashSMART by application. Submitting an application means you agree to these partner terms. Approval is at WashSMART's discretion and may include an on-site inspection of your premises, washing bays, water and drainage, and waiting area. On approval you receive a Partner ID and a listing in the WashSMART subscriber app.",
+  ],
+  [
+    "An independent business",
+    "Partners are independent businesses — not employees, agents, or franchisees of WashSMART or Yuec Avivar Limited. You remain responsible for your staff, your premises, your taxes, and the quality and safety of every wash you perform.",
+  ],
+  [
+    "Verified washes only",
+    "You earn only for washes verified through the WashSMART system: the subscriber presents their QR code, you scan it in the Partner app, and the system records the redemption and deducts the credit. Washes arranged outside the system — cash deals with subscribers, manual claims, or scans of copied codes or screenshots — earn nothing.",
+  ],
+  [
+    "Earnings and the settlement cycle",
+    "Partners are not paid at the bay and are not paid immediately after each wash. Every verified wash creates an earning in your WashSMART ledger at your agreed per-wash rate, held in pending settlement. WashSMART runs a settlement cycle (weekly or monthly) in which completed washes are verified, duplicate or fraudulent redemptions are removed, refunds and disputes are accounted for, and WashSMART's commission is calculated. You receive a settlement statement, and once the settlement is approved the amount is paid to the bank account you registered with us. WashSMART calculates what you earn, based on your verified washes and this agreement — the payment provider only moves the money.",
+  ],
+  [
+    "Your rate",
+    "Your per-wash rate and commission are the ones confirmed in writing when your business is approved, and they are shown on your partner record. WashSMART may review rates with reasonable written notice; a reviewed rate applies only to washes redeemed after the notice takes effect, never backwards.",
+  ],
+  [
+    "No double charging",
+    "A standard wash covered by a subscriber's credit has already been paid for through WashSMART — never charge the subscriber again for that wash. Premium extras such as detailing, waxing, or engine cleaning are agreed with the subscriber and paid directly to you at your displayed prices.",
+  ],
+  [
+    "Standards and availability",
+    "Keep the standards verified at your inspection, honour valid redemptions during your published opening hours, and keep your listing details — hours, location, and photos — accurate. Repeated subscriber complaints, refusing valid redemptions, or a failed re-inspection may lead to suspension or removal from the network.",
+  ],
+  [
+    "Fraud",
+    "Duplicate scans, redeeming codes for your own or staff vehicles, collusion with subscribers, or fabricated washes void the related earnings and may lead to immediate suspension, removal from the network, and recovery of any amounts already paid out for those washes.",
+  ],
+  [
+    "Ending the partnership",
+    "Either side may end the partnership with written notice — email is enough. Washes verified before the end date are settled through the normal settlement cycle. No earnings are created after removal.",
+  ],
+];
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
@@ -62,7 +105,7 @@ export default function TermsPage() {
         </Link>
         <h1 className="mt-6 text-4xl font-bold">Terms of Service</h1>
         <p className="mt-2 text-sm text-gray-500">
-          Last updated: October 2026 · Pre-launch version
+          Last updated: November 2026 · Pre-launch version
         </p>
         <div className="mt-8 space-y-8">
           {SECTIONS.map(([title, body]) => (
@@ -71,6 +114,25 @@ export default function TermsPage() {
               <p className="mt-2 leading-relaxed text-gray-400">{body}</p>
             </section>
           ))}
+        </div>
+
+        <div id="partner-terms" className="mt-14 scroll-mt-8">
+          <h2 className="border-t border-white/10 pt-10 text-2xl font-bold">
+            Partner terms
+          </h2>
+          <p className="mt-2 text-sm text-gray-500">
+            For car wash businesses that apply to join, or are listed in,
+            the WashSMART partner network. By submitting an application you
+            agree to these partner terms.
+          </p>
+          <div className="mt-8 space-y-8">
+            {PARTNER_SECTIONS.map(([title, body]) => (
+              <section key={title}>
+                <h3 className="text-xl font-bold">{title}</h3>
+                <p className="mt-2 leading-relaxed text-gray-400">{body}</p>
+              </section>
+            ))}
+          </div>
         </div>
         <p className="mt-10 text-sm text-gray-500">
           Questions? Email{" "}

@@ -34,6 +34,7 @@ create table if not exists partner_applications (
   status            text not null default 'pending'
                     check (status in ('pending','approved','rejected','suspended')),
   submitted_at      timestamptz not null default now(),
+  terms_accepted_at timestamptz default now(),  -- migration_034: partner-terms acceptance stamp
 
   -- business information
   car_wash_name     text not null,
