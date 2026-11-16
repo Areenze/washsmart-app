@@ -1,7 +1,10 @@
 /* POST /api/verify-phone/confirm — check the user-typed code with Termii.
  *
  * Body: { pin }. Uses the caller's most recent pending verification. On
- * success marks profiles.phone_verified and clears pending rows.
+ * success marks profiles.phone_verified and clears pending rows. If the
+ * caller is a linked partner, their partner record is marked verified
+ * too (migration_032) — best-effort, so the subscriber flow can never
+ * break on it.
  */
 
 import { userClient } from "@/lib/api-auth";
@@ -62,6 +65,23 @@ export async function POST(request: Request) {
     .eq("id", userId);
   if (error) {
     return Response.json({ ok: false, error: "Could not save verification." }, { status: 500 });
+  }
+  // Partner extension (migration_032): if this auth user is a linked
+  // partner, the same OTP proves their business number too — mark the
+  // partner record verified and adopt the verified number, mirroring
+  // the profile semantics above. Best-effort: a partner-side failure
+  // (no partner row, RLS, column not migrated yet) never fails this.
+  try {
+    await sb
+      .from("partners")
+      .update({
+        phone: pending.phone,
+        phone_verified: true,
+        phone_verified_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId);
+  } catch {
+    /* best-effort */
   }
   await sb.from("phone_verifications").delete().eq("user_id", userId);
   return Response.json({ ok: true, phone: pending.phone });

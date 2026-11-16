@@ -97,6 +97,7 @@ function mapPartner(r: any): Partner {
     name: r.name,
     ownerName: r.owner_name,
     phone: r.phone,
+    phoneVerified: r.phone_verified ?? false,
     whatsapp: r.whatsapp ?? undefined,
     email: r.email,
     partnerId: r.partner_id,
@@ -578,6 +579,28 @@ export async function getPartner(id: string): Promise<Partner | undefined> {
   return data ? mapPartner(data) : undefined;
 }
 
+/**
+ * Partner phone-verification state (migration_032). Loaded separately
+ * from PARTNER_COLS so partner queries keep working before the
+ * migration runs — any error (e.g. column not there yet) reads as
+ * "not verified".
+ */
+export async function getPartnerPhoneVerified(
+  partnerId: string
+): Promise<boolean> {
+  try {
+    const { data, error } = await getSupabase()
+      .from("partners")
+      .select("phone_verified")
+      .eq("id", partnerId)
+      .maybeSingle();
+    if (error) return false;
+    return !!(data as any)?.phone_verified;
+  } catch {
+    return false;
+  }
+}
+
 /* ---------------- partner reviews ---------------- */
 
 export interface Review {
@@ -661,6 +684,7 @@ export async function submitReview(
 const PARTNER_PATCH_COLS: Record<string, string> = {
   ownerName: "owner_name",
   phone: "phone",
+  phoneVerified: "phone_verified",
   whatsapp: "whatsapp",
   email: "email",
   hours: "hours",
@@ -692,6 +716,8 @@ export async function updatePartner(
   // open/closed toggle
   if (patch.status === "Open") cols["open_now"] = true;
   if (patch.status === "Closed") cols["open_now"] = false;
+  // Un-verifying (e.g. the number changed) also clears the verified stamp.
+  if (cols["phone_verified"] === false) cols["phone_verified_at"] = null;
   if (Object.keys(cols).length === 0) return getPartner(id);
   const { data, error } = await getSupabase()
     .from("partners")

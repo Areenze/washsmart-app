@@ -8,8 +8,10 @@ import { Badge, Card, DAY_HOURS, Field, PrimaryButton, inputClass } from "@/comp
 import {
   currentPartnerSession,
   getPartner,
+  getPartnerPhoneVerified,
   updatePartner,
 } from "@/lib/db/store";
+import { normalizePhone } from "@/lib/phone";
 import { deletePhoto, uploadPhoto } from "@/lib/db/photos";
 import VerifiedBadge from "@/components/verified-badge";
 import type { Partner } from "@/lib/db/types";
@@ -55,6 +57,10 @@ export default function PartnerProfilePage() {
       const fresh = await getPartner(p.id);
       if (!fresh) return;
       setPartner(fresh);
+      // Phone-verification state lives outside PARTNER_COLS (migration_032).
+      getPartnerPhoneVerified(fresh.id).then((v) =>
+        setPartner((cur) => (cur ? { ...cur, phoneVerified: v } : cur))
+      );
       setHours(fresh.hours);
       const [o, c] = parseHours(fresh.hours);
       setOpenTime(o);
@@ -132,9 +138,24 @@ export default function PartnerProfilePage() {
       return;
     }
     setHoursError(undefined);
-    const updated = await updatePartner(partner.id, { hours, phone, services });
+    // Changing the number drops its verified status until the new
+    // number passes OTP (same rule as subscriber profiles).
+    const phoneChanged =
+      (normalizePhone(phone) ?? phone.trim()) !==
+      (normalizePhone(partner.phone) ?? partner.phone.trim());
+    const updated = await updatePartner(partner.id, {
+      hours,
+      phone,
+      services,
+      ...(phoneChanged && partner.phoneVerified
+        ? { phoneVerified: false }
+        : {}),
+    });
     if (updated) {
-      setPartner({ ...updated });
+      setPartner({
+        ...updated,
+        phoneVerified: phoneChanged ? false : partner.phoneVerified,
+      });
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2500);
     }
@@ -301,6 +322,21 @@ export default function PartnerProfilePage() {
               className={inputClass(false)}
             />
           </Field>
+          {partner.phoneVerified ? (
+            <p className="text-sm font-semibold text-[#48d87c]">
+              ✓ Phone verified
+            </p>
+          ) : (
+            <p className="text-sm text-gray-400">
+              This number isn&apos;t verified yet.{" "}
+              <Link
+                href="/partner/verify-phone?next=/partner/profile"
+                className="font-bold text-white underline"
+              >
+                Verify now →
+              </Link>
+            </p>
+          )}
           <div>
             <p className="mb-2 text-sm font-semibold">Services</p>
             <div className="flex flex-wrap gap-2">

@@ -9,6 +9,8 @@ export interface Partner {
   name: string;
   ownerName: string;
   phone: string;
+  /** Termii OTP verified (migration_032); loaded separately from PARTNER_COLS. */
+  phoneVerified?: boolean;
   whatsapp?: string;
   email: string;
   /** Login username for the Partner App, e.g. "WS-2026-0001" */

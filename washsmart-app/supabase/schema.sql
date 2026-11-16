@@ -129,6 +129,9 @@ create table if not exists partners (
   -- optional CAC registration copied from the application (migration_030)
   cac_type        text,
   cac_number      text,
+  -- Termii OTP phone verification (migration_032)
+  phone_verified  boolean not null default false,
+  phone_verified_at timestamptz,
   rating          numeric(2,1) not null default 5.0,
   reviews         integer not null default 0,
   open_now        boolean not null default true,
