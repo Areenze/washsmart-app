@@ -34,11 +34,11 @@ const FAQS: [string, string][] = [
   ],
   [
     "How long are my washes valid?",
-    "Every wash credit is valid for 30 days from the date of purchase. Use them within 30 days — unused credits expire and don't roll over to the next month.",
+    "Every wash credit is valid for 30 days from the date of purchase. Renew before your credits expire and any unused washes roll over into your new pack. Credits that have already expired don't roll over.",
   ],
   [
     "What happens if I buy a new plan before my current one expires?",
-    "Your new washes are added to your active pack and share its existing expiry date. You don't lose any time, and the 30-day clock doesn't restart.",
+    "Your unused washes roll over, the new plan's washes are added on top, and a fresh 30-day period starts from the day you renew. Renew after your pack has expired instead, and the expired washes are gone — your new plan starts on its own.",
   ],
   [
     "How do I get my wash QR?",
@@ -584,8 +584,8 @@ export default function EntryPage() {
             ))}
           </div>
           <p className="mt-6 text-center text-xs text-gray-500">
-            Credits valid 30 days from purchase. Unused credits expire — no
-            rollover.
+            Credits valid 30 days from purchase. Renew before they expire
+            and unused credits roll over.
           </p>
           <p className="mx-auto mt-3 max-w-xl text-center text-sm text-gray-400">
             <span className="font-bold text-white">You&rsquo;re in control.</span>{" "}

@@ -9,7 +9,7 @@ const SECTIONS: [string, string][] = [
   ],
   [
     "Subscriptions & wash credits",
-    "Each subscription plan grants a fixed number of wash credits. One credit pays for one standard wash at any approved partner. Credits are valid for 30 days from the date of purchase. Unused credits expire at the end of the 30-day period and do not roll over. Buying a new plan while one is active adds the new washes to your active pack; the added washes share the existing pack's expiry date.",
+    "Each subscription plan grants a fixed number of wash credits. One credit pays for one standard wash at any approved partner. Credits are valid for 30 days from the date of purchase. If you buy a new plan before your current credits expire, your unused credits roll over into the renewed pack and a new 30-day period starts on the date of that purchase. Credits that have already expired do not roll over and cannot be recovered.",
   ],
   [
     "Redemption",

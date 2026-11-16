@@ -85,6 +85,7 @@ export function SubscriptionSection() {
               </div>
               <div className="mt-6 space-y-3 text-sm">
                 <p><span className="font-bold text-[#48d87c]">✓</span> {plan.washes} washes, valid 30 days</p>
+                <p><span className="font-bold text-[#48d87c]">✓</span> Unused washes roll over when you renew before expiry</p>
                 <p><span className="font-bold text-[#48d87c]">✓</span> Approved partner locations</p>
                 <p><span className="font-bold text-[#48d87c]">✓</span> Digital wash tracking</p>
                 <p><span className="font-bold text-[#48d87c]">✓</span> Subscriber verification</p>

@@ -154,7 +154,7 @@ export default function UserHome() {
           uid,
           "subscription_expiring",
           "Your subscription expires soon",
-          `Your ${subscription.planName} pack expires in ${days} day${days === 1 ? "" : "s"}. Unused washes don't roll over — book your washes or renew.`,
+          `Your ${subscription.planName} pack expires in ${days} day${days === 1 ? "" : "s"}. Renew before it expires and your unused washes roll over into your new pack.`,
           "/app/subscription"
         ).catch(() => {});
       }

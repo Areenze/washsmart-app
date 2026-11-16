@@ -1017,7 +1017,9 @@ export async function getWashSummary(): Promise<WashSummary> {
   const email = await profileEmail();
   const now = Date.now();
   // 30-day credits: a row past its expiry is dead, even if it still says
-  // 'active' (the DB functions mark it expired when hit). No rollover.
+  // 'active' (the DB functions mark it expired when hit). Expired credits
+  // never roll over; renewing before expiry carries the balance forward
+  // (see topup_subscription, migration_031).
   const live = (data ?? [])
     .map((r) => mapSubscription(r, email))
     .filter((s) => new Date(s.expiresAt).getTime() > now);
@@ -1041,9 +1043,11 @@ export function creditDaysLeft(expiresAt: string): number {
 
 /**
  * Grant 30-day wash credits for the signed-in subscriber (post verification).
- * Uses the topup_subscription RPC: tops up the live pack if one exists
- * (added credits share the current expiry, which never extends), otherwise
- * starts a fresh 30-day pack. Records the payment in both cases.
+ * Uses the topup_subscription RPC: if a live pack exists, this is a
+ * renewal — unused washes roll over and a fresh 30-day period starts on
+ * the renewal date. Otherwise (first purchase, or the old pack already
+ * expired) a fresh 30-day pack starts and expired washes stay expired.
+ * Records the payment in both cases.
  */
 export async function createSubscription(input: {
   planId: string;
