@@ -416,6 +416,24 @@ function SignupInner() {
               >
                 Create account
               </button>
+
+              <p className="text-center text-xs text-gray-500">
+                By creating an account, you agree to WashSMART&apos;s{" "}
+                <Link
+                  href="/terms"
+                  className="font-semibold text-[#48d87c] underline"
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  className="font-semibold text-[#48d87c] underline"
+                >
+                  Privacy Policy
+                </Link>
+                .
+              </p>
             </form>
 
             <p className="mt-5 text-center text-sm text-gray-400">

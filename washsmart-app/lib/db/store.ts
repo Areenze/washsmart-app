@@ -285,7 +285,15 @@ export async function signUpWithPassword(
     email: email.trim().toLowerCase(),
     password,
     options: {
-      data: { name: name.trim(), phone: phone.trim() },
+      // terms_accepted_at: the form states that creating an account
+      // means agreeing to the Terms + Privacy Policy; the timestamp is
+      // stamped here and copied onto the profile by handle_new_user
+      // (migration_033). Harmless metadata until that migration runs.
+      data: {
+        name: name.trim(),
+        phone: phone.trim(),
+        terms_accepted_at: new Date().toISOString(),
+      },
       emailRedirectTo: redirectTo,
     },
   });

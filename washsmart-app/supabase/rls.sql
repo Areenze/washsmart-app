@@ -47,11 +47,12 @@ create or replace function public.handle_new_user()
 returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, name, email, phone)
+  insert into public.profiles (id, name, email, phone, terms_accepted_at)
   values (new.id,
           coalesce(new.raw_user_meta_data ->> 'name', ''),
           new.email,
-          coalesce(new.raw_user_meta_data ->> 'phone', ''))
+          coalesce(new.raw_user_meta_data ->> 'phone', ''),
+          (new.raw_user_meta_data ->> 'terms_accepted_at')::timestamptz)
   on conflict (id) do nothing;
   return new;
 end;

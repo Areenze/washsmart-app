@@ -149,6 +149,7 @@ create table if not exists profiles (
   name        text not null,
   email       text not null unique,      -- unique => duplicate-email blocking
   phone       text not null,
+  terms_accepted_at timestamptz,         -- migration_033: signup acceptance stamp
   created_at  timestamptz not null default now()
 );
 
