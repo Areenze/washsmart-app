@@ -196,42 +196,50 @@ export async function POST(request: Request) {
   }
 
   if (user) {
-    void (async () => {
-      try {
-        // State the real post-mint balance: on a renewal the rolled-
-        // over total is what the subscriber actually has (the plan's
-        // own wash count understates it).
-        let balanceNote = `Your subscription is active with ${plan.washes}${
-          bonusWashes > 0 ? `+${bonusWashes} bonus` : ""
+    // Awaited inline, NOT fire-and-forget: on serverless the runtime
+    // can freeze the function as soon as the response goes out, and a
+    // detached promise is not guaranteed to finish — once this block
+    // grew a second round trip (the balance read below), the payment
+    // notification silently stopped landing. Still best-effort: every
+    // failure is caught and never fails a verified payment.
+    try {
+      // State the real post-mint balance: on a renewal the rolled-
+      // over total is what the subscriber actually has (the plan's
+      // own wash count understates it).
+      let balanceNote = `Your subscription is active with ${plan.washes}${
+        bonusWashes > 0 ? `+${bonusWashes} bonus` : ""
+      } washes.`;
+      const { data: subRow } = await admin
+        .from("subscriptions")
+        .select("washes_remaining")
+        .eq("id", subId)
+        .maybeSingle();
+      if (typeof (subRow as any)?.washes_remaining === "number") {
+        balanceNote = `Your subscription is active — you now have ${
+          (subRow as any).washes_remaining
         } washes.`;
-        const { data: subRow } = await admin
-          .from("subscriptions")
-          .select("washes_remaining")
-          .eq("id", subId)
-          .maybeSingle();
-        if (typeof (subRow as any)?.washes_remaining === "number") {
-          balanceNote = `Your subscription is active — you now have ${
-            (subRow as any).washes_remaining
-          } washes.`;
-        }
-        await sb.rpc("notify_user", {
-          p_user_id: user.id,
-          p_kind: "payment_success",
-          p_title: `Payment successful — ${plan.name}`,
-          p_body:
-            `₦${Number((tx.amount ?? 0) / 100).toLocaleString("en-NG")} received. ` +
-            balanceNote,
-          p_link: "/app",
-        });
-      } catch {
-        /* notifications are best-effort */
       }
-      // First-time buyers also get the automated welcome (in-app + email).
+      await sb.rpc("notify_user", {
+        p_user_id: user.id,
+        p_kind: "payment_success",
+        p_title: `Payment successful — ${plan.name}`,
+        p_body:
+          `₦${Number((tx.amount ?? 0) / 100).toLocaleString("en-NG")} received. ` +
+          balanceNote,
+        p_link: "/app",
+      });
+    } catch {
+      /* notifications are best-effort */
+    }
+    // First-time buyers also get the automated welcome (in-app + email).
+    try {
       await maybeSendSubscriberWelcome(sb, {
         id: user.id,
         email: user.email ?? undefined,
       });
-    })();
+    } catch {
+      /* welcome is best-effort */
+    }
   }
   return Response.json({ ok: true, subscriptionId: subId });
 }
