@@ -162,11 +162,21 @@ export async function POST(request: Request) {
     mintError = r.error;
   }
   if (mintError || !subId) {
+    // Log the underlying code for support diagnosis (never the raw
+    // message to the client — just the Postgres/PostgREST code).
+    const code =
+      (mintError as { code?: string } | null)?.code ?? "no-admin-client";
+    console.error("paystack verify: mint failed", {
+      code,
+      via: admin ? "service" : "legacy",
+      reference,
+    });
     return Response.json(
       {
         ok: false,
         error:
           "Payment verified, but activation failed. Contact support with your payment reference.",
+        detail: code,
       },
       { status: 500 }
     );
