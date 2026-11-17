@@ -9,14 +9,9 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getPlans, getProfile, getVehicles, createSubscription } from "@/lib/db/store";
+import { getPlans, getProfile, getVehicles } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
-import {
-  applyPromoBonus,
-  recordPromoRedemption,
-  validatePromo,
-  type ValidatedPromo,
-} from "@/lib/db/promos";
+import { validatePromo, type ValidatedPromo } from "@/lib/db/promos";
 import type { Plan } from "@/lib/db/types";
 
 const PAYSTACK_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY ?? "";
@@ -156,9 +151,7 @@ function PayInner() {
 
   // 100%-off codes: no Paystack charge. The mint runs server-side:
   // /api/checkout/promo re-validates the code and mints via the service
-  // role (migration_035). A { legacy: true } answer means the route
-  // isn't live yet (pre-migration window) — fall back to the previous
-  // client-side flow for this release only.
+  // role (migration_035) — the browser can never grant itself a plan.
   const redeemFree = async () => {
     if (!plan || !promo) return;
     setPhase("verifying");
@@ -166,32 +159,21 @@ function PayInner() {
     try {
       const { data: sess } = await getSupabase().auth.getSession();
       const token = sess.session?.access_token;
-      let minted = false;
-      if (token) {
-        const res = await fetch("/api/checkout/promo", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            planId: plan.id,
-            promoCode: promoInput.trim().toUpperCase(),
-          }),
-        });
-        const json = await res.json().catch(() => ({}));
-        if (res.ok && json.ok) {
-          minted = true;
-        } else if (!json.legacy) {
-          throw new Error(json.error ?? "Could not redeem that code.");
-        }
-      }
-      if (!minted) {
-        const sub = await createSubscription({ planId: plan.id });
-        await recordPromoRedemption(promo.promoId, null);
-        if (promo.kind === "bonus_washes") {
-          await applyPromoBonus(sub.id, Math.round(promo.value));
-        }
+      if (!token) throw new Error("You need to be signed in.");
+      const res = await fetch("/api/checkout/promo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          planId: plan.id,
+          promoCode: promoInput.trim().toUpperCase(),
+        }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) {
+        throw new Error(json.error ?? "Could not redeem that code.");
       }
       // Fire the first-time welcome (in-app + email); never blocks navigation.
       getSupabase()

@@ -576,17 +576,9 @@ const PARTNER_PUBLIC_COLS =
   "id,partner_id,name,phone,address,area,lga,state,gps,hours,services,bays,daily_capacity,years_operating,staff_count,rating,reviews,open_now,status,photos,cac_type,cac_number";
 
 export async function listApprovedPartners(): Promise<Partner[]> {
-  const sb = getSupabase();
-  const view = await sb
+  const { data, error } = await getSupabase()
     .from("partner_directory")
     .select(PARTNER_PUBLIC_COLS)
-    .order("name");
-  if (!view.error) return (view.data ?? []).map(mapPartner);
-  // View not there yet (pre-migration_035 window): legacy directory read.
-  const { data, error } = await sb
-    .from("partners")
-    .select(PARTNER_COLS)
-    .eq("status", "approved")
     .order("name");
   if (error) throw error;
   return (data ?? []).map(mapPartner);
@@ -601,7 +593,7 @@ export async function getPartnerPublic(
     .select(PARTNER_PUBLIC_COLS)
     .eq("id", id)
     .maybeSingle();
-  if (error) return getPartner(id); // pre-migration_035 fallback
+  if (error) return undefined;
   return data ? mapPartner(data) : undefined;
 }
 
@@ -1102,33 +1094,6 @@ export async function getWashSummary(): Promise<WashSummary> {
 export function creditDaysLeft(expiresAt: string): number {
   const ms = new Date(expiresAt).getTime() - Date.now();
   return ms > 0 ? Math.ceil(ms / 86_400_000) : 0;
-}
-
-/**
- * LEGACY client mint — kept only as the fallback while the server
- * routes (/api/checkout/promo, /api/checkout/demo) roll out with
- * migration_035, which revokes topup_subscription from clients.
- * Remove once 035 is verified live.
- *
- * Grant 30-day wash credits for the signed-in subscriber (post verification).
- * Uses the topup_subscription RPC: if a live pack exists, this is a
- * renewal — unused washes roll over and a fresh 30-day period starts on
- * the renewal date. Otherwise (first purchase, or the old pack already
- * expired) a fresh 30-day pack starts and expired washes stay expired.
- * Records the payment in both cases.
- */
-export async function createSubscription(input: {
-  planId: string;
-}): Promise<Subscription> {
-  const user = await currentUser();
-  if (!user) throw new Error("Not signed in.");
-  const { error } = await getSupabase().rpc("topup_subscription", {
-    p_plan_id: input.planId,
-  });
-  if (error) throw new Error(error.message);
-  const sub = await getMySubscription();
-  if (!sub) throw new Error("Could not load your wash credits.");
-  return sub;
 }
 
 /* ---------------- registered emails (compat) ----------------

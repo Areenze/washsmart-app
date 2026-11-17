@@ -7,24 +7,10 @@
  * browser can never grant itself a free plan with an arbitrary code —
  * or with none. Partial discounts go through Paystack + /api/paystack/
  * verify as usual.
- *
- * Until SUPABASE_SERVICE_ROLE_KEY is configured and migration_035 is
- * applied, this route answers { legacy: true } and the pay page falls
- * back to the previous client-side flow.
  */
 
 import { userClient } from "@/lib/api-auth";
 import { adminClient } from "@/lib/supabase-admin";
-
-function isMissingFn(error: unknown): boolean {
-  const e = error as { code?: string; message?: string } | null;
-  return (
-    !!e &&
-    (e.code === "PGRST202" ||
-      e.code === "42883" ||
-      (e.message ?? "").includes("topup_subscription_for"))
-  );
-}
 
 export async function POST(request: Request) {
   let body: { planId?: string; promoCode?: string };
@@ -52,7 +38,13 @@ export async function POST(request: Request) {
   const { sb, userId } = auth;
 
   const admin = adminClient();
-  if (!admin) return Response.json({ ok: false, legacy: true });
+  if (!admin) {
+    console.error("checkout/promo: SUPABASE_SERVICE_ROLE_KEY not configured");
+    return Response.json(
+      { ok: false, error: "Promo redemption is unavailable right now." },
+      { status: 500 }
+    );
+  }
 
   const { data: plan } = await sb
     .from("plans")
@@ -111,7 +103,6 @@ export async function POST(request: Request) {
     p_bonus_washes: bonusWashes,
   });
   if (mint.error) {
-    if (isMissingFn(mint.error)) return Response.json({ ok: false, legacy: true });
     return Response.json(
       { ok: false, error: "Could not redeem that code. Please try again." },
       { status: 500 }

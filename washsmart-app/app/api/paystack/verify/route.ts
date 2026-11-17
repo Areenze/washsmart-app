@@ -51,11 +51,20 @@ export async function POST(request: Request) {
   }
   const { sb, userId } = auth;
   const admin = adminClient();
+  if (!admin) {
+    // The mint is service-role-only (migration_035); without the key
+    // this route cannot safely activate anything.
+    console.error("paystack verify: SUPABASE_SERVICE_ROLE_KEY not configured");
+    return Response.json(
+      { ok: false, error: "Payments are not configured yet." },
+      { status: 500 }
+    );
+  }
 
   // Idempotency: this reference already minted a subscription. Checked
   // with the service role so the answer covers every account, not just
   // the caller's own payments.
-  const payReader = admin ?? sb;
+  const payReader = admin;
   const { data: existing } = await payReader
     .from("payments")
     .select("subscription_id")
@@ -136,48 +145,26 @@ export async function POST(request: Request) {
   const bonusWashes =
     promo?.kind === "bonus_washes" ? Math.round(Number(promo.value)) : 0;
 
-  // Mint the subscription. Privileged path (service role): the only
-  // caller allowed to grant washes. Legacy fallback covers the window
-  // before SUPABASE_SERVICE_ROLE_KEY is configured / migration_035 is
-  // applied; once both land, the legacy RPC is revoked and unreachable.
-  let subId: string | null = null;
-  let mintError: unknown = null;
-  if (admin) {
-    const r = await admin.rpc("topup_subscription_for", {
-      p_user_id: userId,
-      p_plan_id: planId,
-      p_method: "paystack",
-      p_reference: reference,
-      p_bonus_washes: bonusWashes,
-    });
-    subId = (r.data as string) ?? null;
-    mintError = r.error;
-  } else {
-    const r = await sb.rpc("topup_subscription", {
-      p_plan_id: planId,
-      p_method: "paystack",
-      p_reference: reference,
-    });
-    subId = (r.data as string) ?? null;
-    mintError = r.error;
-  }
-  if (mintError || !subId) {
+  // Mint the subscription via the service role — the only caller
+  // allowed to grant washes (migration_035).
+  const mint = await admin.rpc("topup_subscription_for", {
+    p_user_id: userId,
+    p_plan_id: planId,
+    p_method: "paystack",
+    p_reference: reference,
+    p_bonus_washes: bonusWashes,
+  });
+  const subId = (mint.data as string) ?? null;
+  if (mint.error || !subId) {
     // Log the underlying code for support diagnosis (never the raw
     // message to the client — just the Postgres/PostgREST code).
-    const code =
-      (mintError as { code?: string } | null)?.code ?? "no-admin-client";
-    console.error("paystack verify: mint failed", {
-      code,
-      via: admin ? "service" : "legacy",
-      reference,
-    });
+    const code = (mint.error as { code?: string } | null)?.code ?? "no-sub";
+    console.error("paystack verify: mint failed", { code, reference });
     return Response.json(
       {
         ok: false,
-        // TEMP (activation diagnosis, Nov 2026): the code rides in the
-        // message so a failed test purchase shows it on screen. Remove
-        // once the service-role mint path is verified end to end.
-        error: `Payment verified, but activation failed. Contact support with your payment reference. (code: ${code}, via: ${admin ? "service" : "legacy"})`,
+        error:
+          "Payment verified, but activation failed. Contact support with your payment reference.",
         detail: code,
       },
       { status: 500 }
@@ -198,24 +185,11 @@ export async function POST(request: Request) {
       .eq("reference", reference)
       .maybeSingle();
     try {
-      if (admin) {
-        await admin.rpc("record_promo_redemption_for", {
-          p_promo_id: promo.promo_id,
-          p_user_id: userId,
-          p_payment_id: (payRow as any)?.id ?? null,
-        });
-      } else {
-        await sb.rpc("record_promo_redemption", {
-          p_promo_id: promo.promo_id,
-          p_payment_id: (payRow as any)?.id ?? null,
-        });
-        if (bonusWashes > 0) {
-          await sb.rpc("apply_promo_bonus", {
-            p_subscription_id: subId,
-            p_washes: bonusWashes,
-          });
-        }
-      }
+      await admin.rpc("record_promo_redemption_for", {
+        p_promo_id: promo.promo_id,
+        p_user_id: userId,
+        p_payment_id: (payRow as any)?.id ?? null,
+      });
     } catch {
       /* a failed promo must never block a paid subscription */
     }

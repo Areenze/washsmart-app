@@ -6,11 +6,6 @@
  * the browser. In production the secret exists and this route refuses.
  * The mint runs through the service-role-only topup_subscription_for
  * RPC (migration_035).
- *
- * Until SUPABASE_SERVICE_ROLE_KEY is configured and migration_035 is
- * applied, this route answers { legacy: true } and the auth callback
- * falls back to the previous client-side mint (which only ever ran in
- * no-Paystack-key environments anyway).
  */
 
 import { userClient } from "@/lib/api-auth";
@@ -44,7 +39,13 @@ export async function POST(request: Request) {
   }
 
   const admin = adminClient();
-  if (!admin) return Response.json({ ok: false, legacy: true });
+  if (!admin) {
+    console.error("checkout/demo: SUPABASE_SERVICE_ROLE_KEY not configured");
+    return Response.json(
+      { ok: false, error: "Demo minting is unavailable right now." },
+      { status: 500 }
+    );
+  }
 
   const mint = await admin.rpc("topup_subscription_for", {
     p_user_id: auth.userId,
@@ -54,14 +55,6 @@ export async function POST(request: Request) {
     p_bonus_washes: 0,
   });
   if (mint.error) {
-    const e = mint.error as { code?: string; message?: string };
-    if (
-      e.code === "PGRST202" ||
-      e.code === "42883" ||
-      (e.message ?? "").includes("topup_subscription_for")
-    ) {
-      return Response.json({ ok: false, legacy: true });
-    }
     return Response.json(
       { ok: false, error: "Could not activate your plan." },
       { status: 500 }

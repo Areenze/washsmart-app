@@ -64,36 +64,6 @@ export async function validatePromo(
   };
 }
 
-/** LEGACY (fallback only while migration_035 rolls out — the RPC is
- * revoked from clients once it lands; server routes record redemptions
- * via record_promo_redemption_for). Record a redemption after a
- * successful mint (throws when exhausted). */
-export async function recordPromoRedemption(
-  promoId: string,
-  paymentId: string | null
-): Promise<void> {
-  const { error } = await getSupabase().rpc("record_promo_redemption", {
-    p_promo_id: promoId,
-    p_payment_id: paymentId,
-  });
-  if (error) throw error;
-}
-
-/** LEGACY (fallback only while migration_035 rolls out — the RPC is
- * revoked from clients once it lands; bonus washes are granted inside
- * topup_subscription_for with the count taken from the promo row).
- * Grant bonus washes onto a freshly minted subscription. */
-export async function applyPromoBonus(
-  subscriptionId: string,
-  washes: number
-): Promise<void> {
-  const { error } = await getSupabase().rpc("apply_promo_bonus", {
-    p_subscription_id: subscriptionId,
-    p_washes: washes,
-  });
-  if (error) throw error;
-}
-
 /* ---------------- admin ---------------- */
 
 export async function adminListPromos(): Promise<PromoCode[]> {

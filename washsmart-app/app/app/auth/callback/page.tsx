@@ -10,7 +10,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   applyReferralCode,
   clearVerifyPending,
-  createSubscription,
   currentUserId,
   exchangeCodeForSession,
   getMySubscription,
@@ -110,29 +109,22 @@ function CallbackInner() {
           // Demo environments only (no Paystack public key): mint via
           // /api/checkout/demo, which re-checks server-side that
           // payments are unconfigured and mints via the service role
-          // (migration_035). A { legacy: true } answer means the route
-          // isn't live yet — fall back to the client mint for this
-          // release only.
-          let minted = false;
+          // (migration_035) — the browser can never mint directly.
           const { data: sess } = await getSupabase().auth.getSession();
           const demoToken = sess.session?.access_token;
-          if (demoToken) {
-            const res = await fetch("/api/checkout/demo", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${demoToken}`,
-              },
-              body: JSON.stringify({ planId }),
-            });
-            const json = await res.json().catch(() => ({}));
-            if (res.ok && json.ok) {
-              minted = true;
-            } else if (!json.legacy) {
-              throw new Error(json.error ?? "Could not activate your plan.");
-            }
+          if (!demoToken) throw new Error("You need to be signed in.");
+          const res = await fetch("/api/checkout/demo", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${demoToken}`,
+            },
+            body: JSON.stringify({ planId }),
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.ok) {
+            throw new Error(json.error ?? "Could not activate your plan.");
           }
-          if (!minted) await createSubscription({ planId });
           // In-app confirmation for the demo-mint path (the Paystack route
           // sends its own payment-success notification).
           (async () => {
