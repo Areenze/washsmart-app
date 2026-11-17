@@ -13,7 +13,7 @@ import QRCode from "@/components/qrcode";
 import {
   TOKEN_TTL_MS,
   getMySubscription,
-  getPartner,
+  getPartnerPublic,
   getQRToken,
 } from "@/lib/db/store";
 import type { Partner, Subscription } from "@/lib/db/types";
@@ -40,7 +40,6 @@ function ScanInner() {
   const [token, setToken] = useState<string | null>(null);
   const [issuedAt, setIssuedAt] = useState(0);
   const [now, setNow] = useState(Date.now());
-  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const mint = useCallback(async () => {
@@ -54,7 +53,7 @@ function ScanInner() {
   useEffect(() => {
     (async () => {
       // Optional ?partner= only personalizes the "present at …" line.
-      setPartner(partnerId ? ((await getPartner(partnerId)) ?? null) : null);
+      setPartner(partnerId ? ((await getPartnerPublic(partnerId)) ?? null) : null);
       mint();
     })();
   }, [partnerId, mint]);
@@ -83,17 +82,6 @@ function ScanInner() {
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
   }, []);
-
-  const copyToken = async () => {
-    if (!token) return;
-    try {
-      await navigator.clipboard.writeText(token);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* ignore */
-    }
-  };
 
   const outOfWashes = (subscription?.washesRemaining ?? 0) <= 0;
 
@@ -159,20 +147,6 @@ function ScanInner() {
               remaining
             </p>
 
-            <div className="mt-5 rounded-2xl bg-[#111a14]/5 p-4 text-left">
-              <p className="text-xs font-semibold text-white/50">
-                Demo token (for the partner scanner)
-              </p>
-              <p className="mt-1 break-all font-mono text-[11px] text-[#65e28e]">
-                {token ?? "—"}
-              </p>
-              <button
-                onClick={copyToken}
-                className="mt-2 rounded-lg border border-white/30 px-3 py-1.5 text-xs font-bold"
-              >
-                {copied ? "Copied ✓" : "Copy token"}
-              </button>
-            </div>
           </>
         )}
       </div>

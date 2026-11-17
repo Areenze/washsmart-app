@@ -10,7 +10,7 @@ import Link from "next/link";
 import { Badge, EmptyState } from "@/components/ui";
 import { PartnerReviews } from "@/components/partner-reviews";
 import VerifiedBadge from "@/components/verified-badge";
-import { getPartner } from "@/lib/db/store";
+import { getPartnerPublic } from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
 
 export default function PartnerDetail({
@@ -23,7 +23,7 @@ export default function PartnerDetail({
   const [partner, setPartner] = useState<Partner | null | undefined>(undefined);
 
   useEffect(() => {
-    (async () => setPartner((await getPartner(partnerId)) ?? null))();
+    (async () => setPartner((await getPartnerPublic(partnerId)) ?? null))();
   }, [partnerId]);
 
   if (partner === undefined) {

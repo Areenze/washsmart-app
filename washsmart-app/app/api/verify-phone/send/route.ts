@@ -49,9 +49,10 @@ export async function POST(request: Request) {
   let pinId: string;
   try {
     ({ pinId } = await sendOtp(e164.replace(/^\+/, "")));
-  } catch (err: any) {
+  } catch {
+    // Never surface the provider's raw error text to the client.
     return Response.json(
-      { ok: false, error: err?.message ?? "Could not send the code." },
+      { ok: false, error: "Could not send the code. Please try again." },
       { status: 502 }
     );
   }

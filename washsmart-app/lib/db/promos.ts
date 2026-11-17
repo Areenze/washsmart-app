@@ -64,7 +64,10 @@ export async function validatePromo(
   };
 }
 
-/** Record a redemption after a successful mint (throws when exhausted). */
+/** LEGACY (fallback only while migration_035 rolls out — the RPC is
+ * revoked from clients once it lands; server routes record redemptions
+ * via record_promo_redemption_for). Record a redemption after a
+ * successful mint (throws when exhausted). */
 export async function recordPromoRedemption(
   promoId: string,
   paymentId: string | null
@@ -76,7 +79,10 @@ export async function recordPromoRedemption(
   if (error) throw error;
 }
 
-/** Grant bonus washes onto a freshly minted subscription. */
+/** LEGACY (fallback only while migration_035 rolls out — the RPC is
+ * revoked from clients once it lands; bonus washes are granted inside
+ * topup_subscription_for with the count taken from the promo row).
+ * Grant bonus washes onto a freshly minted subscription. */
 export async function applyPromoBonus(
   subscriptionId: string,
   washes: number

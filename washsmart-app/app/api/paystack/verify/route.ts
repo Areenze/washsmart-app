@@ -5,13 +5,16 @@
  *   1. verifies the transaction with Paystack using the SECRET key
  *      (server-only env var — never exposed to the browser),
  *   2. checks the paid amount (kobo) and currency against the plan,
- *   3. mints the subscription as the signed-in buyer via topup_subscription,
- *      recording method='paystack' and the verified reference.
+ *   3. mints the subscription via the service-role-only
+ *      topup_subscription_for RPC (migration_035) — the browser can
+ *      never mint directly, so Paystack cannot be bypassed.
  * Idempotent per Paystack reference: re-verifying returns the subscription
- * that was already created.
+ * that was already created (checked globally via the service role, so a
+ * reference paid by one account cannot be re-claimed by another).
  */
 
-import { createClient } from "@supabase/supabase-js";
+import { userClient } from "@/lib/api-auth";
+import { adminClient } from "@/lib/supabase-admin";
 import { maybeSendSubscriberWelcome } from "@/lib/welcome";
 
 export async function POST(request: Request) {
@@ -39,28 +42,21 @@ export async function POST(request: Request) {
     );
   }
 
-  const authHeader = request.headers.get("authorization") ?? "";
-  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-  if (!token) {
+  const auth = await userClient(request);
+  if (!auth) {
     return Response.json(
       { ok: false, error: "You need to be signed in." },
       { status: 401 }
     );
   }
+  const { sb, userId } = auth;
+  const admin = adminClient();
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
-    return Response.json({ ok: false, error: "Server misconfigured." }, { status: 500 });
-  }
-  // User-scoped client: RLS applies and auth.uid() is the buyer.
-  const sb = createClient(url, anonKey, {
-    global: { headers: { Authorization: `Bearer ${token}` } },
-    auth: { persistSession: false },
-  });
-
-  // Idempotency: this reference already minted a subscription.
-  const { data: existing } = await sb
+  // Idempotency: this reference already minted a subscription. Checked
+  // with the service role so the answer covers every account, not just
+  // the caller's own payments.
+  const payReader = admin ?? sb;
+  const { data: existing } = await payReader
     .from("payments")
     .select("subscription_id")
     .eq("reference", reference)
@@ -137,13 +133,35 @@ export async function POST(request: Request) {
     );
   }
 
-  // Mint the subscription as the buyer; the RPC records the payment row.
-  const { data: subId, error } = await sb.rpc("topup_subscription", {
-    p_plan_id: planId,
-    p_method: "paystack",
-    p_reference: reference,
-  });
-  if (error) {
+  const bonusWashes =
+    promo?.kind === "bonus_washes" ? Math.round(Number(promo.value)) : 0;
+
+  // Mint the subscription. Privileged path (service role): the only
+  // caller allowed to grant washes. Legacy fallback covers the window
+  // before SUPABASE_SERVICE_ROLE_KEY is configured / migration_035 is
+  // applied; once both land, the legacy RPC is revoked and unreachable.
+  let subId: string | null = null;
+  let mintError: unknown = null;
+  if (admin) {
+    const r = await admin.rpc("topup_subscription_for", {
+      p_user_id: userId,
+      p_plan_id: planId,
+      p_method: "paystack",
+      p_reference: reference,
+      p_bonus_washes: bonusWashes,
+    });
+    subId = (r.data as string) ?? null;
+    mintError = r.error;
+  } else {
+    const r = await sb.rpc("topup_subscription", {
+      p_plan_id: planId,
+      p_method: "paystack",
+      p_reference: reference,
+    });
+    subId = (r.data as string) ?? null;
+    mintError = r.error;
+  }
+  if (mintError || !subId) {
     return Response.json(
       {
         ok: false,
@@ -154,28 +172,37 @@ export async function POST(request: Request) {
     );
   }
 
-  // Notify the buyer in-app (best-effort; never blocks the purchase).
   const {
     data: { user },
   } = await sb.auth.getUser();
 
-  // Record the promo redemption + grant bonus washes (best-effort).
+  // Record the promo redemption (best-effort). Bonus washes on the
+  // privileged path were already granted inside topup_subscription_for,
+  // with the count derived from the promo row — never from the client.
   if (promo && user) {
-    const { data: payRow } = await sb
+    const { data: payRow } = await payReader
       .from("payments")
       .select("id")
       .eq("reference", reference)
       .maybeSingle();
     try {
-      await sb.rpc("record_promo_redemption", {
-        p_promo_id: promo.promo_id,
-        p_payment_id: (payRow as any)?.id ?? null,
-      });
-      if (promo.kind === "bonus_washes") {
-        await sb.rpc("apply_promo_bonus", {
-          p_subscription_id: subId,
-          p_washes: Math.round(Number(promo.value)),
+      if (admin) {
+        await admin.rpc("record_promo_redemption_for", {
+          p_promo_id: promo.promo_id,
+          p_user_id: userId,
+          p_payment_id: (payRow as any)?.id ?? null,
         });
+      } else {
+        await sb.rpc("record_promo_redemption", {
+          p_promo_id: promo.promo_id,
+          p_payment_id: (payRow as any)?.id ?? null,
+        });
+        if (bonusWashes > 0) {
+          await sb.rpc("apply_promo_bonus", {
+            p_subscription_id: subId,
+            p_washes: bonusWashes,
+          });
+        }
       }
     } catch {
       /* a failed promo must never block a paid subscription */
@@ -192,9 +219,7 @@ export async function POST(request: Request) {
           p_body:
             `₦${Number((tx.amount ?? 0) / 100).toLocaleString("en-NG")} received. ` +
             `Your subscription is active with ${plan.washes}${
-              promo?.kind === "bonus_washes"
-                ? `+${Math.round(Number(promo.value))} bonus`
-                : ""
+              bonusWashes > 0 ? `+${bonusWashes} bonus` : ""
             } washes.`,
           p_link: "/app",
         });

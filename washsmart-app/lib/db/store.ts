@@ -41,7 +41,6 @@ import type {
 } from "./types";
 
 export const PARTNER_SESSION_KEY = "washsmart_partner_session";
-export const LAST_TOKEN_KEY = "washsmart_last_token";
 
 /** QR tokens are valid for 5 minutes (matches issue_wash_token default). */
 export const TOKEN_TTL_MS = 300_000;
@@ -568,14 +567,42 @@ export async function deleteWaitlistSignup(id: string): Promise<void> {
 const PARTNER_COLS =
   "id,name,owner_name,phone,whatsapp,email,partner_id,settlement_rate,bank_name,bank_account_last4,address,area,lga,state,gps,hours,services,bays,daily_capacity,years_operating,staff_count,rating,reviews,open_now,status,approved_at,created_at,photos";
 
+/* Public directory columns — the partner_directory view (migration_035)
+ * exposes display fields only: no email, WhatsApp, owner name,
+ * settlement rate, bank details or auth user id. PARTNER_COLS above
+ * stays for the partner's OWN record and admin reads, which the base
+ * table now restricts to the owner + admins. */
+const PARTNER_PUBLIC_COLS =
+  "id,partner_id,name,phone,address,area,lga,state,gps,hours,services,bays,daily_capacity,years_operating,staff_count,rating,reviews,open_now,status,photos,cac_type,cac_number";
+
 export async function listApprovedPartners(): Promise<Partner[]> {
-  const { data, error } = await getSupabase()
+  const sb = getSupabase();
+  const view = await sb
+    .from("partner_directory")
+    .select(PARTNER_PUBLIC_COLS)
+    .order("name");
+  if (!view.error) return (view.data ?? []).map(mapPartner);
+  // View not there yet (pre-migration_035 window): legacy directory read.
+  const { data, error } = await sb
     .from("partners")
     .select(PARTNER_COLS)
     .eq("status", "approved")
     .order("name");
   if (error) throw error;
   return (data ?? []).map(mapPartner);
+}
+
+/** Public (directory) view of one partner — display fields only. */
+export async function getPartnerPublic(
+  id: string
+): Promise<Partner | undefined> {
+  const { data, error } = await getSupabase()
+    .from("partner_directory")
+    .select(PARTNER_PUBLIC_COLS)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) return getPartner(id); // pre-migration_035 fallback
+  return data ? mapPartner(data) : undefined;
 }
 
 export async function getPartner(id: string): Promise<Partner | undefined> {
@@ -707,9 +734,10 @@ const PARTNER_PATCH_COLS: Record<string, string> = {
   lga: "lga",
   state: "state",
   gps: "gps",
-  bankName: "bank_name",
-  bankLast4: "bank_account_last4",
-  settlementRate: "settlement_rate",
+  // settlement_rate and bank details are deliberately NOT patchable
+  // from the client (audit 2026-11-17): they are set by WashSMART at
+  // approval / by an admin, and migration_035 also freezes them at
+  // the database level.
   photos: "photos",
 };
 
@@ -1077,6 +1105,11 @@ export function creditDaysLeft(expiresAt: string): number {
 }
 
 /**
+ * LEGACY client mint — kept only as the fallback while the server
+ * routes (/api/checkout/promo, /api/checkout/demo) roll out with
+ * migration_035, which revokes topup_subscription from clients.
+ * Remove once 035 is verified live.
+ *
  * Grant 30-day wash credits for the signed-in subscriber (post verification).
  * Uses the topup_subscription RPC: if a live pack exists, this is a
  * renewal — unused washes roll over and a fresh 30-day period starts on
@@ -1160,26 +1193,10 @@ export async function getQRToken(): Promise<string | null> {
   });
   // No rows + no error means the pack lapsed and was voided server-side.
   if (error || !issued || issued.length === 0) return null;
-  // Stash the latest token so the partner demo scanner can simulate a
-  // camera read on the same device.
-  if (isBrowser()) {
-    try {
-      window.localStorage.setItem(LAST_TOKEN_KEY, raw);
-    } catch {
-      /* ignore */
-    }
-  }
+  // The raw token is a bearer credential (single-use, 300s): it lives
+  // only in the QR on screen — never persisted to localStorage and
+  // never rendered as copyable text (audit 2026-11-17).
   return raw;
-}
-
-/** Read the stashed token (partner scanner "simulate camera" fallback). */
-export function getLastToken(): string | null {
-  if (!isBrowser()) return null;
-  try {
-    return window.localStorage.getItem(LAST_TOKEN_KEY);
-  } catch {
-    return null;
-  }
 }
 
 /** Legacy JSON-payload token parser (kept for compatibility; new tokens
@@ -1604,6 +1621,29 @@ export async function partnerLogout(): Promise<void> {
   await signOut();
 }
 
+/* The stored partner id is only a hint. The session is real only when
+ * the partner row belongs to the signed-in user (partners.user_id) —
+ * a planted or stale localStorage value must not open the partner
+ * experience keyed to someone else's business (audit 2026-11-17).
+ * The database enforces the same rule (migration_035 own-row read
+ * policy); this keeps the client honest and clears bad state early. */
+async function partnerSessionOwned(
+  id: string,
+  userId: string,
+  strict: boolean
+): Promise<boolean> {
+  const { data, error } = await getSupabase()
+    .from("partners")
+    .select("user_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) {
+    if (strict) throw error;
+    return false;
+  }
+  return !!data && (data as any).user_id === userId;
+}
+
 export async function currentPartnerSession(): Promise<Partner | undefined> {
   if (!isBrowser()) return undefined;
   try {
@@ -1613,6 +1653,10 @@ export async function currentPartnerSession(): Promise<Partner | undefined> {
       data: { session },
     } = await getSupabase().auth.getSession();
     if (!session) {
+      window.localStorage.removeItem(PARTNER_SESSION_KEY);
+      return undefined;
+    }
+    if (!(await partnerSessionOwned(id, session.user.id, false))) {
       window.localStorage.removeItem(PARTNER_SESSION_KEY);
       return undefined;
     }
@@ -1636,6 +1680,10 @@ export async function currentPartnerSessionStrict(): Promise<
     data: { session },
   } = await getSupabase().auth.getSession();
   if (!session) {
+    window.localStorage.removeItem(PARTNER_SESSION_KEY);
+    return undefined;
+  }
+  if (!(await partnerSessionOwned(id, session.user.id, true))) {
     window.localStorage.removeItem(PARTNER_SESSION_KEY);
     return undefined;
   }

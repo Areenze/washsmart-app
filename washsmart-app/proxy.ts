@@ -73,7 +73,17 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   if (EXEMPT_PAGES.some((p) => pathname === p || pathname.startsWith(p + "/")))
     return NextResponse.next();
-  if (searchParams.has("code")) return NextResponse.next(); // Supabase PKCE link
+  // Supabase PKCE links land with ?code= — honour it only on plausible
+  // auth landings (root + subscriber login/signup; the callback and
+  // reset pages are already exempt above). A ?code= on any other path
+  // must not bypass the holding page (audit 2026-11-17).
+  if (
+    searchParams.has("code") &&
+    (pathname === "/" ||
+      pathname === "/app/login" ||
+      pathname === "/app/signup")
+  )
+    return NextResponse.next();
 
   const url = req.nextUrl.clone();
   url.pathname = "/coming-soon";

@@ -297,16 +297,30 @@ create policy "payments admin"  on payments
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- ---------- partners ----------
--- Public directory (approved shops); partner edits own row; admin manages.
+-- Public directory reads go through the partner_directory VIEW
+-- (display columns only — migration_035; the old directory policy
+-- exposed every column incl. settlement_rate/bank/PII to anon).
+-- Base table: partner reads/edits own row; admin manages. Sensitive
+-- columns are frozen by the partners_freeze_sensitive trigger (035).
 drop policy if exists "partners directory"  on partners;
+drop policy if exists "partners own read"   on partners;
 drop policy if exists "partners own update" on partners;
 drop policy if exists "partners admin"      on partners;
-create policy "partners directory"  on partners
-  for select using (status = 'approved');
+create policy "partners own read"   on partners
+  for select using (user_id = auth.uid());
 create policy "partners own update" on partners
   for update using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy "partners admin"      on partners
   for all using (public.is_admin()) with check (public.is_admin());
+create or replace view public.partner_directory as
+  select id, partner_id, name, phone,
+         address, area, lga, state, gps, hours, services,
+         bays, daily_capacity, years_operating, staff_count,
+         rating, reviews, open_now, status, photos,
+         cac_type, cac_number
+    from partners
+   where status = 'approved';
+grant select on public.partner_directory to anon, authenticated, service_role;
 -- NOTE: partner INSERT happens via approve_partner_application() (admin).
 
 -- ---------- partner_applications ----------

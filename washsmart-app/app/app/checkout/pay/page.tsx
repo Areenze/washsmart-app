@@ -154,16 +154,44 @@ function PayInner() {
     }
   };
 
-  // 100%-off codes: no Paystack charge — mint directly, then record the promo.
+  // 100%-off codes: no Paystack charge. The mint runs server-side:
+  // /api/checkout/promo re-validates the code and mints via the service
+  // role (migration_035). A { legacy: true } answer means the route
+  // isn't live yet (pre-migration window) — fall back to the previous
+  // client-side flow for this release only.
   const redeemFree = async () => {
     if (!plan || !promo) return;
     setPhase("verifying");
     setError(null);
     try {
-      const sub = await createSubscription({ planId: plan.id });
-      await recordPromoRedemption(promo.promoId, null);
-      if (promo.kind === "bonus_washes") {
-        await applyPromoBonus(sub.id, Math.round(promo.value));
+      const { data: sess } = await getSupabase().auth.getSession();
+      const token = sess.session?.access_token;
+      let minted = false;
+      if (token) {
+        const res = await fetch("/api/checkout/promo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            planId: plan.id,
+            promoCode: promoInput.trim().toUpperCase(),
+          }),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (res.ok && json.ok) {
+          minted = true;
+        } else if (!json.legacy) {
+          throw new Error(json.error ?? "Could not redeem that code.");
+        }
+      }
+      if (!minted) {
+        const sub = await createSubscription({ planId: plan.id });
+        await recordPromoRedemption(promo.promoId, null);
+        if (promo.kind === "bonus_washes") {
+          await applyPromoBonus(sub.id, Math.round(promo.value));
+        }
       }
       // Fire the first-time welcome (in-app + email); never blocks navigation.
       getSupabase()

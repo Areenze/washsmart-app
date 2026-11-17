@@ -8,6 +8,7 @@
  */
 
 import { userClient } from "@/lib/api-auth";
+import { adminClient } from "@/lib/supabase-admin";
 import { verifyOtp } from "@/lib/termii";
 
 export async function POST(request: Request) {
@@ -43,6 +44,16 @@ export async function POST(request: Request) {
     );
   }
 
+  // Local attempt ceiling (Termii also caps guesses per PIN): burn the
+  // pending code rather than letting it be ground down.
+  if (pending.attempts >= 5) {
+    await sb.from("phone_verifications").delete().eq("user_id", userId);
+    return Response.json(
+      { ok: false, error: "Too many attempts. Please request a new code." },
+      { status: 400 }
+    );
+  }
+
   await sb.from("phone_verifications").update({ attempts: pending.attempts + 1 }).eq("id", pending.id);
 
   let verified = false;
@@ -55,7 +66,12 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "Wrong code. Check the SMS and try again." }, { status: 400 });
   }
 
-  const { error } = await sb
+  // The verified flags are written with the service role: migration_035
+  // freezes phone_verified against self-grant, and this route is the
+  // one place that may grant it — after Termii has confirmed the code.
+  // (Falls back to the caller's client until the service key is set.)
+  const writer = adminClient() ?? sb;
+  const { error } = await writer
     .from("profiles")
     .update({
       phone: pending.phone,
@@ -72,7 +88,7 @@ export async function POST(request: Request) {
   // the profile semantics above. Best-effort: a partner-side failure
   // (no partner row, RLS, column not migrated yet) never fails this.
   try {
-    await sb
+    await writer
       .from("partners")
       .update({
         phone: pending.phone,
@@ -83,6 +99,6 @@ export async function POST(request: Request) {
   } catch {
     /* best-effort */
   }
-  await sb.from("phone_verifications").delete().eq("user_id", userId);
+  await writer.from("phone_verifications").delete().eq("user_id", userId);
   return Response.json({ ok: true, phone: pending.phone });
 }

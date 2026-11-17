@@ -103,6 +103,26 @@ export async function getAgent(id: string): Promise<Agent | undefined> {
   return mapAgent(data);
 }
 
+/* Same rule as the partner session (audit 2026-11-17): the stored
+ * agent id is a hint, not an identity. The session is real only when
+ * the agent row's user_id is the signed-in user. */
+async function agentSessionOwned(
+  id: string,
+  userId: string,
+  strict: boolean
+): Promise<boolean> {
+  const { data, error } = await getSupabase()
+    .from("agents")
+    .select("user_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) {
+    if (strict) throw error;
+    return false;
+  }
+  return !!data && (data as any).user_id === userId;
+}
+
 export async function currentAgentSession(): Promise<Agent | undefined> {
   if (!isBrowser()) return undefined;
   try {
@@ -112,6 +132,10 @@ export async function currentAgentSession(): Promise<Agent | undefined> {
       data: { session },
     } = await getSupabase().auth.getSession();
     if (!session) {
+      window.localStorage.removeItem(AGENT_SESSION_KEY);
+      return undefined;
+    }
+    if (!(await agentSessionOwned(id, session.user.id, false))) {
       window.localStorage.removeItem(AGENT_SESSION_KEY);
       return undefined;
     }
@@ -132,6 +156,10 @@ export async function currentAgentSessionStrict(): Promise<Agent | undefined> {
     data: { session },
   } = await getSupabase().auth.getSession();
   if (!session) {
+    window.localStorage.removeItem(AGENT_SESSION_KEY);
+    return undefined;
+  }
+  if (!(await agentSessionOwned(id, session.user.id, true))) {
     window.localStorage.removeItem(AGENT_SESSION_KEY);
     return undefined;
   }
