@@ -19,7 +19,6 @@ import {
   getVehicles,
   saveProfile,
   saveVehicles,
-  signOut,
 } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
 import { normalizePhone, isValidPhone, PHONE_ERROR } from "@/lib/phone";
@@ -298,33 +297,28 @@ export default function ProfilePage() {
         <ReferralCard />
       </div>
 
-      <button
-        onClick={async () => {
-          await signOut();
-          window.location.href = "/";
-        }}
-        className="mt-6 w-full rounded-full border border-white/10 py-3 transition-all duration-200 hover:border-white/25 text-sm font-bold text-gray-400"
-      >
-        Log out
-      </button>
-
-      <Card className="mt-6">
-        <h2 className="text-lg font-bold">About WashSMART</h2>
-        <div className="mt-3 space-y-1 text-sm">
-          <Link href="/" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
-            WashSMART website <span className="text-gray-500">→</span>
+      <footer className="mt-10 border-t border-white/10 pb-4 pt-6">
+        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+          <Link href="/" className="text-gray-300 transition-colors hover:text-white">
+            WashSMART website
           </Link>
-          <Link href="/find-a-wash" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
-            Find a wash <span className="text-gray-500">→</span>
+          <Link href="/find-a-wash" className="text-gray-300 transition-colors hover:text-white">
+            Find a wash
           </Link>
-          <Link href="/terms" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
-            Terms of service <span className="text-gray-500">→</span>
+          <Link href="/terms" className="text-gray-300 transition-colors hover:text-white">
+            Terms of service
           </Link>
-          <Link href="/privacy" className="flex items-center justify-between rounded-xl px-3 py-2.5 font-semibold text-gray-300 transition-colors hover:bg-white/5 hover:text-white">
-            Privacy policy <span className="text-gray-500">→</span>
+          <Link href="/privacy" className="text-gray-300 transition-colors hover:text-white">
+            Privacy policy
           </Link>
-        </div>
-      </Card>
+        </nav>
+        <p className="mt-4 text-xs text-gray-500">
+          Powered by Yuec Avivar Limited
+        </p>
+        <p className="mt-1 text-xs text-gray-500">
+          © 2026 WashSMART. All rights reserved.
+        </p>
+      </footer>
     </section>
   );
 }

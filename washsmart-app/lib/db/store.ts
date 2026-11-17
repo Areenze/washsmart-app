@@ -1715,9 +1715,12 @@ export async function applyReferralCode(code: string): Promise<boolean> {
 
 /** Public signup link carrying the referral code. */
 export function referralLink(code: string): string {
-  const origin = isBrowser()
-    ? window.location.origin
-    : "https://washsmart-alpha.vercel.app";
+  // Always the canonical app origin — never window.location.origin:
+  // on a preview/deployment URL the link would point at an ephemeral
+  // deployment (possibly behind Deployment Protection) and the friend
+  // could not open it. Switch to https://washsmart.ng when the
+  // coming-soon gate lifts at launch.
+  const origin = "https://washsmart-alpha.vercel.app";
   return `${origin}/app/signup?ref=${encodeURIComponent(code)}`;
 }
 
