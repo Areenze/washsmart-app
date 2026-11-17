@@ -174,8 +174,10 @@ export async function POST(request: Request) {
     return Response.json(
       {
         ok: false,
-        error:
-          "Payment verified, but activation failed. Contact support with your payment reference.",
+        // TEMP (activation diagnosis, Nov 2026): the code rides in the
+        // message so a failed test purchase shows it on screen. Remove
+        // once the service-role mint path is verified end to end.
+        error: `Payment verified, but activation failed. Contact support with your payment reference. (code: ${code}, via: ${admin ? "service" : "legacy"})`,
         detail: code,
       },
       { status: 500 }
