@@ -5,8 +5,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { currentUserId } from "@/lib/db/store";
-import { unreadCount } from "@/lib/db/notifications";
+import {
+  NOTIFICATIONS_CHANGED,
+  unreadCount,
+} from "@/lib/db/notifications";
 
 export default function NotificationBell({
   audience = "subscriber",
@@ -16,6 +20,7 @@ export default function NotificationBell({
   href?: string;
 }) {
   const [count, setCount] = useState(0);
+  const pathname = usePathname();
 
   useEffect(() => {
     let live = true;
@@ -25,12 +30,17 @@ export default function NotificationBell({
       setCount(await unreadCount(uid, audience).catch(() => 0));
     };
     refresh();
+    // Instant refresh when anything marks notifications read, and on
+    // every in-app navigation (the shell doesn't remount between
+    // pages, so without these the badge lagged up to a minute behind).
+    window.addEventListener(NOTIFICATIONS_CHANGED, refresh);
     const t = window.setInterval(refresh, 60000);
     return () => {
       live = false;
+      window.removeEventListener(NOTIFICATIONS_CHANGED, refresh);
       window.clearInterval(t);
     };
-  }, [audience]);
+  }, [audience, pathname]);
 
   return (
     <Link

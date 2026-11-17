@@ -88,18 +88,37 @@ export async function unreadCount(
   return count ?? 0;
 }
 
+/** The bell (components/notification-bell.tsx) listens for this event
+ * so its unread badge refreshes the moment anything marks
+ * notifications read — without it, the badge only caught up on the
+ * bell's 60-second poll or a full reload. */
+export const NOTIFICATIONS_CHANGED = "washsmart:notifications-changed";
+
+export function signalNotificationsChanged(): void {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED));
+  }
+}
+
 export async function markAllRead(
   userId: string,
   audience: "subscriber" | "partner" = "subscriber"
 ): Promise<void> {
-  await getSupabase()
+  const { error } = await getSupabase()
     .from("notifications")
     .update({ read: true })
     .eq("user_id", userId)
     .eq("audience", audience)
     .eq("read", false);
+  if (error) throw error;
+  signalNotificationsChanged();
 }
 
 export async function markRead(id: string): Promise<void> {
-  await getSupabase().from("notifications").update({ read: true }).eq("id", id);
+  const { error } = await getSupabase()
+    .from("notifications")
+    .update({ read: true })
+    .eq("id", id);
+  if (error) throw error;
+  signalNotificationsChanged();
 }

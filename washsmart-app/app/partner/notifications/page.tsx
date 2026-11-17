@@ -9,6 +9,7 @@ import { currentUserId } from "@/lib/db/store";
 import {
   listNotifications,
   markAllRead,
+  markRead,
   type Notification,
 } from "@/lib/db/notifications";
 
@@ -39,8 +40,22 @@ export default function PartnerNotificationsPage() {
   const readAll = async () => {
     const uid = await currentUserId().catch(() => null);
     if (!uid) return;
-    await markAllRead(uid, "partner");
-    setItems((prev) => (prev ?? []).map((n) => ({ ...n, read: true })));
+    try {
+      await markAllRead(uid, "partner");
+      setItems((prev) => (prev ?? []).map((n) => ({ ...n, read: true })));
+    } catch {
+      await load();
+    }
+  };
+
+  // Opening a notification marks it read (previously the click only
+  // navigated, so the badge never moved).
+  const openOne = (n: Notification) => {
+    if (n.read) return;
+    markRead(n.id).catch(() => {});
+    setItems((prev) =>
+      (prev ?? []).map((x) => (x.id === n.id ? { ...x, read: true } : x))
+    );
   };
 
   if (items === null) return <p className="py-8 text-gray-400">Loading…</p>;
@@ -100,7 +115,12 @@ export default function PartnerNotificationsPage() {
               </div>
             );
             return n.link ? (
-              <Link key={n.id} href={n.link} className="block">
+              <Link
+                key={n.id}
+                href={n.link}
+                className="block"
+                onClick={() => openOne(n)}
+              >
                 {inner}
               </Link>
             ) : (

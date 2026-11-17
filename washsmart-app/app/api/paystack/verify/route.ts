@@ -198,15 +198,29 @@ export async function POST(request: Request) {
   if (user) {
     void (async () => {
       try {
+        // State the real post-mint balance: on a renewal the rolled-
+        // over total is what the subscriber actually has (the plan's
+        // own wash count understates it).
+        let balanceNote = `Your subscription is active with ${plan.washes}${
+          bonusWashes > 0 ? `+${bonusWashes} bonus` : ""
+        } washes.`;
+        const { data: subRow } = await admin
+          .from("subscriptions")
+          .select("washes_remaining")
+          .eq("id", subId)
+          .maybeSingle();
+        if (typeof (subRow as any)?.washes_remaining === "number") {
+          balanceNote = `Your subscription is active — you now have ${
+            (subRow as any).washes_remaining
+          } washes.`;
+        }
         await sb.rpc("notify_user", {
           p_user_id: user.id,
           p_kind: "payment_success",
           p_title: `Payment successful — ${plan.name}`,
           p_body:
             `₦${Number((tx.amount ?? 0) / 100).toLocaleString("en-NG")} received. ` +
-            `Your subscription is active with ${plan.washes}${
-              bonusWashes > 0 ? `+${bonusWashes} bonus` : ""
-            } washes.`,
+            balanceNote,
           p_link: "/app",
         });
       } catch {
