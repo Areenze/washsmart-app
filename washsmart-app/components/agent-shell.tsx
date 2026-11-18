@@ -57,16 +57,16 @@ export default function AgentShell({ children }: { children: ReactNode }) {
   if (agent === null) return null; // redirecting
 
   return (
-    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
+    <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec] [overflow-x:clip]">
       <PullToRefresh />
-      <header className="border-b bg-[#111a14] px-4 py-4 sm:px-5">
+      <header className="border-b bg-[#111a14] px-3 py-4 sm:px-5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
-          <Link href="/agent/dashboard" className="flex items-center gap-1.5 sm:gap-2">
+          <Link href="/agent/dashboard" className="flex min-w-0 items-center gap-1.5 sm:gap-2">
             <ResponsiveLogo />
             <Brand />
           </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="rounded-md bg-[#20a957]/15 px-2 py-1 font-mono text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <span className="rounded-md bg-[#20a957]/15 px-1.5 py-1 font-mono text-[10px] font-bold tracking-[0.08em] text-[#48d87c] sm:px-2 sm:tracking-[0.14em]">
               {agent.code}
             </span>
             <button
@@ -78,7 +78,7 @@ export default function AgentShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-7xl px-5 py-8">{children}</div>
+      <div className="mx-auto w-full min-w-0 max-w-7xl px-5 py-8">{children}</div>
     </main>
   );
 }

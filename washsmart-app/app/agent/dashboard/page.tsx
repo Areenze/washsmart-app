@@ -96,14 +96,14 @@ export default function AgentDashboard() {
             Send this link to a car-wash owner, or let them scan the code.
             Your agent code is added automatically — you always get credit.
           </p>
-          <div className="mt-4 flex flex-wrap items-start gap-5">
+          <div className="mt-4 flex max-w-full flex-wrap items-start gap-5">
             <div className="rounded-2xl bg-white p-3">
               <QRCode
                 text={`https://washsmart.ng/join/apply?agent=${agent.code}`}
                 size={148}
               />
             </div>
-            <div className="min-w-56 flex-1">
+            <div className="min-w-0 flex-1 basis-full sm:min-w-56 sm:basis-auto">
               <p className="break-all rounded-xl bg-white/5 px-3 py-2 font-mono text-sm text-[#48d87c]">
                 washsmart.ng/join/apply?agent={agent.code}
               </p>
