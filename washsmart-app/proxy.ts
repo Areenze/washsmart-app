@@ -11,6 +11,12 @@ import type { NextRequest } from "next/server";
  * serves its experience directly (short paths map into the segment) and
  * is never gated. */
 
+/* GATE SWITCH — lifted by Mm on 2026-11-18 for a real test on the public
+ * domain: washsmart.ng serves the full site while this is true. Set it
+ * back to false (and redeploy) to restore the "coming soon" holding page
+ * instantly. The gate logic below stays in place for that purpose. */
+const GATE_LIFTED = true;
+
 const PUBLIC_HOSTS = new Set(["washsmart.ng", "www.washsmart.ng"]);
 
 // Role doors: each subdomain serves its segment directly (short paths map
@@ -67,6 +73,10 @@ export function proxy(req: NextRequest) {
   }
 
   if (!PUBLIC_HOSTS.has(host)) return NextResponse.next();
+
+  // Gate lifted (see GATE_LIFTED above): the public domain serves the
+  // full site, exactly like the *.vercel.app hosts.
+  if (GATE_LIFTED) return NextResponse.next();
 
   if (EXEMPT_EXACT.has(pathname)) return NextResponse.next();
   if (EXEMPT_PREFIXES.some((p) => pathname.startsWith(p)))
