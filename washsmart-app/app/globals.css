@@ -61,6 +61,16 @@ textarea {
   color-scheme: dark;
 }
 
+/* The OPEN dropdown list must stay readable. Some browsers render it
+ * with the OS theme instead of color-scheme, which left near-white
+ * option text on a white list (reported by Mm on /join/apply,
+ * 2026-11-18). Style the options directly so the list is always
+ * dark with light text on the dark surfaces. */
+select option {
+  background-color: #111a14;
+  color: #e9f2ec;
+}
+
 :focus-visible {
   outline: 2px solid var(--brand-bright);
   outline-offset: 2px;
@@ -118,6 +128,12 @@ button:not(:disabled) {
  * ------------------------------------------------------------------ */
 .subscriber-light {
   color-scheme: light;
+}
+
+/* Subscriber (light) dropdown lists: white list, dark text. */
+.subscriber-light select option {
+  background-color: #ffffff;
+  color: #131915;
 }
 
 /* Page + card surfaces */

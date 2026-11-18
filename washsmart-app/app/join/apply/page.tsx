@@ -32,6 +32,31 @@ const SERVICE_OPTIONS = [
   "Detailing",
 ];
 
+/* The 20 Lagos State LGAs — the LGA field is a dropdown of these
+ * (Mm, 2026-11-18) so partners pick instead of typing. */
+const LAGOS_LGAS = [
+  "Agege",
+  "Ajeromi-Ifelodun",
+  "Alimosho",
+  "Amuwo-Odofin",
+  "Apapa",
+  "Badagry",
+  "Epe",
+  "Eti-Osa",
+  "Ibeju-Lekki",
+  "Ifako-Ijaiye",
+  "Ikeja",
+  "Ikorodu",
+  "Kosofe",
+  "Lagos Island",
+  "Lagos Mainland",
+  "Mushin",
+  "Ojo",
+  "Oshodi-Isolo",
+  "Shomolu",
+  "Surulere",
+];
+
 const STEP_TITLES = [
   "Business Information",
   "Location",
@@ -565,14 +590,20 @@ function ApplyWizard() {
                           : undefined
                       }
                     >
-                      <input
+                      <select
                         value={draft.location.lga}
                         onChange={(e) => setLoc("lga", e.target.value)}
-                        placeholder="e.g. Lagos Mainland"
                         className={inputClass(
                           touched && draft.location.lga.trim().length <= 1
                         )}
-                      />
+                      >
+                        <option value="">Select LGA…</option>
+                        {LAGOS_LGAS.map((lga) => (
+                          <option key={lga} value={lga}>
+                            {lga}
+                          </option>
+                        ))}
+                      </select>
                     </Field>
                   </div>
                   <Field
