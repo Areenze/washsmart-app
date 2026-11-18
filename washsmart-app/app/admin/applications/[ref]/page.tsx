@@ -161,6 +161,10 @@ export default function ApplicationDetailPage() {
   ).length;
   const inspectionPassed = inspection?.status === "passed";
   const isPending = app.status === "pending";
+  // The inspection stays editable after approval — Mm's flow is often
+  // approve first, then complete the inspection when the site visit
+  // happens. Only a rejected application locks the checklist.
+  const canInspect = isPending || app.status === "approved";
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -272,11 +276,11 @@ export default function ApplicationDetailPage() {
           )}
         </div>
 
-        {!inspection && isPending ? (
+        {!inspection && canInspect ? (
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-400">
               No inspection on file. Inspect the site against the 10-point
-              checklist before approving.
+              checklist.
             </p>
             <button
               onClick={() => persist("in_progress")}
@@ -302,7 +306,7 @@ export default function ApplicationDetailPage() {
                   >
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <p className="font-semibold">{item.label}</p>
-                      {isPending ? (
+                      {canInspect ? (
                         <div className="flex gap-2">
                           <button
                             onClick={() => setItem(item.key, true)}
@@ -335,7 +339,7 @@ export default function ApplicationDetailPage() {
                         </span>
                       )}
                     </div>
-                    {isPending ? (
+                    {canInspect ? (
                       <input
                         value={entry.note}
                         onChange={(e) => setNote(item.key, e.target.value)}
@@ -352,7 +356,7 @@ export default function ApplicationDetailPage() {
               })}
             </div>
 
-            {isPending && (
+            {canInspect && (
               <>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div>
@@ -439,6 +443,9 @@ export default function ApplicationDetailPage() {
       ) : (
         <p className="mt-4 rounded-2xl bg-[#111a14] p-4 text-center text-sm text-gray-400 shadow-sm">
           This application was {app.status}.{" "}
+          {app.status === "approved" && !inspectionPassed && (
+            <>You can still complete the site inspection above. </>
+          )}
           <Link href="/admin/applications" className="font-bold text-[#48d87c]">
             Back to queue
           </Link>

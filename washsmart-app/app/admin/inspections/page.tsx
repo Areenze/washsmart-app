@@ -59,7 +59,7 @@ export default function AdminInspectionsPage() {
           <EmptyState
             icon="🔍"
             title="No inspections yet"
-            body="Start an inspection from any pending partner application."
+            body="Start an inspection from a partner application — pending or already approved."
           />
         </div>
       ) : (
