@@ -11,6 +11,7 @@ import { fmtDate } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
 import {
   adminPartnerDetail,
+  logAdminAction,
   ngn,
   type AdminPartnerDetail,
 } from "@/lib/db/admin";
@@ -34,6 +35,10 @@ export default function AdminPartnerDetailPage() {
   const [loginBusy, setLoginBusy] = useState(false);
   const [loginNote, setLoginNote] = useState<string | null>(null);
   const [loginLinked, setLoginLinked] = useState<boolean | null>(null);
+  const [statusOverride, setStatusOverride] = useState<string | null>(null);
+  const [statusBusy, setStatusBusy] = useState(false);
+  const [statusNote, setStatusNote] = useState<string | null>(null);
+  const [confirmSuspend, setConfirmSuspend] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -51,6 +56,49 @@ export default function AdminPartnerDetailPage() {
 
   const p = d.partner;
   const s = d.stats;
+
+  const statusNow = statusOverride ?? p.status;
+
+  const changeStatus = async (next: "suspended" | "approved") => {
+    if (statusBusy) return;
+    setStatusBusy(true);
+    setStatusNote(null);
+    try {
+      const { data: sess } = await getSupabase().auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) throw new Error("Session expired — sign in again.");
+      const res = await fetch("/api/admin/partner-status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ partnerId: p.partner_id, status: next }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok)
+        throw new Error(out.error || "Could not change the status.");
+      setStatusOverride(next);
+      setConfirmSuspend(false);
+      setStatusNote(
+        next === "suspended"
+          ? "✓ Suspended — hidden from Find-a-wash and their QR scans are now refused."
+          : "✓ Reactivated — visible to subscribers and can redeem washes again."
+      );
+      await logAdminAction(
+        next === "suspended" ? "partner.suspend" : "partner.reactivate",
+        "partner",
+        p.partner_id,
+        `${next === "suspended" ? "Suspended" : "Reactivated"} ${p.name} (${p.partner_id})`
+      ).catch(() => {});
+    } catch (e) {
+      setStatusNote(
+        `⚠️ ${e instanceof Error ? e.message : "Something went wrong."}`
+      );
+    } finally {
+      setStatusBusy(false);
+    }
+  };
 
   const linkedNow = loginLinked ?? !!p.user_id;
   const createLogin = async () => {
@@ -94,8 +142,8 @@ export default function AdminPartnerDetailPage() {
       </button>
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-3xl font-bold">{p.name}</h1>
-        <Badge tone={tone(p.status) as "green" | "amber" | "red"}>
-          {(p.status ?? "").toUpperCase()}
+        <Badge tone={tone(statusNow) as "green" | "amber" | "red"}>
+          {(statusNow ?? "").toUpperCase()}
         </Badge>
       </div>
       <p className="mt-1 text-sm text-gray-500">
@@ -175,7 +223,7 @@ export default function AdminPartnerDetailPage() {
           <Section title="Verification">
             <dl className="space-y-2 text-sm">
               {[
-                ["Status", p.status],
+                ["Status", statusNow],
                 ["Approved at", p.approved_at ? fmtDate(p.approved_at) : "—"],
                 ["Application ref", p.application_ref ?? "—"],
                 ["Joined", p.created_at ? fmtDate(p.created_at) : "—"],
@@ -230,6 +278,73 @@ export default function AdminPartnerDetailPage() {
               partner, and emails a link so they set their own password.
               Approvals do this automatically — this button is the retry for
               partners approved earlier.
+            </p>
+          </Section>
+
+          <Section title="Partner status">
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="shrink-0 text-gray-400">Status</dt>
+                <dd className="text-right font-semibold">
+                  {statusNow === "suspended"
+                    ? "Suspended — not trading"
+                    : statusNow === "approved"
+                      ? "Active — live to subscribers"
+                      : (statusNow ?? "—")}
+                </dd>
+              </div>
+            </dl>
+            {statusNow === "approved" && !confirmSuspend && (
+              <button
+                onClick={() => setConfirmSuspend(true)}
+                disabled={statusBusy}
+                className="mt-4 w-full rounded-full bg-red-500/90 py-3 text-sm font-bold text-white transition hover:bg-red-500 disabled:opacity-60"
+              >
+                Suspend partner
+              </button>
+            )}
+            {statusNow === "approved" && confirmSuspend && (
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-gray-300">
+                  Suspend {p.name}? They disappear from Find-a-wash
+                  immediately and their QR scans will be refused. They can
+                  still sign in and see their earnings, and this can be
+                  undone at any time.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => changeStatus("suspended")}
+                    disabled={statusBusy}
+                    className="flex-1 rounded-full bg-red-500 py-3 text-sm font-bold text-white transition hover:bg-red-400 disabled:opacity-60"
+                  >
+                    {statusBusy ? "Working…" : "Yes, suspend"}
+                  </button>
+                  <button
+                    onClick={() => setConfirmSuspend(false)}
+                    disabled={statusBusy}
+                    className="flex-1 rounded-full bg-white/10 py-3 text-sm font-bold text-white transition hover:bg-white/20 disabled:opacity-60"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            {statusNow === "suspended" && (
+              <button
+                onClick={() => changeStatus("approved")}
+                disabled={statusBusy}
+                className="mt-4 w-full rounded-full bg-[#20a957] py-3 text-sm font-bold text-white transition hover:bg-[#1a8a47] disabled:opacity-60"
+              >
+                {statusBusy ? "Working…" : "Reactivate partner"}
+              </button>
+            )}
+            {statusNote && (
+              <p className="mt-3 text-sm text-gray-300">{statusNote}</p>
+            )}
+            <p className="mt-3 text-xs text-gray-500">
+              Suspension stops trading only — the partner&apos;s record,
+              earnings and settlement history are kept, and the change is
+              written to the admin audit log.
             </p>
           </Section>
         </div>
