@@ -810,10 +810,11 @@ export default function EntryPage() {
             </ul>
           </div>
           <div>
-            <p className="font-bold text-gray-300">Partners</p>
+            <p className="font-bold text-gray-300">Partners & Agents</p>
             <ul className="mt-3 space-y-2">
               <li><Link href="/join" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#48d87c] hover:text-white">Become a Partner ↗</Link></li>
               <li><Link href="/partner" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white">Partner Login ↗</Link></li>
+              <li><a href="https://agent.washsmart.ng" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white">Agent Login ↗</a></li>
             </ul>
           </div>
           <div>
