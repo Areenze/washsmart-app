@@ -126,7 +126,7 @@ function partnerWelcomeHtml(opts: { carWashName: string; partnerId: string }): s
 Use it with your password to sign in to the Partner App.</p>
 <p><strong>What happens next:</strong></p>
 <ol style="padding-left:20px;">
-<li>We'll link your Partner App login and confirm your payout details.</li>
+<li>Set your password from the separate login email we've sent to this address, then sign in to the Partner App.</li>
 <li>Subscribers find you on the map and show their Wash QR — you scan it in the Partner App to verify each wash.</li>
 <li>Verified washes accrue as pending earnings and are paid out on WashSMART's settlement cycle.</li>
 </ol>
@@ -151,6 +151,42 @@ export async function sendPartnerWelcomeEmail(opts: {
     });
   } catch {
     /* welcome must never break approval */
+  }
+}
+
+function partnerSetPasswordHtml(opts: {
+  carWashName: string;
+  partnerId: string;
+  actionLink: string;
+}): string {
+  return emailShell(`
+<h2 style="margin:0 0 12px;font-size:22px;">Your WashSMART partner login is ready 🔑</h2>
+<p><strong>${opts.carWashName}</strong> — your Partner App login has been created. All that's left is to choose your password.</p>
+<p><strong>Your Partner ID:</strong> <span style="font-family:monospace;font-size:16px;background:#eef4f0;padding:4px 10px;border-radius:8px;">${opts.partnerId}</span></p>
+${btn(opts.actionLink, "Set my password")}
+<p>After setting it, sign in to the Partner App with your <strong>Partner ID, email or phone number</strong> and your new password.</p>
+${btn(`${APP_URL}/partner`, "Open the Partner App")}
+<p style="color:#8a938d;font-size:13px;">This set-password link expires. If it has, go to the Partner App login page, tap "Forgot password", and we'll email you a fresh one.</p>`);
+}
+
+/** Email the partner their set-password link (sent by
+ *  /api/admin/partner-login when the login is created or re-sent).
+ *  Never throws. */
+export async function sendPartnerSetPasswordEmail(opts: {
+  to: string;
+  carWashName: string;
+  partnerId: string;
+  actionLink: string;
+}): Promise<{ sent: boolean }> {
+  try {
+    return await sendEmail({
+      to: opts.to,
+      subject: "Set your WashSMART partner password 🔑",
+      html: partnerSetPasswordHtml(opts),
+    });
+  } catch {
+    /* login creation must never break on email */
+    return { sent: false };
   }
 }
 

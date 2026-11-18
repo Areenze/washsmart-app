@@ -98,6 +98,10 @@ export default function ApplicationDetailPage() {
               : " (NO passed inspection on file)")
         ).catch(() => {});
         // Automated partner welcome email (best-effort; never blocks).
+        // The partner-login call right after creates the partner's auth
+        // account, links it, and emails their set-password link — also
+        // best-effort; if it fails, an admin can retry from the partner's
+        // page (Partner App login section).
         getSupabase()
           .auth.getSession()
           .then(({ data: sess }) => {
@@ -110,6 +114,14 @@ export default function ApplicationDetailPage() {
                 Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({ ref: app.ref }),
+            }).catch(() => {});
+            fetch("/api/admin/partner-login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ partnerId }),
             }).catch(() => {});
           })
           .catch(() => {});

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Badge, EmptyState } from "@/components/ui";
 import { fmtDate } from "@/lib/db/store";
+import { getSupabase } from "@/lib/db/supabase";
 import {
   adminPartnerDetail,
   ngn,
@@ -30,6 +31,9 @@ export default function AdminPartnerDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const [d, setD] = useState<AdminPartnerDetail | null | undefined>(undefined);
+  const [loginBusy, setLoginBusy] = useState(false);
+  const [loginNote, setLoginNote] = useState<string | null>(null);
+  const [loginLinked, setLoginLinked] = useState<boolean | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -47,6 +51,41 @@ export default function AdminPartnerDetailPage() {
 
   const p = d.partner;
   const s = d.stats;
+
+  const linkedNow = loginLinked ?? !!p.user_id;
+  const createLogin = async () => {
+    if (loginBusy) return;
+    setLoginBusy(true);
+    setLoginNote(null);
+    try {
+      const { data: sess } = await getSupabase().auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) throw new Error("Session expired — sign in again.");
+      const res = await fetch("/api/admin/partner-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ partnerId: p.partner_id }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok)
+        throw new Error(out.error || "Could not create the login.");
+      setLoginLinked(true);
+      setLoginNote(
+        out.sent
+          ? `✓ Set-password email sent to ${p.email}`
+          : "✓ Login linked, but the email could not be sent — press Resend to try again."
+      );
+    } catch (e) {
+      setLoginNote(
+        `⚠️ ${e instanceof Error ? e.message : "Something went wrong."}`
+      );
+    } finally {
+      setLoginBusy(false);
+    }
+  };
 
   return (
     <div>
@@ -132,29 +171,68 @@ export default function AdminPartnerDetailPage() {
           )}
         </Section>
 
-        <Section title="Verification">
-          <dl className="space-y-2 text-sm">
-            {[
-              ["Status", p.status],
-              ["Approved at", p.approved_at ? fmtDate(p.approved_at) : "—"],
-              ["Application ref", p.application_ref ?? "—"],
-              ["Joined", p.created_at ? fmtDate(p.created_at) : "—"],
-            ].map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-4">
-                <dt className="shrink-0 text-gray-400">{k}</dt>
-                <dd className="text-right font-semibold">{v || "—"}</dd>
+        <div className="space-y-4">
+          <Section title="Verification">
+            <dl className="space-y-2 text-sm">
+              {[
+                ["Status", p.status],
+                ["Approved at", p.approved_at ? fmtDate(p.approved_at) : "—"],
+                ["Application ref", p.application_ref ?? "—"],
+                ["Joined", p.created_at ? fmtDate(p.created_at) : "—"],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-4">
+                  <dt className="shrink-0 text-gray-400">{k}</dt>
+                  <dd className="text-right font-semibold">{v || "—"}</dd>
+                </div>
+              ))}
+            </dl>
+            {p.application_ref && (
+              <Link
+                href={`/admin/applications/${p.application_ref}`}
+                className="mt-4 inline-block text-sm font-bold text-[#48d87c]"
+              >
+                View application →
+              </Link>
+            )}
+          </Section>
+
+          <Section title="Partner App login">
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="shrink-0 text-gray-400">Login</dt>
+                <dd className="text-right font-semibold">
+                  {linkedNow
+                    ? "✓ Linked — partner can sign in"
+                    : "Not created yet"}
+                </dd>
               </div>
-            ))}
-          </dl>
-          {p.application_ref && (
-            <Link
-              href={`/admin/applications/${p.application_ref}`}
-              className="mt-4 inline-block text-sm font-bold text-[#48d87c]"
+              <div className="flex justify-between gap-4">
+                <dt className="shrink-0 text-gray-400">Login email</dt>
+                <dd className="text-right font-semibold">{p.email || "—"}</dd>
+              </div>
+            </dl>
+            <button
+              onClick={createLogin}
+              disabled={loginBusy}
+              className="mt-4 w-full rounded-full bg-[#20a957] py-3 text-sm font-bold text-white transition hover:bg-[#1a8a47] disabled:opacity-60"
             >
-              View application →
-            </Link>
-          )}
-        </Section>
+              {loginBusy
+                ? "Working…"
+                : linkedNow
+                  ? "Resend set-password email"
+                  : "Create login & email set-password link"}
+            </button>
+            {loginNote && (
+              <p className="mt-3 text-sm text-gray-300">{loginNote}</p>
+            )}
+            <p className="mt-3 text-xs text-gray-500">
+              Creates the partner&apos;s account if needed, links it to this
+              partner, and emails a link so they set their own password.
+              Approvals do this automatically — this button is the retry for
+              partners approved earlier.
+            </p>
+          </Section>
+        </div>
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
