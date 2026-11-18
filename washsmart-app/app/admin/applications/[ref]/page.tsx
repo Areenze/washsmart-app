@@ -97,34 +97,37 @@ export default function ApplicationDetailPage() {
               ? ` (inspection passed, score ${inspection.score}%)`
               : " (NO passed inspection on file)")
         ).catch(() => {});
-        // Automated partner welcome email (best-effort; never blocks).
-        // The partner-login call right after creates the partner's auth
-        // account, links it, and emails their set-password link — also
-        // best-effort; if it fails, an admin can retry from the partner's
-        // page (Partner App login section).
-        getSupabase()
-          .auth.getSession()
-          .then(({ data: sess }) => {
-            const token = sess.session?.access_token;
-            if (!token) return;
-            fetch("/api/admin/welcome-partner", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ ref: app.ref }),
-            }).catch(() => {});
-            fetch("/api/admin/partner-login", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ partnerId }),
-            }).catch(() => {});
-          })
-          .catch(() => {});
+        // Automated partner welcome email + login creation. Awaited
+        // (best-effort; errors swallowed) BEFORE navigating away — the
+        // previous fire-and-forget version let router.push abort the
+        // fetches, silently losing an approved partner's emails. The
+        // partner-login call creates the partner's auth account, links
+        // it, and emails their set-password link; if it still fails, an
+        // admin can retry from the partner's page (Partner App login).
+        try {
+          const { data: sess } = await getSupabase().auth.getSession();
+          const token = sess.session?.access_token;
+          if (token) {
+            const headers = {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            };
+            await Promise.allSettled([
+              fetch("/api/admin/welcome-partner", {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ ref: app.ref }),
+              }),
+              fetch("/api/admin/partner-login", {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ partnerId }),
+              }),
+            ]);
+          }
+        } catch {
+          // Never block the approval on email/login dispatch.
+        }
         router.push("/admin/applications");
       } else {
         await rejectApplication(app.ref);
