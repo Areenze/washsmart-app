@@ -12,11 +12,16 @@ interface FitReport {
   vw: number;
   docSW: number;
   bodySW: number;
+  screenW: number;
+  dpr: number;
+  vvW: number;
+  vvScale: number;
   lines: string[];
 }
 
 function measure(): FitReport {
   const vw = window.innerWidth;
+  const vv = window.visualViewport;
   const lines: string[] = [];
   document.querySelectorAll("*").forEach((el) => {
     const r = el.getBoundingClientRect();
@@ -40,6 +45,10 @@ function measure(): FitReport {
     vw,
     docSW: document.documentElement.scrollWidth,
     bodySW: document.body ? document.body.scrollWidth : -1,
+    screenW: window.screen ? window.screen.width : -1,
+    dpr: window.devicePixelRatio || -1,
+    vvW: vv ? Math.round(vv.width) : -1,
+    vvScale: vv ? Math.round(vv.scale * 100) / 100 : -1,
     lines: lines.slice(0, 8),
   };
 }
@@ -62,6 +71,10 @@ export default function FitDebug() {
       <div>
         FIT vw={report.vw} doc={report.docSW} body={report.bodySW} wide=
         {report.lines.length}
+      </div>
+      <div>
+        screen={report.screenW} dpr={report.dpr} vv={report.vvW} scale=
+        {report.vvScale}
       </div>
       {report.lines.map((l, i) => (
         <div key={i} className="whitespace-pre-wrap break-all">

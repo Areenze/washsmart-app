@@ -92,8 +92,8 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
   const moreActive = MORE_TABS.some((t) => t.href === pathname);
   const tabClass = (active: boolean) =>
     active
-      ? "whitespace-nowrap border-b-2 border-[#ffffff] px-2 py-3 text-sm font-bold text-[#ffffff] sm:px-3"
-      : "whitespace-nowrap border-b-2 border-transparent px-2 py-3 text-sm font-semibold text-gray-400 hover:text-[#f2f2f2] sm:px-3";
+      ? "whitespace-nowrap border-b-2 border-[#ffffff] px-1.5 py-3 text-[13px] font-bold text-[#ffffff] sm:px-3 sm:text-sm"
+      : "whitespace-nowrap border-b-2 border-transparent px-1.5 py-3 text-[13px] font-semibold text-gray-400 hover:text-[#f2f2f2] sm:px-3 sm:text-sm";
 
   return (
     <div className="flex min-h-screen w-full min-w-0 flex-col bg-[#0a0a0a] text-[#f2f2f2] [overflow-x:clip]">
@@ -125,7 +125,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
       </header>
 
       <nav className="sticky top-0 z-10 border-b border-white/5 bg-[#151515]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl gap-1 px-3 sm:gap-2 sm:px-5">
+        <div className="mx-auto flex max-w-7xl gap-0.5 px-2 sm:gap-2 sm:px-5">
           {PRIMARY_TABS.map((t) => (
             <Link key={t.href} href={t.href} className={tabClass(pathname === t.href)}>
               {t.label}
