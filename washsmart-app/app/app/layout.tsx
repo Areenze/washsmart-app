@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Brand, ResponsiveLogo } from "@/components/ui";
 import NotificationBell from "@/components/notification-bell";
+import PullToRefresh, { RefreshButton } from "@/components/pull-to-refresh";
 import { getProfile, getWashSummary, signOut } from "@/lib/db/store";
 import { getSupabase } from "@/lib/db/supabase";
 
@@ -136,6 +137,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="subscriber-light flex min-h-screen flex-col bg-[#0a0f0c] text-[#e9f2ec]">
+      <PullToRefresh />
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#111a14]/90 px-4 py-3 backdrop-blur-md sm:px-5 sm:py-4">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <Link href="/app" className="flex items-center gap-1.5 sm:gap-2" aria-label="WashSMART home">
@@ -211,6 +213,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               >
                 Log out
               </button>
+              <RefreshButton />
               <NotificationBell />
               <Link
                 href="/app/profile"
