@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Brand, ResponsiveLogo } from "@/components/ui";
 import PullToRefresh from "@/components/pull-to-refresh";
+import FitDebug from "@/components/fit-debug";
 import { agentLogout, currentAgentSessionStrict } from "@/lib/db/agents";
 import type { Agent } from "@/lib/db/types";
 
@@ -59,6 +60,7 @@ export default function AgentShell({ children }: { children: ReactNode }) {
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec] [overflow-x:clip]">
       <PullToRefresh />
+      <FitDebug />
       <header className="border-b bg-[#111a14] px-3 py-4 sm:px-5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
           <Link href="/agent/dashboard" className="flex min-w-0 items-center gap-1.5 sm:gap-2">
