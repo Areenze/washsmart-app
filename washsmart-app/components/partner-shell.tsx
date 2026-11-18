@@ -100,15 +100,15 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
       <PullToRefresh />
       <FitDebug />
       <header className="border-b bg-[#151515] px-3 py-4 sm:px-5">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
-          <Link href="/partner/dashboard" className="flex items-center gap-1.5 sm:gap-2">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <Link href="/partner/dashboard" className="flex min-w-0 items-center gap-1.5 sm:gap-2">
             <ResponsiveLogo />
             <Brand />
             <span className="ml-1 hidden rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff] sm:inline-block">
               PARTNER PORTAL
             </span>
           </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
             <div className="hidden text-right sm:block">
               <p className="text-sm font-bold">{partner?.name ?? "Partner"}</p>
               <p className="text-xs text-gray-400">Partner App</p>
