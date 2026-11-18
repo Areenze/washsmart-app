@@ -2,7 +2,7 @@
  * Served from /sw.js (see next.config.ts headers: never cached by the browser).
  */
 
-const CACHE = "washsmart-shell-v1";
+const CACHE = "washsmart-shell-v2";
 const SHELL = ["/", "/offline", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
