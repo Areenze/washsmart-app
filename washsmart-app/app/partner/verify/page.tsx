@@ -118,7 +118,7 @@ function VerifyInner() {
       )}
 
       {phase === "checklist" && subscription && (
-        <div className="rounded-3xl bg-[#151515] p-8 shadow-sm">
+        <div className="rounded-3xl bg-[#151515] p-5 shadow-sm sm:p-8">
           <h1 className="text-2xl font-bold">Verification Checklist</h1>
           <div className="mt-5 space-y-3">
             {[
@@ -142,13 +142,13 @@ function VerifyInner() {
           <div className="mt-6 rounded-2xl bg-[#0a0a0a] p-5">
             <div className="flex items-center justify-between gap-3 py-1 text-sm">
               <span className="shrink-0 text-gray-400">Plan</span>
-              <span className="min-w-0 truncate text-right font-bold">
+              <span className="min-w-0 text-right font-bold [overflow-wrap:anywhere]">
                 {subscription.planName} · {subscription.washesTotal} washes / 30 days
               </span>
             </div>
             <div className="flex items-center justify-between gap-3 py-1 text-sm">
               <span className="shrink-0 text-gray-400">Subscriber</span>
-              <span className="min-w-0 truncate text-right font-bold" title={subscription.email}>
+              <span className="min-w-0 text-right font-bold [overflow-wrap:anywhere]" title={subscription.email}>
                 {subscription.email}
               </span>
             </div>

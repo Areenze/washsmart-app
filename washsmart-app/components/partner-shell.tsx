@@ -25,6 +25,12 @@ const tabs = [
   { href: "/partner/profile", label: "Profile" },
 ];
 
+/* Mobile nav (Mm, 2026-11-18): only the first three tabs fit a phone
+ * screen (~320px) — the rest move into a "More" dropdown below the md
+ * breakpoint. md+ screens show the full row inline, as before. */
+const PRIMARY_TABS = tabs.slice(0, 3);
+const MORE_TABS = tabs.slice(3);
+
 // Pages that render outside the partner shell (own header, no session needed).
 const PUBLIC_PARTNER_PATHS = [
   "/partner",
@@ -36,6 +42,12 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [partner, setPartner] = useState<Partner | null | undefined>(undefined);
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  // Close the mobile "More" dropdown whenever the route changes.
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [pathname]);
 
   // Tri-state per check: Partner (authed), null (definitely no session),
   // undefined (transient failure — keep previous state). A network blip must
@@ -76,6 +88,12 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
     router.replace("/partner");
   };
 
+  const moreActive = MORE_TABS.some((t) => t.href === pathname);
+  const tabClass = (active: boolean) =>
+    active
+      ? "whitespace-nowrap border-b-2 border-[#ffffff] px-2 py-3 text-sm font-bold text-[#ffffff] sm:px-3"
+      : "whitespace-nowrap border-b-2 border-transparent px-2 py-3 text-sm font-semibold text-gray-400 hover:text-[#f2f2f2] sm:px-3";
+
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-[#f2f2f2]">
       <PullToRefresh />
@@ -105,20 +123,58 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
       </header>
 
       <nav className="sticky top-0 z-10 border-b border-white/5 bg-[#151515]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-3 sm:gap-2 sm:px-5">
-          {tabs.map((t) => (
+        <div className="mx-auto flex max-w-7xl gap-1 px-3 sm:gap-2 sm:px-5">
+          {PRIMARY_TABS.map((t) => (
+            <Link key={t.href} href={t.href} className={tabClass(pathname === t.href)}>
+              {t.label}
+            </Link>
+          ))}
+          {MORE_TABS.map((t) => (
             <Link
               key={t.href}
               href={t.href}
-              className={
-                pathname === t.href
-                  ? "border-b-2 border-[#ffffff] px-3 py-3 text-sm font-bold text-[#ffffff]"
-                  : "border-b-2 border-transparent px-3 py-3 text-sm font-semibold text-gray-400 hover:text-[#f2f2f2]"
-              }
+              className={`hidden md:block ${tabClass(pathname === t.href)}`}
             >
               {t.label}
             </Link>
           ))}
+
+          {/* Mobile only: the remaining sections live in this dropdown. */}
+          <div className="relative ml-auto md:hidden">
+            <button
+              onClick={() => setMoreOpen((o) => !o)}
+              aria-expanded={moreOpen}
+              className={`h-full ${tabClass(moreActive)}`}
+            >
+              More <span aria-hidden>{moreOpen ? "▴" : "▾"}</span>
+            </button>
+            {moreOpen && (
+              <>
+                <button
+                  aria-hidden
+                  tabIndex={-1}
+                  className="fixed inset-0 z-10 cursor-default"
+                  onClick={() => setMoreOpen(false)}
+                />
+                <div className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-2xl border border-white/10 bg-[#1c1c1c] py-2 shadow-2xl">
+                  {MORE_TABS.map((t) => (
+                    <Link
+                      key={t.href}
+                      href={t.href}
+                      onClick={() => setMoreOpen(false)}
+                      className={
+                        pathname === t.href
+                          ? "block bg-white/10 px-4 py-3 text-sm font-bold text-white"
+                          : "block px-4 py-3 text-sm font-semibold text-gray-300 hover:bg-white/5"
+                      }
+                    >
+                      {t.label}
+                    </Link>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 
