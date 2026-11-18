@@ -492,13 +492,13 @@ export default function EntryPage() {
             </h2>
           </Reveal>
           <Reveal delay={100}>
-            <div className="mt-8 overflow-hidden rounded-3xl border border-white/5">
+            <div className="mt-8 overflow-x-auto rounded-3xl border border-white/5">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="bg-[#111a14] text-gray-400">
-                    <th className="px-5 py-4 font-semibold"></th>
-                    <th className="px-5 py-4 font-semibold">Pay as you go</th>
-                    <th className="bg-[#0e2a1c] px-5 py-4 font-bold text-[#48d87c]">
+                    <th className="px-3 py-4 font-semibold sm:px-5"></th>
+                    <th className="px-3 py-4 font-semibold sm:px-5">Pay as you go</th>
+                    <th className="bg-[#0e2a1c] px-3 py-4 font-bold text-[#48d87c] sm:px-5">
                       WashSMART
                     </th>
                   </tr>
@@ -512,11 +512,11 @@ export default function EntryPage() {
                     ["Verified partner standards", false, true],
                   ].map(([label, a, b]) => (
                     <tr key={label as string} className="bg-[#111a14]/50">
-                      <td className="px-5 py-3.5 font-semibold">{label}</td>
-                      <td className="px-5 py-3.5 text-gray-600">
+                      <td className="px-3 py-3.5 font-semibold sm:px-5">{label}</td>
+                      <td className="px-3 py-3.5 text-gray-600 sm:px-5">
                         {a ? "✓" : "—"}
                       </td>
-                      <td className="bg-[#0e2a1c]/60 px-5 py-3.5 font-bold text-[#48d87c]">
+                      <td className="bg-[#0e2a1c]/60 px-3 py-3.5 font-bold text-[#48d87c] sm:px-5">
                         {b ? "✓" : "—"}
                       </td>
                     </tr>

@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Brand, Logo } from "@/components/ui";
+import { Brand, ResponsiveLogo } from "@/components/ui";
 import { agentLogout, currentAgentSessionStrict } from "@/lib/db/agents";
 import type { Agent } from "@/lib/db/types";
 
@@ -57,19 +57,19 @@ export default function AgentShell({ children }: { children: ReactNode }) {
 
   return (
     <main className="min-h-screen bg-[#0a0f0c] text-[#e9f2ec]">
-      <header className="border-b bg-[#111a14] px-5 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/agent/dashboard" className="flex items-center gap-2">
-            <Logo />
+      <header className="border-b bg-[#111a14] px-4 py-4 sm:px-5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
+          <Link href="/agent/dashboard" className="flex items-center gap-1.5 sm:gap-2">
+            <ResponsiveLogo />
             <Brand />
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span className="rounded-md bg-[#20a957]/15 px-2 py-1 font-mono text-[10px] font-bold tracking-[0.14em] text-[#48d87c]">
               {agent.code}
             </span>
             <button
               onClick={logout}
-              className="text-sm font-semibold text-gray-400 hover:text-white"
+              className="whitespace-nowrap text-sm font-semibold text-gray-400 hover:text-white"
             >
               Log out
             </button>

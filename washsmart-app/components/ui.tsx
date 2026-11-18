@@ -24,9 +24,25 @@ export function Logo({ size = 40 }: { size?: number }) {
 export function Brand({ light = false }: { light?: boolean }) {
   void light; // all headers are dark now; brand always renders light
   return (
-    <span className="text-xl font-bold text-[#e9f2ec]">
+    <span className="whitespace-nowrap text-lg font-bold text-[#e9f2ec] sm:text-xl">
       Wash<span className="text-[#20a957]">SMART</span>
     </span>
+  );
+}
+
+/* Shell-header logo: a slightly smaller mark on phones so the header row
+ * (logo + brand + actions) fits narrow layout widths — 320px included —
+ * without clipping; the full 40px mark returns from sm up. */
+export function ResponsiveLogo() {
+  return (
+    <>
+      <span className="sm:hidden">
+        <Logo size={32} />
+      </span>
+      <span className="hidden sm:block">
+        <Logo />
+      </span>
+    </>
   );
 }
 

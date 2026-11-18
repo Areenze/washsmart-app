@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { Brand, Logo } from "@/components/ui";
+import { Brand, ResponsiveLogo } from "@/components/ui";
 import NotificationBell from "@/components/notification-bell";
 import {
   currentPartnerSessionStrict,
@@ -77,16 +77,16 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-[#f2f2f2]">
-      <header className="border-b bg-[#151515] px-5 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Link href="/partner/dashboard" className="flex items-center gap-2">
-            <Logo />
+      <header className="border-b bg-[#151515] px-4 py-4 sm:px-5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
+          <Link href="/partner/dashboard" className="flex items-center gap-1.5 sm:gap-2">
+            <ResponsiveLogo />
             <Brand />
-            <span className="ml-1 rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff]">
+            <span className="ml-1 hidden rounded-md bg-[#ffffff]/15 px-2 py-1 text-[10px] font-bold tracking-[0.14em] text-[#ffffff] sm:inline-block">
               PARTNER PORTAL
             </span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden text-right sm:block">
               <p className="text-sm font-bold">{partner?.name ?? "Partner"}</p>
               <p className="text-xs text-gray-400">Partner App</p>
@@ -94,7 +94,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
             <NotificationBell audience="partner" href="/partner/notifications" />
             <button
               onClick={logout}
-              className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold text-gray-400"
+              className="whitespace-nowrap rounded-full border border-white/10 px-3 py-2 text-xs font-bold text-gray-400 sm:px-4"
             >
               Log out
             </button>
