@@ -97,7 +97,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full min-w-0 flex-col bg-[#0a0a0a] text-[#f2f2f2] [overflow-x:clip]">
       <PullToRefresh />
-      <header className="border-b bg-[#151515] px-4 py-4 sm:px-5">
+      <header className="border-b bg-[#151515] px-3 py-4 sm:px-5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
           <Link href="/partner/dashboard" className="flex items-center gap-1.5 sm:gap-2">
             <ResponsiveLogo />

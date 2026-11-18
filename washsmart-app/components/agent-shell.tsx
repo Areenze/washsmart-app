@@ -66,7 +66,10 @@ export default function AgentShell({ children }: { children: ReactNode }) {
             <Brand />
           </Link>
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <span className="rounded-md bg-[#20a957]/15 px-1.5 py-1 font-mono text-[10px] font-bold tracking-[0.08em] text-[#48d87c] sm:px-2 sm:tracking-[0.14em]">
+            {/* The code chip hides on phones: logo + wordmark + chip + Log
+             * out cannot all fit ~320px, and the dashboard body already
+             * shows the code prominently. It returns from sm up. */}
+            <span className="hidden rounded-md bg-[#20a957]/15 px-1.5 py-1 font-mono text-[10px] font-bold tracking-[0.08em] text-[#48d87c] sm:inline-block sm:px-2 sm:tracking-[0.14em]">
               {agent.code}
             </span>
             <button
