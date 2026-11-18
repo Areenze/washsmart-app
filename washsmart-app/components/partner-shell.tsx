@@ -95,7 +95,7 @@ export default function PartnerShell({ children }: { children: ReactNode }) {
       : "whitespace-nowrap border-b-2 border-transparent px-2 py-3 text-sm font-semibold text-gray-400 hover:text-[#f2f2f2] sm:px-3";
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-[#f2f2f2]">
+    <div className="flex min-h-screen w-full min-w-0 flex-col bg-[#0a0a0a] text-[#f2f2f2] [overflow-x:clip]">
       <PullToRefresh />
       <header className="border-b bg-[#151515] px-4 py-4 sm:px-5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">

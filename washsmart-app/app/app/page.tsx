@@ -239,7 +239,7 @@ export default function UserHome() {
         <section
           id="wash-qr"
           aria-label="My Wash QR"
-          className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-6 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] md:p-8"
+          className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-5 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] sm:p-6 md:p-8"
         >
           <div>
             <div>
@@ -314,7 +314,7 @@ export default function UserHome() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr] [&>*]:min-w-0">
         <Reveal>
-        <div className="overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-8 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)]">
+        <div className="overflow-hidden rounded-3xl border border-white/5 bg-[#063c28] p-6 text-white shadow-[0_0_32px_5px_rgb(0_0_0/0.28)] sm:p-8">
           <p className="mb-3 text-sm font-semibold text-[#65e28e]">
             WASHSMART SUBSCRIBER
           </p>
