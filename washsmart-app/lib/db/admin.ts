@@ -44,6 +44,29 @@ export interface DashboardStats {
   newSubscribers7d: number;
 }
 
+/* Accounts that must NOT be counted or listed as subscribers: profiles
+ * whose login belongs to a partner or an agent, plus staff (admin)
+ * accounts. Every login gets a profile (handle_new_user), so without
+ * this filter the Subscribers list and counts fill up with partners,
+ * agents and staff — Mm's rule (2026-11-18): subscribers show
+ * subscribers, partners show partners, agents show agents. */
+async function nonSubscriberIds(
+  db: ReturnType<typeof getSupabase>
+): Promise<Set<string>> {
+  const [partners, agents, staff] = await Promise.all([
+    db.from("partners").select("user_id").not("user_id", "is", null),
+    db.from("agents").select("user_id").not("user_id", "is", null),
+    db.from("profiles").select("id").eq("is_admin", true),
+  ]);
+  const ids = new Set<string>();
+  for (const r of (partners.data ?? []) as any[])
+    if (r.user_id) ids.add(r.user_id as string);
+  for (const r of (agents.data ?? []) as any[])
+    if (r.user_id) ids.add(r.user_id as string);
+  for (const r of (staff.data ?? []) as any[]) ids.add(r.id as string);
+  return ids;
+}
+
 export async function adminDashboardStats(): Promise<DashboardStats> {
   const db = getSupabase();
   const [
@@ -54,6 +77,7 @@ export async function adminDashboardStats(): Promise<DashboardStats> {
     ledger,
     approvedPartners,
     apps,
+    excluded,
   ] = await Promise.all([
     db.from("profiles").select("id,created_at", { count: "exact" }),
     db.from("subscriptions").select("status,washes_total,washes_remaining"),
@@ -71,17 +95,21 @@ export async function adminDashboardStats(): Promise<DashboardStats> {
       .from("partner_applications")
       .select("ref", { count: "exact", head: true })
       .eq("status", "pending"),
+    nonSubscriberIds(db),
   ]);
 
   const subRows = subs.data ?? [];
   const active = subRows.filter((s) => s.status === "active");
+  const subscriberRows = (profiles.data ?? []).filter(
+    (p) => !excluded.has(p.id)
+  );
   const weekAgo = Date.now() - 7 * 864e5;
-  const new7d = (profiles.data ?? []).filter(
+  const new7d = subscriberRows.filter(
     (p) => new Date(p.created_at).getTime() > weekAgo
   ).length;
 
   return {
-    totalSubscribers: profiles.count ?? 0,
+    totalSubscribers: subscriberRows.length,
     activeSubscriptions: active.length,
     creditsIssued: subRows.reduce((s, r) => s + (r.washes_total ?? 0), 0),
     creditsRedeemed:
@@ -220,7 +248,9 @@ export async function adminListSubscribers(
   }
   const { data: profiles, error } = await req;
   if (error) throw error;
-  const ids = (profiles ?? []).map((p) => p.id);
+  const excluded = await nonSubscriberIds(db);
+  const visible = (profiles ?? []).filter((p) => !excluded.has(p.id));
+  const ids = visible.map((p) => p.id);
   if (ids.length === 0) return [];
 
   const [subs, wash, pays, vehs] = await Promise.all([
@@ -247,7 +277,7 @@ export async function adminListSubscribers(
   const payMap = byOwner(pays.data, (p: any) => p.owner_id);
   const vehMap = byOwner(vehs.data, (v: any) => v.owner_id);
 
-  return (profiles ?? []).map((p) => {
+  return visible.map((p) => {
     const ss = (subMap.get(p.id) ?? []).sort(
       (a: any, b: any) =>
         new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
@@ -1616,13 +1646,14 @@ export interface AreaStat {
 
 export async function adminLocationStats(): Promise<AreaStat[]> {
   const db = getSupabase();
-  const [subs, parts, wash] = await Promise.all([
-    db.from("profiles").select("area").limit(2000),
+  const [subs, parts, wash, excluded] = await Promise.all([
+    db.from("profiles").select("id,area").limit(2000),
     db.from("partners").select("area,status").limit(500),
     db
       .from("wash_transactions")
       .select("partner:partners(area)")
       .limit(2000),
+    nonSubscriberIds(db),
   ]);
   const m = new Map<string, AreaStat>();
   const bump = (area: string | null, key: "subscribers" | "partners" | "washes") => {
@@ -1630,7 +1661,9 @@ export async function adminLocationStats(): Promise<AreaStat[]> {
     if (!m.has(a)) m.set(a, { area: a, subscribers: 0, partners: 0, washes: 0 });
     m.get(a)![key] += 1;
   };
-  for (const s of (subs.data ?? []) as any[]) bump(s.area, "subscribers");
+  for (const s of (subs.data ?? []) as any[]) {
+    if (!excluded.has(s.id)) bump(s.area, "subscribers");
+  }
   for (const p of (parts.data ?? []) as any[]) {
     if (p.status === "approved") bump(p.area, "partners");
   }
