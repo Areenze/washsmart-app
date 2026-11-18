@@ -76,7 +76,7 @@ export default function AdminPartnerDetailPage() {
       setLoginNote(
         out.sent
           ? `✓ Set-password email sent to ${p.email}`
-          : "✓ Login linked, but the email could not be sent — press Resend to try again."
+          : `✓ Login linked, but the email could not be sent — ${out.emailError ?? "press Resend to try again."}`
       );
     } catch (e) {
       setLoginNote(

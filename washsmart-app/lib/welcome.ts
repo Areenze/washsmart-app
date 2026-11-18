@@ -177,7 +177,7 @@ export async function sendPartnerSetPasswordEmail(opts: {
   carWashName: string;
   partnerId: string;
   actionLink: string;
-}): Promise<{ sent: boolean }> {
+}): Promise<{ sent: boolean; skipped?: boolean; error?: string }> {
   try {
     return await sendEmail({
       to: opts.to,
@@ -186,7 +186,7 @@ export async function sendPartnerSetPasswordEmail(opts: {
     });
   } catch {
     /* login creation must never break on email */
-    return { sent: false };
+    return { sent: false, error: "Email helper failed" };
   }
 }
 

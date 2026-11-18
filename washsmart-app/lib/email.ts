@@ -14,7 +14,7 @@ interface SendEmailOpts {
 
 export async function sendEmail(
   opts: SendEmailOpts
-): Promise<{ sent: boolean; skipped?: boolean }> {
+): Promise<{ sent: boolean; skipped?: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn(`[email] RESEND_API_KEY not set — skipping email to ${opts.to}`);
@@ -38,11 +38,11 @@ export async function sendEmail(
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       console.warn("[email] Resend rejected the send:", res.status, text.slice(0, 200));
-      return { sent: false };
+      return { sent: false, error: `Resend ${res.status}: ${text.slice(0, 160)}` };
     }
     return { sent: true };
   } catch (e) {
     console.warn("[email] send failed:", e instanceof Error ? e.message : e);
-    return { sent: false };
+    return { sent: false, error: e instanceof Error ? e.message : "Network error" };
   }
 }

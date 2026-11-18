@@ -154,14 +154,26 @@ export async function POST(request: Request) {
     const actionLink = linkData?.properties?.action_link;
     if (!actionLink) throw new Error("Could not generate the set-password link.");
 
-    const { sent } = await sendPartnerSetPasswordEmail({
+    const mail = await sendPartnerSetPasswordEmail({
       to: email,
       carWashName: partner.name ?? "Partner",
       partnerId: partner.partner_id,
       actionLink,
     });
 
-    return Response.json({ ok: true, created, linked, sent });
+    return Response.json({
+      ok: true,
+      created,
+      linked,
+      sent: mail.sent,
+      // Surface WHY the email failed so an admin is not left guessing
+      // (the send itself stays best-effort — the login already exists).
+      emailError: mail.sent
+        ? undefined
+        : mail.skipped
+          ? "Email service is not configured (RESEND_API_KEY missing)."
+          : (mail.error ?? "Email send failed."),
+    });
   } catch (e) {
     console.error("partner-login failed:", e);
     return Response.json(
