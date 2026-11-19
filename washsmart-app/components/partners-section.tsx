@@ -6,6 +6,7 @@
  * scroll), as the body of the /app/partners route, and on /find-a-wash. */
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { EmptyState } from "@/components/ui";
 import { listApprovedPartners, submitLocationRequest } from "@/lib/db/store";
@@ -103,13 +104,62 @@ export function PartnersSection({
         <h3 className="text-2xl font-bold md:text-3xl">Partner Locations</h3>
         <p className="mx-auto mt-2 max-w-xl text-sm text-gray-400">
           Every green pin is an approved WashSMART partner. Tap a pin for
-          details — we are continually adding partner washes across Lagos.
+          details, or browse the full list below — we are continually adding
+          partner washes across Lagos.
         </p>
       </div>
 
       <div className="mt-6">
         <PartnerMap partners={filtered} detailBase={detailBase} light={mapLight} />
       </div>
+
+      {/* Full list — the safety net. The map can only pin partners whose
+          record carries GPS coordinates; an approved partner without a
+          pin must still be findable here (WS-2026-0003 was invisible
+          until this list existed). Follows the same search filter. */}
+      {filtered.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-bold">
+            All partner locations ({filtered.length})
+          </h3>
+          <ul className="mt-4 overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+            {filtered.map((p) => (
+              <li key={p.id} className="border-b border-white/10 last:border-b-0">
+                <Link
+                  href={`${detailBase}/${p.id}`}
+                  className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-white/5"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-bold text-[#e9f2ec]">
+                      {p.name}
+                      {p.cacNumber && (
+                        <span className="ml-2 align-middle text-xs font-bold text-[#48d87c]">
+                          ✓ Verified Business
+                        </span>
+                      )}
+                    </p>
+                    <p className="mt-0.5 truncate text-sm text-gray-400">
+                      {p.address} · {p.location}
+                    </p>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      {p.hours}
+                      {!p.gps && " · Map pin pending — visit at the address above"}
+                    </p>
+                  </div>
+                  {p.status === "Open" && (
+                    <span className="shrink-0 rounded-full bg-[#20a957]/15 px-3 py-1 text-xs font-bold text-[#48d87c]">
+                      Open now
+                    </span>
+                  )}
+                  <span aria-hidden className="shrink-0 text-gray-500">
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {query && filtered.length === 0 && (
         <div className="mt-6">

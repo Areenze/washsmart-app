@@ -230,6 +230,15 @@ export default function ApplicationDetailPage() {
             ["GPS", app.location.gps || "—"],
           ]}
         />
+        {!app.location.gps && (
+          <p className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+            ⚠️ <strong>No GPS pin on this application.</strong> Without
+            coordinates this partner gets no pin on the subscriber map —
+            subscribers will only find them in the text list under the map.
+            Get the location pin from the partner before or right after
+            approving.
+          </p>
+        )}
         <Section h="Operations" />
         <Rows
           rows={[
