@@ -34,11 +34,11 @@ const FAQS: [string, string][] = [
   ],
   [
     "How long are my washes valid?",
-    "Every wash credit is valid for 30 days from the date of purchase. Renew before your credits expire and any unused washes roll over into your new pack. Credits that have already expired don't roll over.",
+    "Every wash credit is valid for 30 days from the date of purchase. Renew before your credits expire and any unused washes roll over into your new pack. Credits that have already expired don't roll over — except on Premium, which gives you a 3-day grace window after expiry.",
   ],
   [
     "What happens if I buy a new plan before my current one expires?",
-    "Your unused washes roll over, the new plan's washes are added on top, and a fresh 30-day period starts from the day you renew. Renew after your pack has expired instead, and the expired washes are gone — your new plan starts on its own.",
+    "Your unused washes roll over, the new plan's washes are added on top, and a fresh 30-day period starts from the day you renew. Renew after your pack has expired instead, and the expired washes are gone — your new plan starts on its own. On Premium, you get a 3-day grace: renew within 3 days after expiry and your leftover washes still roll over.",
   ],
   [
     "How do I get my wash QR?",
@@ -540,8 +540,8 @@ export default function EntryPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-center text-gray-400">
               Every plan gives you wash credits valid for 30 days, redeemable at
-              any approved WashSMART partner — and one subscription covers every
-              car you register.
+              any approved WashSMART partner — and each plan covers a set
+              number of your cars: 1 on Basic, 2 on Standard, 3 on Premium.
             </p>
           </Reveal>
           <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
@@ -569,6 +569,20 @@ export default function EntryPage() {
                   <p className="mt-4 text-2xl font-bold text-[#48d87c]">
                     {p.washes} wash{p.washes === 1 ? "" : "es"}
                   </p>
+                  <div className="mt-3 space-y-1.5 text-sm text-gray-400">
+                    <p>
+                      Covers {p.carLimit} car{p.carLimit === 1 ? "" : "s"}
+                    </p>
+                    {p.prioritySupport && <p>Priority support</p>}
+                    {p.graceDays > 0 && (
+                      <p>{p.graceDays}-day rollover grace after expiry</p>
+                    )}
+                    {p.guestWash && <p>Gift 1 wash to a friend each cycle</p>}
+                    <p>
+                      Refer friends, earn {p.referralBonus} free wash
+                      {p.referralBonus === 1 ? "" : "es"}
+                    </p>
+                  </div>
                   <Link
                     href="/app/signup"
                     className={`mt-6 block rounded-full py-3 text-center font-bold text-white transition-all duration-200 active:scale-[0.98] ${

@@ -125,7 +125,8 @@ function OnboardingInner() {
       <p className="mt-2 text-sm text-gray-400">
         Your subscription covers your registered cars only. Register each car
         you want us to wash — every wash deducts from your wash credits,
-        whichever car you bring.
+        whichever car you bring. How many cars your subscription covers
+        depends on your plan: Basic 1, Standard 2, Premium 3.
       </p>
 
       <div className="mt-6 space-y-4">
@@ -196,12 +197,14 @@ function OnboardingInner() {
           </div>
         ))}
 
-        <button
-          onClick={() => setDrafts((ds) => [...ds, emptyDraft()])}
-          className="w-full rounded-full border border-dashed border-white/20 py-3 text-sm font-bold text-gray-300 transition-all duration-200 hover:border-[#20a957] hover:text-[#48d87c]"
-        >
-          + Add another vehicle
-        </button>
+        {drafts.length < 4 && (
+          <button
+            onClick={() => setDrafts((ds) => [...ds, emptyDraft()])}
+            className="w-full rounded-full border border-dashed border-white/20 py-3 text-sm font-bold text-gray-300 transition-all duration-200 hover:border-[#20a957] hover:text-[#48d87c]"
+          >
+            + Add another vehicle
+          </button>
+        )}
 
         <div className="rounded-3xl border border-white/5 bg-[#111a14] p-5">
           <label className="mb-1 block text-sm font-semibold">

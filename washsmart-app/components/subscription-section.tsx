@@ -11,6 +11,7 @@ import {
   fmtDate,
   getMySubscription,
   getPlans,
+  planPerkLines,
 } from "@/lib/db/store";
 import type { Plan, Subscription } from "@/lib/db/types";
 
@@ -84,11 +85,13 @@ export function SubscriptionSection() {
                 <span className="text-sm font-normal text-gray-400">/30 days</span>
               </div>
               <div className="mt-6 space-y-3 text-sm">
-                <p><span className="font-bold text-[#48d87c]">✓</span> {plan.washes} washes, valid 30 days</p>
-                <p><span className="font-bold text-[#48d87c]">✓</span> Unused washes roll over when you renew before expiry</p>
+                {planPerkLines(plan).map((line) => (
+                  <p key={line}>
+                    <span className="font-bold text-[#48d87c]">✓</span> {line}
+                  </p>
+                ))}
                 <p><span className="font-bold text-[#48d87c]">✓</span> Approved partner locations</p>
                 <p><span className="font-bold text-[#48d87c]">✓</span> Digital wash tracking</p>
-                <p><span className="font-bold text-[#48d87c]">✓</span> Subscriber verification</p>
               </div>
               {isCurrent ? (
                 <div className="mt-8 w-full rounded-xl bg-[#20a957]/10 py-3 text-center font-bold text-[#48d87c]">
@@ -114,7 +117,7 @@ export function SubscriptionSection() {
       <p className="mt-2 text-center text-xs text-gray-500">
         🎁 Know a car owner?{" "}
         <Link href="/app/profile" className="font-bold text-[#48d87c]">
-          Refer a friend, get 1 free wash →
+          Refer a friend, earn free washes →
         </Link>
       </p>
     </div>

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import InstallPrompt from "@/components/install-prompt";
 import ReferralCard from "@/components/referral-card";
+import GiftWashCard from "@/components/gift-wash-card";
 import QRCode from "@/components/qrcode";
 import { PartnersSection } from "@/components/partners-section";
 import { SubscriptionSection } from "@/components/subscription-section";
@@ -393,7 +394,7 @@ export default function UserHome() {
                 </div>
                 {bonusWashes > 0 && (
                   <p className="mt-1 text-xs font-semibold text-[#48d87c]">
-                    🎁 Includes {bonusWashes} free referral wash
+                    🎁 Includes {bonusWashes} free bonus wash
                     {bonusWashes === 1 ? "" : "es"}
                   </p>
                 )}
@@ -438,6 +439,7 @@ export default function UserHome() {
           )}
         </div>
         {profile && <ReferralCard highlight={outOfWashes} />}
+        {profile && <GiftWashCard />}
         </div>
         </Reveal>
       </div>

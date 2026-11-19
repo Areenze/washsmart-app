@@ -25,6 +25,12 @@ create table if not exists plans (
   amount      integer not null,          -- naira (no kobo)
   washes      integer not null,          -- washes per month
   popular     boolean not null default false,
+  -- tier perks (migration_037, decided 2026-11-19)
+  car_limit        integer not null default 1,   -- registered cars covered
+  referral_bonus   integer not null default 1,   -- washes the referrer earns
+  grace_days       integer not null default 0,   -- post-expiry rollover grace
+  priority_support boolean not null default false,
+  guest_wash       boolean not null default false, -- gift 1 wash per cycle
   created_at  timestamptz not null default now()
 );
 
@@ -296,8 +302,9 @@ create policy "own ledger" on ledger_entries
 -- ============================================================================
 -- Seed: plans (₦10,000/4 · ₦15,000/6 · ₦20,000/8 — flat ₦2,500/wash, 2026-10-29)
 -- ============================================================================
-insert into plans (id, name, amount, washes, popular) values
-  ('basic',    'Basic',    10000, 4, false),
-  ('standard', 'Standard', 15000, 6, true),
-  ('premium',  'Premium',  20000, 8, false)
+insert into plans (id, name, amount, washes, popular, car_limit, referral_bonus, grace_days, priority_support, guest_wash) values
+  ('basic',    'Basic',    10000, 4, false, 1, 1, 0, false, false),
+  ('standard', 'Standard', 15000, 6, true,  2, 1, 0, true,  false),
+  ('premium',  'Premium',  20000, 8, false, 3, 2, 3, true,  true),
+  ('gift',     'Gift Wash',    0, 1, false, 1, 1, 0, false, false)  -- internal, never sold (migration_037)
 on conflict (id) do nothing;

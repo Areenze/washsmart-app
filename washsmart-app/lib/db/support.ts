@@ -70,10 +70,26 @@ export async function createTicket(input: {
   subject: string;
   description: string;
 }): Promise<Ticket> {
-  const priority =
+  let priority =
     input.category === "payment_issue" || input.category === "refund_request"
       ? "high"
       : "normal";
+  // Priority-support perk (migration_037): Standard and Premium
+  // subscribers' tickets are always high priority. Best-effort — the
+  // plans column lands with the migration; until then this is a no-op.
+  if (priority !== "high") {
+    const { data } = await getSupabase()
+      .from("subscriptions")
+      .select("plan_id, plans:plans(priority_support)")
+      .eq("owner_id", input.subscriberId)
+      .eq("status", "active")
+      .gt("renews_at", new Date().toISOString())
+      .not("plan_id", "in", '("referral","gift")')
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if ((data as any)?.plans?.priority_support) priority = "high";
+  }
   const { data, error } = await getSupabase()
     .from("tickets")
     .insert({

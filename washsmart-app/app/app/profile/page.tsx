@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import {
   fmtDate,
+  getMyCarLimit,
   getMySubscription,
   getProfile,
   getVehicles,
@@ -33,6 +34,8 @@ export default function ProfilePage() {
   const [touched, setTouched] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [originalPhone, setOriginalPhone] = useState("");
+  const [carLimit, setCarLimit] = useState(4);
+  const [vehicleError, setVehicleError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -41,6 +44,7 @@ export default function ProfilePage() {
       setOriginalPhone(normalizePhone(p.phone) ?? p.phone);
       setVehicles(await getVehicles());
       setSubscription(await getMySubscription());
+      setCarLimit(await getMyCarLimit().catch(() => 4));
       // Error-aware admin check: a failed check keeps the previous value so
       // a network blip never hides the admin entry point.
       try {
@@ -84,15 +88,29 @@ export default function ProfilePage() {
       color: newVehicle.color.trim(),
     };
     const next = [...vehicles, v];
-    setVehicles(next);
-    await saveVehicles(next);
-    setNewVehicle({ label: "", plate: "", color: "" });
+    setVehicleError(null);
+    try {
+      await saveVehicles(next);
+      setVehicles(next);
+      setNewVehicle({ label: "", plate: "", color: "" });
+    } catch (e) {
+      setVehicleError(
+        e instanceof Error ? e.message : "Could not save that vehicle."
+      );
+    }
   };
 
   const removeVehicle = async (id: string) => {
     const next = vehicles.filter((v) => v.id !== id);
-    setVehicles(next);
-    await saveVehicles(next);
+    setVehicleError(null);
+    try {
+      await saveVehicles(next);
+      setVehicles(next);
+    } catch (e) {
+      setVehicleError(
+        e instanceof Error ? e.message : "Could not remove that vehicle."
+      );
+    }
   };
 
   return (
@@ -192,6 +210,15 @@ export default function ProfilePage() {
 
       <Card className="mt-6">
         <h2 className="text-lg font-bold">My vehicles</h2>
+        <p className="mt-1 text-sm text-gray-400">
+          {vehicles.length} of {carLimit} car{carLimit === 1 ? "" : "s"}{" "}
+          covered by your current plan.
+          {vehicles.length >= carLimit &&
+            " Upgrade your plan to register more."}
+        </p>
+        {vehicleError && (
+          <p className="mt-3 text-sm text-red-400">{vehicleError}</p>
+        )}
         {vehicles.length === 0 ? (
           <p className="mt-3 text-sm text-gray-400">
             No vehicles added yet.
@@ -246,7 +273,9 @@ export default function ProfilePage() {
         </div>
         <button
           onClick={addVehicle}
-          disabled={newVehicle.label.trim().length < 2}
+          disabled={
+            newVehicle.label.trim().length < 2 || vehicles.length >= carLimit
+          }
           className="mt-3 rounded-full border border-[#20a957] px-5 py-2.5 transition-all duration-200 hover:bg-[#20a957]/10 text-sm font-bold text-[#48d87c] disabled:opacity-40"
         >
           + Add Vehicle

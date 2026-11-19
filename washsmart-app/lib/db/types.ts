@@ -137,6 +137,13 @@ export interface Plan {
   amount: number; // kobo-free naira integer
   washes: number;
   popular?: boolean;
+  // Tier perks (migration_037). mapPlan fills these from the plans row,
+  // falling back to the decided values per plan id before the migration.
+  carLimit: number; // registered cars the plan covers
+  referralBonus: number; // bonus washes the referrer earns per signup
+  graceDays: number; // post-expiry rollover grace window
+  prioritySupport: boolean;
+  guestWash: boolean; // may gift 1 wash per cycle
 }
 
 export interface Profile {

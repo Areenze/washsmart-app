@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import {
+  getMyReferralBonus,
   getReferralCode,
   getReferralCount,
   referralLink,
@@ -18,6 +19,7 @@ export default function ReferralCard({
 }) {
   const [code, setCode] = useState<string | null>(null);
   const [count, setCount] = useState(0);
+  const [bonus, setBonus] = useState(1);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -25,6 +27,7 @@ export default function ReferralCard({
       try {
         setCode(await getReferralCode());
         setCount(await getReferralCount());
+        setBonus(await getMyReferralBonus());
       } catch {
         setCode(null);
       }
@@ -55,7 +58,9 @@ export default function ReferralCard({
           <p className="text-sm font-bold text-[#48d87c]">
             🎁 REFER A FRIEND
           </p>
-          <h2 className="mt-1 text-2xl font-bold">Get 1 free wash</h2>
+          <h2 className="mt-1 text-2xl font-bold">
+            Get {bonus} free wash{bonus === 1 ? "" : "es"}
+          </h2>
         </div>
         {count > 0 && (
           <div className="rounded-full bg-[#20a957]/15 px-3 py-1 text-xs font-bold text-green-400">
@@ -65,8 +70,11 @@ export default function ReferralCard({
       </div>
       <p className="mt-3 text-sm text-gray-400">
         Out of washes? Share your link — when a friend subscribes, you
-        instantly get <span className="font-bold text-[#e9f2ec]">1 free wash</span>,
-        valid for 30 days. No limit.
+        instantly get{" "}
+        <span className="font-bold text-[#e9f2ec]">
+          {bonus} free wash{bonus === 1 ? "" : "es"}
+        </span>
+        , valid for 30 days. No limit.
       </p>
       {code ? (
         <>

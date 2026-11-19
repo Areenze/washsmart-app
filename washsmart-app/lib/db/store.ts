@@ -169,7 +169,20 @@ function mapApplication(r: any): PartnerApplication {
   };
 }
 
+/* Tier perks decided 2026-11-19 (migration_037 adds the columns).
+ * The per-id fallbacks keep the app correct in the window before the
+ * migration runs; once it has run, the plans row is the source. */
+const PLAN_PERK_FALLBACKS: Record<
+  string,
+  Pick<Plan, "carLimit" | "referralBonus" | "graceDays" | "prioritySupport" | "guestWash">
+> = {
+  basic: { carLimit: 1, referralBonus: 1, graceDays: 0, prioritySupport: false, guestWash: false },
+  standard: { carLimit: 2, referralBonus: 1, graceDays: 0, prioritySupport: true, guestWash: false },
+  premium: { carLimit: 3, referralBonus: 2, graceDays: 3, prioritySupport: true, guestWash: true },
+};
+
 function mapPlan(r: any): Plan {
+  const fb = PLAN_PERK_FALLBACKS[r.id];
   return {
     id: r.id,
     name: r.name,
@@ -177,7 +190,31 @@ function mapPlan(r: any): Plan {
     amount: r.amount,
     washes: r.washes,
     popular: r.popular ?? undefined,
+    carLimit: r.car_limit ?? fb?.carLimit ?? 1,
+    referralBonus: r.referral_bonus ?? fb?.referralBonus ?? 1,
+    graceDays: r.grace_days ?? fb?.graceDays ?? 0,
+    prioritySupport: r.priority_support ?? fb?.prioritySupport ?? false,
+    guestWash: r.guest_wash ?? fb?.guestWash ?? false,
   };
+}
+
+/** Subscriber-facing perk lines for a plan (plan cards, checkout). */
+export function planPerkLines(plan: Plan): string[] {
+  const lines: string[] = [
+    `${plan.washes} washes, valid 30 days`,
+    `Covers ${plan.carLimit} registered car${plan.carLimit === 1 ? "" : "s"}`,
+    "Unused washes roll over when you renew before expiry",
+  ];
+  if (plan.graceDays > 0)
+    lines.push(
+      `${plan.graceDays}-day grace — renew just after expiry and leftovers still roll over`
+    );
+  if (plan.prioritySupport) lines.push("Priority support");
+  if (plan.guestWash) lines.push("Gift 1 wash to a friend every cycle");
+  lines.push(
+    `Refer a friend, earn ${plan.referralBonus} free wash${plan.referralBonus === 1 ? "" : "es"}`
+  );
+  return lines;
 }
 
 function mapSubscription(r: any, email: string): Subscription {
@@ -917,7 +954,7 @@ export async function getPlans(): Promise<Plan[]> {
   const { data, error } = await getSupabase()
     .from("plans")
     .select("*")
-    .neq("id", "referral") // internal bonus plan, never sold
+    .not("id", "in", '("referral","gift")') // internal bonus plans, never sold
     .order("amount");
   if (error) throw error;
   return (data ?? []).map(mapPlan);
@@ -1002,25 +1039,148 @@ export async function getVehicles(): Promise<Vehicle[]> {
   }));
 }
 
+/**
+ * How many registered cars the subscriber's current plan covers.
+ * No live paid pack (e.g. onboarding, before a plan is chosen) → the
+ * highest tier's cap, so signup is never blocked by the cap.
+ */
+export async function getMyCarLimit(): Promise<number> {
+  const summary = await getWashSummary();
+  const primary = summary.primary;
+  if (primary && primary.planId !== "referral" && primary.planId !== "gift") {
+    const plan = await getPlan(primary.planId).catch(() => undefined);
+    if (plan) return plan.carLimit;
+  }
+  return 4;
+}
+
+/** Bonus washes the subscriber earns per referred friend (tier perk). */
+export async function getMyReferralBonus(): Promise<number> {
+  const summary = await getWashSummary();
+  const primary = summary.primary;
+  if (primary && primary.planId !== "referral" && primary.planId !== "gift") {
+    const plan = await getPlan(primary.planId).catch(() => undefined);
+    if (plan) return plan.referralBonus;
+  }
+  return 1;
+}
+
+/**
+ * Diff-based save (insert new / update kept / delete removed) so that
+ * editing a car never trips the per-plan car cap, and cars registered
+ * under a bigger plan are never wiped by a downgrade — the cap only
+ * blocks ADDING beyond it (the DB trigger in migration_037 backstops).
+ */
 export async function saveVehicles(v: Vehicle[]): Promise<void> {
   const user = await currentUser();
   if (!user) throw new Error("Not signed in.");
   const sb = getSupabase();
-  const { error: delError } = await sb
+  const { data: existing, error: exError } = await sb
     .from("vehicles")
-    .delete()
+    .select("id,label,plate,color")
     .eq("owner_id", user.id);
-  if (delError) throw delError;
-  if (v.length === 0) return;
-  const { error } = await sb.from("vehicles").insert(
-    v.map((x) => ({
-      owner_id: user.id,
-      label: x.label,
-      plate: x.plate || null,
-      color: x.color || null,
-    }))
+  if (exError) throw exError;
+  const existingRows = (existing ?? []) as any[];
+  const cap = await getMyCarLimit();
+  const ceiling = Math.max(cap, existingRows.length);
+  if (v.length > ceiling) {
+    throw new Error(
+      `Your current plan covers up to ${cap} registered car${cap === 1 ? "" : "s"}. Remove a car or upgrade your plan to add more.`
+    );
+  }
+  const existingIds = new Set(existingRows.map((r) => r.id as string));
+  const keepIds = new Set(
+    v.filter((x) => existingIds.has(x.id)).map((x) => x.id)
   );
-  if (error) throw error;
+  const toDelete = existingRows
+    .filter((r) => !keepIds.has(r.id as string))
+    .map((r) => r.id as string);
+  if (toDelete.length > 0) {
+    const { error } = await sb.from("vehicles").delete().in("id", toDelete);
+    if (error) throw error;
+  }
+  for (const x of v.filter((x) => existingIds.has(x.id))) {
+    const { error } = await sb
+      .from("vehicles")
+      .update({ label: x.label, plate: x.plate || null, color: x.color || null })
+      .eq("id", x.id);
+    if (error) throw error;
+  }
+  const fresh = v.filter((x) => !existingIds.has(x.id));
+  if (fresh.length > 0) {
+    const { error } = await sb.from("vehicles").insert(
+      fresh.map((x) => ({
+        owner_id: user.id,
+        label: x.label,
+        plate: x.plate || null,
+        color: x.color || null,
+      }))
+    );
+    if (error) {
+      if ((error.message ?? "").includes("CAR_LIMIT")) {
+        throw new Error(
+          "Your current plan covers fewer cars than this. Remove a car or upgrade your plan to add more."
+        );
+      }
+      throw error;
+    }
+  }
+}
+
+/* ---------------- guest wash (Premium perk, migration_037) ---------------- */
+
+export interface GiftStatus {
+  /** The subscriber's live plan includes the guest-wash perk. */
+  eligible: boolean;
+  /** They have already gifted in the current 30-day cycle. */
+  giftedThisCycle: boolean;
+  /** Gifting is possible right now (eligible, not yet gifted, washes left). */
+  canGift: boolean;
+  planName: string | null;
+}
+
+export async function getGiftStatus(): Promise<GiftStatus> {
+  const none: GiftStatus = {
+    eligible: false,
+    giftedThisCycle: false,
+    canGift: false,
+    planName: null,
+  };
+  const user = await currentUser();
+  if (!user) return none;
+  const summary = await getWashSummary();
+  const primary = summary.primary;
+  if (!primary || primary.planId === "referral" || primary.planId === "gift")
+    return none;
+  const plan = await getPlan(primary.planId).catch(() => undefined);
+  if (!plan?.guestWash) return { ...none, planName: plan?.name ?? primary.planName };
+  // Cycle window: the 30 days ending at the pack's expiry.
+  const cycleStart = new Date(
+    new Date(primary.expiresAt).getTime() - 30 * 86_400_000
+  ).toISOString();
+  const { data, error } = await getSupabase()
+    .from("wash_gifts")
+    .select("id")
+    .eq("giver_id", user.id)
+    .eq("giver_subscription_id", primary.id)
+    .gt("created_at", cycleStart)
+    .limit(1);
+  if (error) return none; // table lands with migration_037 — stay hidden until then
+  const gifted = (data ?? []).length > 0;
+  return {
+    eligible: true,
+    giftedThisCycle: gifted,
+    canGift: !gifted && primary.washesRemaining > 0,
+    planName: plan.name,
+  };
+}
+
+/** Gift 1 wash from the subscriber's own pool to another account. */
+export async function giftWash(recipientEmail: string): Promise<void> {
+  const { error } = await getSupabase().rpc("gift_wash", {
+    p_recipient_email: recipientEmail.trim(),
+  });
+  if (error) throw new Error(error.message);
 }
 
 /* ---------------- subscriptions ---------------- */
@@ -1078,8 +1238,12 @@ export async function getWashSummary(): Promise<WashSummary> {
   const live = (data ?? [])
     .map((r) => mapSubscription(r, email))
     .filter((s) => new Date(s.expiresAt).getTime() > now);
-  const bonuses = live.filter((s) => s.planId === "referral");
-  const paid = live.filter((s) => s.planId !== "referral");
+  const bonuses = live.filter(
+    (s) => s.planId === "referral" || s.planId === "gift"
+  );
+  const paid = live.filter(
+    (s) => s.planId !== "referral" && s.planId !== "gift"
+  );
   const primary =
     paid[0] ?? bonuses.find((b) => b.washesRemaining > 0) ?? null;
   return {
