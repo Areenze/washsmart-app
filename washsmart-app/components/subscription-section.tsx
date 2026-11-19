@@ -9,20 +9,24 @@ import Link from "next/link";
 import { Badge, Card, Reveal } from "@/components/ui";
 import {
   fmtDate,
+  getExtrasStatus,
   getMySubscription,
   getPlans,
   planPerkLines,
+  type ExtrasStatus,
 } from "@/lib/db/store";
 import type { Plan, Subscription } from "@/lib/db/types";
 
 export function SubscriptionSection() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [extras, setExtras] = useState<ExtrasStatus | null>(null);
 
   useEffect(() => {
     (async () => {
       setPlans(await getPlans());
       setSubscription(await getMySubscription());
+      setExtras(await getExtrasStatus().catch(() => null));
     })();
   }, []);
 
@@ -40,6 +44,19 @@ export function SubscriptionSection() {
                 {subscription.washesRemaining} of {subscription.washesTotal}{" "}
                 washes left · expires {fmtDate(subscription.expiresAt)}
               </p>
+              {extras?.eligible &&
+                (extras.available ? (
+                  <p className="mt-1 text-sm font-semibold text-[#48d87c]">
+                    ⭐ Extras session available this cycle — engine wash,
+                    interior wipe, tyre shine &amp; vacuuming
+                  </p>
+                ) : (
+                  <p className="mt-1 text-sm text-gray-400">
+                    ⭐ Extras session used
+                    {extras.usedAt ? ` ${fmtDate(extras.usedAt)}` : ""} —
+                    back again next cycle
+                  </p>
+                ))}
             </div>
             <Badge>ACTIVE</Badge>
           </div>
@@ -53,7 +70,7 @@ export function SubscriptionSection() {
         <p className="mt-3 text-gray-400">Simple plans for every lifestyle.</p>
       </div>
 
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
+      <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         {plans.map((plan, i) => {
           const isCurrent = subscription?.planId === plan.id;
           const dimmed = !!subscription && !isCurrent;

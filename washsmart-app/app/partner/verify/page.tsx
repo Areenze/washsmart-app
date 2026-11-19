@@ -11,9 +11,12 @@ import { useSearchParams } from "next/navigation";
 import {
   currentPartnerSession,
   currentUserId,
+  getWashExtrasStatus,
   inspectToken,
+  redeemExtrasSession,
   redeemWash,
   type PartnerStats,
+  type WashExtrasStatus,
   partnerStats,
 } from "@/lib/db/store";
 import { notifySoon } from "@/lib/db/notifications";
@@ -53,6 +56,9 @@ function VerifyInner() {
   const [tx, setTx] = useState<WashTransaction | null>(null);
   const [washesLeft, setWashesLeft] = useState(0);
   const [stats, setStats] = useState<PartnerStats | null>(null);
+  const [extras, setExtras] = useState<WashExtrasStatus | null>(null);
+  const [includeExtras, setIncludeExtras] = useState(false);
+  const [extrasNote, setExtrasNote] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,6 +67,10 @@ function VerifyInner() {
       if (cancelled) return;
       if (check.ok) {
         setSubscription(check.subscription);
+        // Best-effort: does this subscriber have a Premium Plus extras
+        // session available? Null (e.g. before migration_038) just
+        // hides the option.
+        setExtras(await getWashExtrasStatus(token).catch(() => null));
         setPhase("checklist");
       } else {
         setFailure(check.failure);
@@ -79,7 +89,23 @@ function VerifyInner() {
     window.setTimeout(async () => {
       const res = await redeemWash(token, partner.id);
       if (res.ok) {
-        setTx(res.transaction);
+        let finalTx = res.transaction;
+        if (includeExtras && extras?.extrasAvailable) {
+          try {
+            await redeemExtrasSession(res.transaction.id);
+            finalTx = { ...finalTx, type: "Premium Plus Wash + Extras" };
+            setExtrasNote(
+              "Extras session included: engine wash, interior wipe, tyre shine & vacuuming."
+            );
+          } catch (e) {
+            setExtrasNote(
+              `Wash recorded. Extras session could not be added: ${
+                e instanceof Error ? e.message : "unknown error"
+              }`
+            );
+          }
+        }
+        setTx(finalTx);
         setWashesLeft(res.washesRemaining);
         setStats(await partnerStats(partner.id));
         setPhase("approved");
@@ -154,6 +180,43 @@ function VerifyInner() {
             </div>
           </div>
 
+          {extras?.extrasAvailable && (
+            <button
+              onClick={() => setIncludeExtras((v) => !v)}
+              className={`mt-6 flex w-full items-center gap-3 rounded-2xl border p-5 text-left transition-colors ${
+                includeExtras
+                  ? "border-[#2ed06a] bg-[#2ed06a]/10"
+                  : "border-white/10 bg-[#0a0a0a]"
+              }`}
+            >
+              <span
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border font-bold ${
+                  includeExtras
+                    ? "border-[#2ed06a] bg-[#2ed06a] text-[#0a0a0a]"
+                    : "border-white/25 text-transparent"
+                }`}
+              >
+                ✓
+              </span>
+              <span>
+                <span className="block text-sm font-bold">
+                  ⭐ Include Premium Plus extras session
+                </span>
+                <span className="mt-0.5 block text-xs text-gray-400">
+                  Engine wash, interior wipe, tyre shine &amp; vacuuming — the
+                  subscriber&rsquo;s one session for this cycle. Ask them
+                  before ticking.
+                </span>
+              </span>
+            </button>
+          )}
+          {extras && !extras.extrasAvailable && extras.planId === "premium_plus" && (
+            <p className="mt-6 rounded-2xl bg-[#0a0a0a] p-4 text-xs text-gray-400">
+              Premium Plus extras session already used this cycle — this wash
+              is a standard wash.
+            </p>
+          )}
+
           <div className="mt-6 flex gap-3">
             <Link
               href="/partner/scan"
@@ -187,6 +250,11 @@ function VerifyInner() {
           <p className="mt-3 text-white/70">
             {tx.subscriberName} · {tx.type}
           </p>
+          {extrasNote && (
+            <p className="mx-auto mt-3 max-w-sm text-sm text-[#65e28e]">
+              {extrasNote}
+            </p>
+          )}
           <div className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3">
             <div className="rounded-2xl bg-[#151515]/10 p-4">
               <p className="text-xs text-white/60">Subscriber washes left</p>

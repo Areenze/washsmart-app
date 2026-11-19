@@ -9,7 +9,7 @@ const SECTIONS: [string, string][] = [
   ],
   [
     "Subscriptions & wash credits",
-    "Each subscription plan grants a fixed number of wash credits. One credit pays for one standard wash at any approved partner. Credits are valid for 30 days from the date of purchase. If you buy a new plan before your current credits expire, your unused credits roll over into the renewed pack and a new 30-day period starts on the date of that purchase. Credits that have already expired do not roll over and cannot be recovered — except on Premium, where renewing within 3 days after expiry still rolls your leftover credits over.",
+    "Each subscription plan grants a fixed number of wash credits. One credit pays for one standard wash at any approved partner. Credits are valid for 30 days from the date of purchase. If you buy a new plan before your current credits expire, your unused credits roll over into the renewed pack and a new 30-day period starts on the date of that purchase. Credits that have already expired do not roll over and cannot be recovered — except on Premium (3 days) and Premium Plus (5 days), where renewing within the grace window after expiry still rolls your leftover credits over.",
   ],
   [
     "Redemption",
@@ -37,11 +37,15 @@ const SECTIONS: [string, string][] = [
   ],
   [
     "Referrals",
-    "If you refer a friend and they buy their first plan, you receive bonus wash credits valid for 30 days — one credit on Basic and Standard, two on Premium. The bonus is per referred friend; abuse of the referral program may lead to account suspension.",
+    "If you refer a friend and they buy their first plan, you receive bonus wash credits valid for 30 days — one credit on Basic and Standard, two on Premium and Premium Plus. The bonus is per referred friend; abuse of the referral program may lead to account suspension.",
   ],
   [
     "Gifting washes",
-    "Premium subscribers may gift one wash per 30-day cycle from their own balance to another WashSMART account. The gifted wash is valid for 30 days from the gift date and cannot be returned, transferred again, or exchanged for cash.",
+    "Premium and Premium Plus subscribers may gift one wash per 30-day cycle from their own balance to another WashSMART account. The gifted wash is valid for 30 days from the gift date and cannot be returned, transferred again, or exchanged for cash.",
+  ],
+  [
+    "Extras sessions",
+    "Premium Plus includes one extras session per 30-day cycle: on any one wash in the cycle, the partner adds an engine wash, interior wipe, tyre shine and vacuuming to the standard wash. Tell the partner you want to use your session before the wash is approved. An unused extras session expires at the end of the cycle and does not roll over.",
   ],
   [
     "Partner network",
@@ -49,7 +53,7 @@ const SECTIONS: [string, string][] = [
   ],
   [
     "Fair use",
-    "Subscriptions cover the vehicles registered on your account, up to your plan's limit (Basic 1 car, Standard 2 cars, Premium 3 cars). Sharing QR codes, reselling credits, or any attempt to manipulate redemptions may lead to suspension.",
+    "Subscriptions cover the vehicles registered on your account, up to your plan's limit (Basic 1 car, Standard 2 cars, Premium 3 cars, Premium Plus 4 cars). Sharing QR codes, reselling credits, or any attempt to manipulate redemptions may lead to suspension.",
   ],
   [
     "Changes",

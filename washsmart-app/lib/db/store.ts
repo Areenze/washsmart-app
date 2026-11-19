@@ -174,11 +174,12 @@ function mapApplication(r: any): PartnerApplication {
  * migration runs; once it has run, the plans row is the source. */
 const PLAN_PERK_FALLBACKS: Record<
   string,
-  Pick<Plan, "carLimit" | "referralBonus" | "graceDays" | "prioritySupport" | "guestWash">
+  Pick<Plan, "carLimit" | "referralBonus" | "graceDays" | "prioritySupport" | "guestWash" | "extrasPerCycle">
 > = {
-  basic: { carLimit: 1, referralBonus: 1, graceDays: 0, prioritySupport: false, guestWash: false },
-  standard: { carLimit: 2, referralBonus: 1, graceDays: 0, prioritySupport: true, guestWash: false },
-  premium: { carLimit: 3, referralBonus: 2, graceDays: 3, prioritySupport: true, guestWash: true },
+  basic: { carLimit: 1, referralBonus: 1, graceDays: 0, prioritySupport: false, guestWash: false, extrasPerCycle: 0 },
+  standard: { carLimit: 2, referralBonus: 1, graceDays: 0, prioritySupport: true, guestWash: false, extrasPerCycle: 0 },
+  premium: { carLimit: 3, referralBonus: 2, graceDays: 3, prioritySupport: true, guestWash: true, extrasPerCycle: 0 },
+  premium_plus: { carLimit: 4, referralBonus: 2, graceDays: 5, prioritySupport: true, guestWash: true, extrasPerCycle: 1 },
 };
 
 function mapPlan(r: any): Plan {
@@ -195,6 +196,7 @@ function mapPlan(r: any): Plan {
     graceDays: r.grace_days ?? fb?.graceDays ?? 0,
     prioritySupport: r.priority_support ?? fb?.prioritySupport ?? false,
     guestWash: r.guest_wash ?? fb?.guestWash ?? false,
+    extrasPerCycle: r.extras_per_cycle ?? fb?.extrasPerCycle ?? 0,
   };
 }
 
@@ -211,6 +213,10 @@ export function planPerkLines(plan: Plan): string[] {
     );
   if (plan.prioritySupport) lines.push("Priority support");
   if (plan.guestWash) lines.push("Gift 1 wash to a friend every cycle");
+  if (plan.extrasPerCycle > 0)
+    lines.push(
+      `${plan.extrasPerCycle} extras session per cycle — engine wash, interior wipe, tyre shine & vacuuming`
+    );
   lines.push(
     `Refer a friend, earn ${plan.referralBonus} free wash${plan.referralBonus === 1 ? "" : "es"}`
   );
@@ -1183,6 +1189,43 @@ export async function giftWash(recipientEmail: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/* ---------------- extras session (Premium Plus, migration_038) ---------------- */
+
+export interface ExtrasStatus {
+  /** The subscriber's live plan includes extras sessions. */
+  eligible: boolean;
+  /** A session is still unused in the current cycle. */
+  available: boolean;
+  /** When the current cycle's session was used, if it was. */
+  usedAt: string | null;
+}
+
+export async function getExtrasStatus(): Promise<ExtrasStatus> {
+  const none: ExtrasStatus = { eligible: false, available: false, usedAt: null };
+  const user = await currentUser();
+  if (!user) return none;
+  const summary = await getWashSummary();
+  const primary = summary.primary;
+  if (!primary || primary.planId === "referral" || primary.planId === "gift")
+    return none;
+  const plan = await getPlan(primary.planId).catch(() => undefined);
+  if (!plan || plan.extrasPerCycle <= 0) return none;
+  const cycleStart = new Date(
+    new Date(primary.expiresAt).getTime() - 30 * 86_400_000
+  ).toISOString();
+  const { data, error } = await getSupabase()
+    .from("wash_transactions")
+    .select("redeemed_at")
+    .eq("subscription_id", primary.id)
+    .eq("extras", true)
+    .gt("redeemed_at", cycleStart)
+    .order("redeemed_at", { ascending: false })
+    .limit(1);
+  if (error) return { eligible: true, available: true, usedAt: null }; // column lands with migration_038
+  const usedAt = (data?.[0] as any)?.redeemed_at ?? null;
+  return { eligible: true, available: !usedAt, usedAt };
+}
+
 /* ---------------- subscriptions ---------------- */
 
 const SUB_COLS =
@@ -1504,6 +1547,43 @@ export async function redeemWash(
 
 const TX_COLS =
   "id,subscription_id,partner_id,type,payout,redeemed_at,subscriber:profiles(name),partner:partners(name,area)";
+
+/* -------- extras session at the partner door (migration_038) -------- */
+
+export interface WashExtrasStatus {
+  planId: string;
+  planName: string;
+  extrasAvailable: boolean;
+  extrasUsedAt: string | null;
+}
+
+/** Partner-side: does this scanned subscription have an extras session
+ *  available this cycle? Returns null when unknown (e.g. before
+ *  migration_038 has run) — the verify screen just skips the option. */
+export async function getWashExtrasStatus(
+  rawToken: string
+): Promise<WashExtrasStatus | null> {
+  const hash = await sha256Hex(rawToken.trim());
+  const { data, error } = await getSupabase().rpc("wash_extras_status", {
+    p_token_hash: hash,
+  });
+  if (error || !data || data.length === 0) return null;
+  const r = data[0] as any;
+  return {
+    planId: r.plan_id ?? "",
+    planName: r.plan_name ?? "",
+    extrasAvailable: !!r.extras_available,
+    extrasUsedAt: r.extras_used_at ?? null,
+  };
+}
+
+/** Attach the subscriber's extras session to a just-redeemed wash. */
+export async function redeemExtrasSession(washId: string): Promise<void> {
+  const { error } = await getSupabase().rpc("redeem_extras_session", {
+    p_wash_id: washId,
+  });
+  if (error) throw new Error(error.message);
+}
 
 export async function listWashHistory(): Promise<WashTransaction[]> {
   const user = await currentUser();

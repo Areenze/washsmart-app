@@ -144,6 +144,7 @@ export interface Plan {
   graceDays: number; // post-expiry rollover grace window
   prioritySupport: boolean;
   guestWash: boolean; // may gift 1 wash per cycle
+  extrasPerCycle: number; // extras sessions per cycle (migration_038; Premium Plus)
 }
 
 export interface Profile {

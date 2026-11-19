@@ -126,7 +126,7 @@ function OnboardingInner() {
         Your subscription covers your registered cars only. Register each car
         you want us to wash — every wash deducts from your wash credits,
         whichever car you bring. How many cars your subscription covers
-        depends on your plan: Basic 1, Standard 2, Premium 3.
+        depends on your plan: Basic 1, Standard 2, Premium 3, Premium Plus 4.
       </p>
 
       <div className="mt-6 space-y-4">

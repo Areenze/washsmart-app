@@ -31,6 +31,7 @@ create table if not exists plans (
   grace_days       integer not null default 0,   -- post-expiry rollover grace
   priority_support boolean not null default false,
   guest_wash       boolean not null default false, -- gift 1 wash per cycle
+  extras_per_cycle integer not null default 0,   -- extras sessions (migration_038)
   created_at  timestamptz not null default now()
 );
 
@@ -196,6 +197,7 @@ create table if not exists wash_transactions (
   partner_id      text not null references partners (id),
   token_hash      text not null unique,  -- sha256 of the redeemed QR token
   type            text not null,         -- e.g. "Standard Wash"
+  extras          boolean not null default false, -- Premium Plus extras session (migration_038)
   payout          integer not null,      -- partner payout estimate (₦)
   redeemed_at     timestamptz not null default now()
 );
@@ -302,9 +304,10 @@ create policy "own ledger" on ledger_entries
 -- ============================================================================
 -- Seed: plans (₦10,000/4 · ₦15,000/6 · ₦20,000/8 — flat ₦2,500/wash, 2026-10-29)
 -- ============================================================================
-insert into plans (id, name, amount, washes, popular, car_limit, referral_bonus, grace_days, priority_support, guest_wash) values
-  ('basic',    'Basic',    10000, 4, false, 1, 1, 0, false, false),
-  ('standard', 'Standard', 15000, 6, true,  2, 1, 0, true,  false),
-  ('premium',  'Premium',  20000, 8, false, 3, 2, 3, true,  true),
-  ('gift',     'Gift Wash',    0, 1, false, 1, 1, 0, false, false)  -- internal, never sold (migration_037)
+insert into plans (id, name, amount, washes, popular, car_limit, referral_bonus, grace_days, priority_support, guest_wash, extras_per_cycle) values
+  ('basic',    'Basic',    10000, 4, false, 1, 1, 0, false, false, 0),
+  ('standard', 'Standard', 15000, 6, true,  2, 1, 0, true,  false, 0),
+  ('premium',  'Premium',  20000, 8, false, 3, 2, 3, true,  true,  0),
+  ('premium_plus', 'Premium Plus', 25000, 8, false, 4, 2, 5, true, true, 1),  -- migration_038
+  ('gift',     'Gift Wash',    0, 1, false, 1, 1, 0, false, false, 0)  -- internal, never sold (migration_037)
 on conflict (id) do nothing;

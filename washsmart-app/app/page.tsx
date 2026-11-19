@@ -541,10 +541,11 @@ export default function EntryPage() {
             <p className="mx-auto mt-4 max-w-xl text-center text-gray-400">
               Every plan gives you wash credits valid for 30 days, redeemable at
               any approved WashSMART partner — and each plan covers a set
-              number of your cars: 1 on Basic, 2 on Standard, 3 on Premium.
+              number of your cars: 1 on Basic, 2 on Standard, 3 on Premium,
+              4 on Premium Plus.
             </p>
           </Reveal>
-          <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
+          <div className="mx-auto mt-10 grid max-w-6xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {(plans ?? []).map((p, i) => (
               <Reveal key={p.id} delay={i * 100}>
                 <div
@@ -578,6 +579,9 @@ export default function EntryPage() {
                       <p>{p.graceDays}-day rollover grace after expiry</p>
                     )}
                     {p.guestWash && <p>Gift 1 wash to a friend each cycle</p>}
+                    {p.extrasPerCycle > 0 && (
+                      <p>1 extras session: engine wash, wipe, tyre shine &amp; vacuum</p>
+                    )}
                     <p>
                       Refer friends, earn {p.referralBonus} free wash
                       {p.referralBonus === 1 ? "" : "es"}
