@@ -5,12 +5,43 @@
  * be unusable at hundreds of partners. Used inline on /app (continuous
  * scroll), as the body of the /app/partners route, and on /find-a-wash. */
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { EmptyState } from "@/components/ui";
-import { listApprovedPartners, submitLocationRequest } from "@/lib/db/store";
+import {
+  getProfile,
+  listApprovedPartners,
+  submitLocationRequest,
+} from "@/lib/db/store";
 import type { Partner } from "@/lib/db/types";
+
+/** "lat,lng" → [lat, lng], or null when the record has no usable pin. */
+function parseGps(gps?: string): [number, number] | null {
+  if (!gps) return null;
+  const m = gps.split(",").map((s) => parseFloat(s.trim()));
+  if (m.length !== 2 || m.some((n) => Number.isNaN(n))) return null;
+  const [lat, lng] = m;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return [lat, lng];
+}
+
+function haversineKm(
+  a: [number, number],
+  b: [number, number]
+): number {
+  const R = 6371;
+  const dLat = ((b[0] - a[0]) * Math.PI) / 180;
+  const dLng = ((b[1] - a[1]) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((a[0] * Math.PI) / 180) *
+      Math.cos((b[0] * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+const PAGE_SIZE = 10;
 
 const PartnerMap = dynamic(
   () => import("@/components/partner-map").then((m) => m.PartnerMap),
@@ -39,6 +70,14 @@ export function PartnersSection({
   const [reqState, setReqState] = useState<
     "idle" | "sending" | "done" | "error"
   >("idle");
+  /** The subscriber's registered Lagos area (signed-in only). */
+  const [profileArea, setProfileArea] = useState<string | null>(null);
+  /** Live device position, once the subscriber shares it. */
+  const [pos, setPos] = useState<[number, number] | null>(null);
+  const [locState, setLocState] = useState<
+    "idle" | "asking" | "ready" | "denied"
+  >("idle");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     // Support deep links like /app/partners?q=lekki or /app?q=lekki.
@@ -49,7 +88,31 @@ export function PartnersSection({
       /* ignore */
     }
     (async () => setPartners(await listApprovedPartners()))();
+    (async () => {
+      try {
+        const profile = await getProfile();
+        if (profile?.area?.trim()) setProfileArea(profile.area.trim());
+      } catch {
+        /* public visitor or no profile — proximity falls back below */
+      }
+    })();
   }, []);
+
+  const askLocation = () => {
+    if (!("geolocation" in navigator)) {
+      setLocState("denied");
+      return;
+    }
+    setLocState("asking");
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        setPos([p.coords.latitude, p.coords.longitude]);
+        setLocState("ready");
+      },
+      () => setLocState("denied"),
+      { timeout: 10_000, maximumAge: 300_000 }
+    );
+  };
 
   const query = q.trim().toLowerCase();
   const filtered = query
@@ -57,6 +120,79 @@ export function PartnersSection({
         `${p.name} ${p.location}`.toLowerCase().includes(query)
       )
     : partners;
+
+  /* Proximity list (Mm, 2026-11-19): the list under the map must NOT be
+   * the whole network — at hundreds of partners it would scroll forever.
+   * Default view = partners near the subscriber: live device location
+   * when shared (nearest first by straight-line distance), else the
+   * subscriber's registered area. A text search always overrides and
+   * shows every match. Partners without a GPS pin can only be placed
+   * by area — they ride along when their area matches, and always via
+   * search. */
+  const { rows, listHeading, listNote } = useMemo(() => {
+    const areaLc = profileArea?.toLowerCase() ?? null;
+    const areaMatch = (p: Partner) =>
+      !!areaLc &&
+      (p.area.toLowerCase().includes(areaLc) ||
+        areaLc.includes(p.area.toLowerCase()) ||
+        p.lga.toLowerCase().includes(areaLc));
+    const withDist = filtered.map((p) => {
+      const pin = pos ? parseGps(p.gps) : null;
+      return { p, distKm: pin && pos ? haversineKm(pos, pin) : null };
+    });
+    const byDistThenName = (
+      a: { p: Partner; distKm: number | null },
+      b: { p: Partner; distKm: number | null }
+    ) =>
+      (a.distKm ?? Number.POSITIVE_INFINITY) -
+        (b.distKm ?? Number.POSITIVE_INFINITY) ||
+      a.p.name.localeCompare(b.p.name);
+
+    if (query) {
+      return {
+        rows: [...withDist].sort(byDistThenName),
+        listHeading: `Matching partners (${filtered.length})`,
+        listNote: null as string | null,
+      };
+    }
+    if (pos) {
+      const near = withDist
+        .filter((r) => r.distKm !== null)
+        .sort(byDistThenName);
+      const pinless = withDist
+        .filter((r) => r.distKm === null && areaMatch(r.p))
+        .sort(byDistThenName);
+      return {
+        rows: [...near, ...pinless],
+        listHeading: "Partners near you",
+        listNote:
+          "Nearest first, based on your current location. Search an area or partner name to look further afield.",
+      };
+    }
+    if (areaLc) {
+      const inArea = withDist.filter((r) => areaMatch(r.p));
+      if (inArea.length > 0) {
+        return {
+          rows: inArea.sort(byDistThenName),
+          listHeading: `Partners in ${profileArea}`,
+          listNote:
+            "Based on the area on your profile. Share your location or search to see partners elsewhere.",
+        };
+      }
+    }
+    return {
+      rows: [...withDist].sort(byDistThenName),
+      listHeading: `All partner locations (${filtered.length})`,
+      listNote: null as string | null,
+    };
+  }, [filtered, pos, profileArea, query]);
+
+  // A new search or a fresh location starts the list from the top.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query, pos]);
+
+  const visibleRows = rows.slice(0, visibleCount);
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reqEmail.trim());
   const canSend = emailOk && reqArea.trim().length > 1 && reqState !== "sending";
@@ -104,8 +240,8 @@ export function PartnersSection({
         <h3 className="text-2xl font-bold md:text-3xl">Partner Locations</h3>
         <p className="mx-auto mt-2 max-w-xl text-sm text-gray-400">
           Every green pin is an approved WashSMART partner. Tap a pin for
-          details, or browse the full list below — we are continually adding
-          partner washes across Lagos.
+          details, or browse the nearby list below — we are continually
+          adding partner washes across Lagos.
         </p>
       </div>
 
@@ -113,17 +249,39 @@ export function PartnersSection({
         <PartnerMap partners={filtered} detailBase={detailBase} light={mapLight} />
       </div>
 
-      {/* Full list — the safety net. The map can only pin partners whose
-          record carries GPS coordinates; an approved partner without a
-          pin must still be findable here (WS-2026-0003 was invisible
-          until this list existed). Follows the same search filter. */}
-      {filtered.length > 0 && (
+      {/* Proximity list under the map — nearby partners only by default
+          (see the rows memo above), nearest first, 10 at a time. It is
+          also the safety net for partners without a GPS pin: they show
+          here by area match and always via search, even though the map
+          cannot pin them (WS-2026-0003 was invisible before this list). */}
+      {rows.length > 0 && (
         <div className="mt-8">
-          <h3 className="text-lg font-bold">
-            All partner locations ({filtered.length})
-          </h3>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-lg font-bold">{listHeading}</h3>
+            {!pos && locState !== "denied" && (
+              <button
+                type="button"
+                onClick={askLocation}
+                disabled={locState === "asking"}
+                className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-[#e9f2ec] transition-colors hover:bg-white/10 disabled:opacity-60"
+              >
+                {locState === "asking"
+                  ? "Getting your location…"
+                  : "📍 Use my location"}
+              </button>
+            )}
+          </div>
+          {listNote && (
+            <p className="mt-1 text-sm text-gray-500">{listNote}</p>
+          )}
+          {locState === "denied" && !pos && (
+            <p className="mt-1 text-sm text-gray-500">
+              Location not shared — showing partners for your registered
+              area instead.
+            </p>
+          )}
           <ul className="mt-4 overflow-hidden rounded-3xl border border-white/10 bg-white/5">
-            {filtered.map((p) => (
+            {visibleRows.map(({ p, distKm }) => (
               <li key={p.id} className="border-b border-white/10 last:border-b-0">
                 <Link
                   href={`${detailBase}/${p.id}`}
@@ -140,6 +298,12 @@ export function PartnersSection({
                     </p>
                     <p className="mt-0.5 truncate text-sm text-gray-400">
                       {p.address} · {p.location}
+                      {distKm !== null &&
+                        ` · ${
+                          distKm < 1
+                            ? `${Math.max(50, Math.round(distKm * 1000))} m`
+                            : `${distKm.toFixed(1)} km`
+                        } away`}
                     </p>
                     <p className="mt-0.5 text-xs text-gray-500">
                       {p.hours}
@@ -158,7 +322,23 @@ export function PartnersSection({
               </li>
             ))}
           </ul>
+          {rows.length > visibleCount && (
+            <button
+              type="button"
+              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+              className="mt-4 w-full rounded-full border border-white/10 bg-white/5 py-3 text-sm font-bold text-[#e9f2ec] transition-colors hover:bg-white/10"
+            >
+              Show more partners ({rows.length - visibleCount} more)
+            </button>
+          )}
         </div>
+      )}
+
+      {!query && partners.length > 0 && rows.length === 0 && (
+        <p className="mt-8 text-center text-sm text-gray-400">
+          No partners near you yet — search an area above to look further
+          afield, or request coverage below.
+        </p>
       )}
 
       {query && filtered.length === 0 && (
