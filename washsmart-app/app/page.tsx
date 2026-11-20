@@ -851,6 +851,9 @@ export default function EntryPage() {
         <p className="mx-auto mt-8 max-w-7xl text-xs text-gray-600">
           © 2026 WashSMART · Lagos, Nigeria
         </p>
+        <p className="mx-auto mt-2 max-w-7xl text-xs text-gray-600">
+          WashSMART is a product of Yuec Avivar Limited.
+        </p>
       </footer>
     </main>
   );
