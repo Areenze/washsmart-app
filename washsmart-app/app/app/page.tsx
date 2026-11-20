@@ -83,6 +83,12 @@ export default function UserHome() {
       /* ignore */
     }
     (async () => {
+      // Start the QR mint NOW, in parallel with the data loads below —
+      // it resolves the session and subscription itself, and gating it
+      // on the profile made the QR the last thing to appear (~5s on a
+      // slow connection: profile + summary + partners + history first,
+      // then two more round trips to mint).
+      void mintQr();
       try {
         const p = await getProfile();
         setProfile(p);
@@ -103,16 +109,22 @@ export default function UserHome() {
         setLoaded(true);
       }
     })();
-  }, []);
+  }, [mintQr]);
 
-  // Mint (and auto-refresh) the QR token once the profile is loaded.
+  // The mint starts on mount (above, in parallel with the data loads).
+  // This effect is the safety net: if that first mint raced the session
+  // restore and came back empty, retry once the profile confirms the
+  // sign-in; if there is no profile after loading, clear the QR.
   useEffect(() => {
     if (!profile) {
-      setQrToken(null);
+      if (loaded) {
+        setQrToken(null);
+        setQrCode(null);
+      }
       return;
     }
-    mintQr();
-  }, [profile, mintQr]);
+    if (!qrToken) mintQr();
+  }, [profile, loaded, qrToken, mintQr]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
