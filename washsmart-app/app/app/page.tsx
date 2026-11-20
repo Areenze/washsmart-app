@@ -16,7 +16,7 @@ import {
   clearVerifyPending,
   creditDaysLeft,
   fmtDate,
-  getQRToken,
+  getWashCredentials,
   getVerifyPending,
   getWashSummary,
   getProfile,
@@ -57,12 +57,14 @@ export default function UserHome() {
   // separate Scan tab. The token is partner-agnostic — whichever partner
   // scans it is recorded at redemption time.
   const [qrToken, setQrToken] = useState<string | null>(null);
+  const [qrCode, setQrCode] = useState<string | null>(null);
   const [qrIssuedAt, setQrIssuedAt] = useState(0);
   const [now, setNow] = useState(() => Date.now());
 
   const mintQr = useCallback(async () => {
-    const t = await getQRToken();
-    setQrToken(t);
+    const creds = await getWashCredentials();
+    setQrToken(creds?.token ?? null);
+    setQrCode(creds?.code ?? null);
     setQrIssuedAt(Date.now());
     setNow(Date.now());
   }, []);
@@ -307,6 +309,17 @@ export default function UserHome() {
                 <p className="mt-2 text-sm font-semibold text-[#65e28e]">
                   {totalWashes} {totalWashes === 1 ? "wash" : "washes"} remaining
                 </p>
+                {qrCode && (
+                  <div className="mt-5 rounded-2xl bg-[#111a14]/40 px-4 py-3">
+                    <p className="text-xs text-white/70">
+                      Partner&rsquo;s camera not working? Give them this code
+                      instead:
+                    </p>
+                    <p className="mt-1 font-mono text-3xl font-bold tracking-[0.35em] text-white">
+                      {qrCode.slice(0, 3)} {qrCode.slice(3)}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

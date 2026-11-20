@@ -30,6 +30,8 @@ export default function PartnerScanPage() {
 function PartnerScanInner() {
   const router = useRouter();
   const [manual, setManual] = useState("");
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState("");
   const [error, setError] = useState("");
   const [cameraError, setCameraError] = useState("");
   const [scanning, setScanning] = useState(false);
@@ -42,6 +44,14 @@ function PartnerScanInner() {
       return;
     }
     router.push(`/partner/verify?token=${encodeURIComponent(token.trim())}`);
+  };
+
+  const goVerifyCode = () => {
+    if (code.length !== 6) {
+      setCodeError("Enter all 6 digits of the code on the subscriber's screen.");
+      return;
+    }
+    router.push(`/partner/verify?code=${code}`);
   };
 
   const stopScanner = async () => {
@@ -87,10 +97,10 @@ function PartnerScanInner() {
           "Camera access was blocked. Allow camera access for this site (iPhone: Settings → Safari → Camera → Allow), then try again. If you opened this inside another app, open it in Safari instead."
         );
       } else if (/notfound|nodevice|devices/i.test(msg)) {
-        setCameraError("No camera found on this device. Paste the token below instead.");
+        setCameraError("No camera found on this device. Enter the subscriber's 6-digit code below instead.");
       } else {
         setCameraError(
-          "Couldn't start the camera. Paste the token below instead — or open this page in Safari/Chrome."
+          "Couldn't start the camera. Enter the subscriber's 6-digit code below instead — or open this page in Safari/Chrome."
         );
       }
     }
@@ -151,7 +161,39 @@ function PartnerScanInner() {
 
         <div className="mt-6 border-t border-white/15 pt-6 text-left">
           <p className="text-sm font-semibold text-white/80">
-            Or enter the token manually
+            Camera not working? Use the subscriber&rsquo;s code
+          </p>
+          <p className="mt-1 text-xs text-white/50">
+            Ask the subscriber for the 6-digit code shown under their QR.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <input
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                setCodeError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") goVerifyCode();
+              }}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder="6-digit code"
+              className="w-full rounded-xl border border-white/20 bg-[#151515]/10 px-4 py-3 text-center font-mono text-lg font-bold tracking-[0.3em] text-white placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-white/40"
+            />
+            <button
+              onClick={goVerifyCode}
+              className="shrink-0 rounded-xl bg-white px-5 font-bold text-[#101010]"
+            >
+              Verify
+            </button>
+          </div>
+          {codeError && <p className="mt-2 text-xs text-amber-300">{codeError}</p>}
+        </div>
+
+        <div className="mt-6 border-t border-white/15 pt-6 text-left">
+          <p className="text-sm font-semibold text-white/80">
+            Or paste a full QR token
           </p>
           <div className="mt-2 flex gap-2">
             <input

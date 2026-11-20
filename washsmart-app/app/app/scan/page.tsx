@@ -14,7 +14,7 @@ import {
   TOKEN_TTL_MS,
   getMySubscription,
   getPartnerPublic,
-  getQRToken,
+  getWashCredentials,
 } from "@/lib/db/store";
 import type { Partner, Subscription } from "@/lib/db/types";
 
@@ -38,13 +38,15 @@ function ScanInner() {
   const [partner, setPartner] = useState<Partner | null | undefined>(undefined);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [code, setCode] = useState<string | null>(null);
   const [issuedAt, setIssuedAt] = useState(0);
   const [now, setNow] = useState(Date.now());
   const [loading, setLoading] = useState(true);
 
   const mint = useCallback(async () => {
-    const t = await getQRToken();
-    setToken(t);
+    const creds = await getWashCredentials();
+    setToken(creds?.token ?? null);
+    setCode(creds?.code ?? null);
     setIssuedAt(Date.now());
     setSubscription(await getMySubscription());
     setLoading(false);
@@ -146,6 +148,18 @@ function ScanInner() {
               {subscription?.washesRemaining === 1 ? "wash" : "washes"}{" "}
               remaining
             </p>
+
+            {code && (
+              <div className="mx-auto mt-5 max-w-xs rounded-2xl bg-[#111a14]/10 px-4 py-3">
+                <p className="text-xs text-white/70">
+                  Partner&rsquo;s camera not working? Give them this code
+                  instead:
+                </p>
+                <p className="mt-1 font-mono text-3xl font-bold tracking-[0.35em]">
+                  {code.slice(0, 3)} {code.slice(3)}
+                </p>
+              </div>
+            )}
 
           </>
         )}

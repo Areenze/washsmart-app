@@ -88,6 +88,15 @@ function randomToken(chars = 32): string {
     .padEnd(chars, "x");
 }
 
+/** 6-digit fallback code (migration_039). Human-dictable by design; the
+ *  server stores only its SHA-256 hash, single-use, same 300s window as
+ *  the QR token, with a per-partner guessing lockout. */
+function randomCode6(): string {
+  const n =
+    (crypto.getRandomValues(new Uint32Array(1))[0] % 900000) + 100000;
+  return String(n);
+}
+
 /* ---------------- row mappers (DB snake_case -> UI types) ---------------- */
 
 function mapPartner(r: any): Partner {
@@ -1337,11 +1346,20 @@ export function resetDb(): void {
 
 /* ---------------- QR tokens ---------------- */
 
-/** Mint a fresh time-boxed token for the signed-in subscriber.
- *  Only the SHA-256 hash is stored server-side; the QR carries the raw token.
- *  Draws from the live credit (paid pack or referral bonus) expiring soonest
- *  that still has washes left, so credits are used before they expire. */
-export async function getQRToken(): Promise<string | null> {
+export interface WashCredentials {
+  token: string;
+  /** 6-digit fallback code for when the partner's camera can't scan.
+   *  Null when migration_039 hasn't run yet (token-only mint). */
+  code: string | null;
+}
+
+/** Mint a fresh time-boxed credential pair for the signed-in subscriber.
+ *  Only SHA-256 hashes are stored server-side; the QR carries the raw
+ *  token, and the 6-digit code rides on the same row with the same
+ *  single-use + 300s semantics. Draws from the live credit (paid pack or
+ *  referral bonus) expiring soonest that still has washes left, so
+ *  credits are used before they expire. */
+export async function getWashCredentials(): Promise<WashCredentials | null> {
   const user = await currentUser();
   if (!user) return null;
   const sb = getSupabase();
@@ -1356,6 +1374,32 @@ export async function getQRToken(): Promise<string | null> {
     .limit(1);
   const sub = subs?.[0];
   if (!sub) return null;
+
+  // Paired mint (token + code). The server rejects a code that is
+  // already live on another unused token — re-roll and retry.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const raw = `WS1-${randomToken(32)}`;
+    const code = randomCode6();
+    const hash = await sha256Hex(raw);
+    const codeHash = await sha256Hex(code);
+    const { data: issued, error } = await sb.rpc(
+      "issue_wash_token_with_code",
+      {
+        p_subscription_id: sub.id,
+        p_token_hash: hash,
+        p_code_hash: codeHash,
+        p_ttl_seconds: 300,
+      }
+    );
+    if (!error && issued && issued.length > 0) return { token: raw, code };
+    // No rows + no error means the pack lapsed and was voided server-side.
+    if (!error) return null;
+    if (error.message?.includes("code collision")) continue;
+    // RPC missing (migration_039 not run yet) or any other failure:
+    // fall through to the legacy token-only mint so the QR never breaks.
+    break;
+  }
+
   const raw = `WS1-${randomToken(32)}`;
   const hash = await sha256Hex(raw);
   const { data: issued, error } = await sb.rpc("issue_wash_token", {
@@ -1365,10 +1409,16 @@ export async function getQRToken(): Promise<string | null> {
   });
   // No rows + no error means the pack lapsed and was voided server-side.
   if (error || !issued || issued.length === 0) return null;
-  // The raw token is a bearer credential (single-use, 300s): it lives
-  // only in the QR on screen — never persisted to localStorage and
-  // never rendered as copyable text (audit 2026-11-17).
-  return raw;
+  // The raw token stays QR-only (audit 2026-11-17): never persisted and
+  // never rendered as copyable text. The 6-digit code is the deliberate
+  // exception — short-lived, single-use and rate-limited server-side,
+  // it exists to be read out when a partner's camera cannot scan.
+  return { token: raw, code: null };
+}
+
+export async function getQRToken(): Promise<string | null> {
+  const creds = await getWashCredentials();
+  return creds?.token ?? null;
 }
 
 /** Legacy JSON-payload token parser (kept for compatibility; new tokens
@@ -1489,7 +1539,16 @@ export async function redeemWash(
             : "bad-token";
     return { ok: false, reason };
   }
-  const row = data[0];
+  return finishRedeem(sb, data[0], partnerId);
+}
+
+/** Shared tail of a successful redemption (token or code path): load the
+ *  recorded transaction and notify the subscriber. */
+async function finishRedeem(
+  sb: ReturnType<typeof getSupabase>,
+  row: { wash_id: string; washes_remaining: number },
+  partnerId: string
+): Promise<RedeemResult> {
   const { data: tx } = await sb
     .from("wash_transactions")
     .select(
@@ -1543,6 +1602,91 @@ export async function redeemWash(
   return result;
 }
 
+/* -------- 6-digit code fallback (migration_039) -------- */
+
+/** Validate a subscriber's 6-digit code without redeeming it — the
+ *  camera-free twin of inspectToken. */
+export async function inspectCode(
+  code: string
+): Promise<
+  | { ok: true; subscription: Subscription }
+  | { ok: false; failure: RedeemFailure }
+> {
+  const hash = await sha256Hex(code.trim());
+  const { data, error } = await getSupabase().rpc("inspect_wash_code", {
+    p_code_hash: hash,
+  });
+  if (error || !data || data.length === 0)
+    return { ok: false, failure: "bad-code" };
+  const r = data[0];
+  if (!r.valid) {
+    const failure = ((): RedeemFailure => {
+      switch (r.failure) {
+        case "already-used":
+          return "already-used";
+        case "expired":
+          return "expired-token";
+        case "no-washes":
+          return "no-washes-left";
+        case "inactive":
+          return "inactive-subscription";
+        case "locked":
+          return "code-locked";
+        default:
+          return "bad-code";
+      }
+    })();
+    return { ok: false, failure };
+  }
+  const subscription: Subscription = {
+    id: r.subscription_id,
+    planId: "",
+    planName: r.plan_name,
+    price: "",
+    amount: 0,
+    washesTotal: 0,
+    washesRemaining: r.washes_remaining,
+    status: "active",
+    startedAt: "",
+    expiresAt: "",
+    email: "",
+  };
+  return { ok: true, subscription };
+}
+
+/** Redeem a wash by the subscriber's 6-digit code — same server-side
+ *  effects as redeemWash (mark used, decrement, transaction, ledger). */
+export async function redeemWashByCode(
+  code: string,
+  partnerId: string
+): Promise<RedeemResult> {
+  const hash = await sha256Hex(code.trim());
+  const sb = getSupabase();
+  const { data, error } = await sb.rpc("redeem_wash_by_code", {
+    p_code_hash: hash,
+    p_partner_id: partnerId,
+    p_type: "Standard Wash",
+  });
+  if (!error && (!data || data.length === 0)) {
+    // Subscription lapsed: the RPC voided the pack and returned no rows.
+    return { ok: false, reason: "inactive-subscription" };
+  }
+  if (error || !data || data.length === 0) {
+    const msg = error?.message ?? "";
+    const reason: RedeemFailure = msg.includes("locked")
+      ? "code-locked"
+      : msg.includes("already used")
+        ? "already-used"
+        : msg.includes("expired")
+          ? "expired-token"
+          : msg.includes("no washes")
+            ? "no-washes-left"
+            : "bad-code";
+    return { ok: false, reason };
+  }
+  return finishRedeem(sb, data[0], partnerId);
+}
+
 /* ---------------- history & stats ---------------- */
 
 const TX_COLS =
@@ -1567,6 +1711,25 @@ export async function getWashExtrasStatus(
   const { data, error } = await getSupabase().rpc("wash_extras_status", {
     p_token_hash: hash,
   });
+  if (error || !data || data.length === 0) return null;
+  const r = data[0] as any;
+  return {
+    planId: r.plan_id ?? "",
+    planName: r.plan_name ?? "",
+    extrasAvailable: !!r.extras_available,
+    extrasUsedAt: r.extras_used_at ?? null,
+  };
+}
+
+/** Code-path twin of getWashExtrasStatus (migration_039). */
+export async function getWashExtrasStatusByCode(
+  code: string
+): Promise<WashExtrasStatus | null> {
+  const hash = await sha256Hex(code.trim());
+  const { data, error } = await getSupabase().rpc(
+    "wash_extras_status_by_code",
+    { p_code_hash: hash }
+  );
   if (error || !data || data.length === 0) return null;
   const r = data[0] as any;
   return {

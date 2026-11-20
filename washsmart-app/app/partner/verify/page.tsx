@@ -12,9 +12,12 @@ import {
   currentPartnerSession,
   currentUserId,
   getWashExtrasStatus,
+  getWashExtrasStatusByCode,
+  inspectCode,
   inspectToken,
   redeemExtrasSession,
   redeemWash,
+  redeemWashByCode,
   type PartnerStats,
   type WashExtrasStatus,
   partnerStats,
@@ -28,7 +31,9 @@ const FAILURE_COPY: Record<RedeemFailure, string> = {
   "unknown-subscription": "No subscription matches this QR code.",
   "inactive-subscription": "This subscription is no longer active.",
   "no-washes-left": "The subscriber has used all their washes this month.",
-  "already-used": "This QR code was already scanned. Ask for a fresh one.",
+  "already-used": "This was already used. Ask the subscriber to refresh and show a fresh one.",
+  "bad-code": "That code isn't a valid WashSMART code. Check the digits on the subscriber's screen and try again.",
+  "code-locked": "Too many wrong codes were entered, so manual code entry is paused for 15 minutes. QR scanning still works.",
 };
 
 type Phase = "checking" | "checklist" | "approving" | "approved" | "rejected";
@@ -50,6 +55,9 @@ export default function VerifyPage() {
 function VerifyInner() {
   const search = useSearchParams();
   const token = search.get("token") ?? "";
+  // Camera-free path: /partner/verify?code=123456 (migration_039).
+  const code = (search.get("code") ?? "").replace(/\D/g, "");
+  const viaCode = !token && code.length === 6;
   const [phase, setPhase] = useState<Phase>("checking");
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [failure, setFailure] = useState<RedeemFailure | null>(null);
@@ -63,14 +71,28 @@ function VerifyInner() {
   useEffect(() => {
     let cancelled = false;
     window.setTimeout(async () => {
-      const check = await inspectToken(token);
+      if (!token && !viaCode) {
+        // Landed here with no usable credential — reject without an RPC
+        // call (a blank code lookup would count as a failed attempt).
+        setFailure(token ? "bad-token" : "bad-code");
+        setPhase("rejected");
+        return;
+      }
+      const check = token
+        ? await inspectToken(token)
+        : await inspectCode(code);
       if (cancelled) return;
       if (check.ok) {
         setSubscription(check.subscription);
         // Best-effort: does this subscriber have a Premium Plus extras
         // session available? Null (e.g. before migration_038) just
         // hides the option.
-        setExtras(await getWashExtrasStatus(token).catch(() => null));
+        setExtras(
+          await (token
+            ? getWashExtrasStatus(token)
+            : getWashExtrasStatusByCode(code)
+          ).catch(() => null)
+        );
         setPhase("checklist");
       } else {
         setFailure(check.failure);
@@ -80,14 +102,16 @@ function VerifyInner() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, code, viaCode]);
 
   const approve = async () => {
     const partner = await currentPartnerSession();
     if (!partner) return;
     setPhase("approving");
     window.setTimeout(async () => {
-      const res = await redeemWash(token, partner.id);
+      const res = token
+        ? await redeemWash(token, partner.id)
+        : await redeemWashByCode(code, partner.id);
       if (res.ok) {
         let finalTx = res.transaction;
         if (includeExtras && extras?.extrasAvailable) {
@@ -139,7 +163,9 @@ function VerifyInner() {
       {phase === "checking" && (
         <div className="rounded-3xl bg-[#151515] p-12 text-center shadow-sm">
           <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#ffffff]" />
-          <p className="mt-5 font-bold">Verifying QR code…</p>
+          <p className="mt-5 font-bold">
+            {viaCode ? "Verifying code…" : "Verifying QR code…"}
+          </p>
         </div>
       )}
 
@@ -148,10 +174,10 @@ function VerifyInner() {
           <h1 className="text-2xl font-bold">Verification Checklist</h1>
           <div className="mt-5 space-y-3">
             {[
-              "QR code is valid",
+              viaCode ? "Code is valid" : "QR code is valid",
               "Subscription is active",
               `Washes remaining (${subscription.washesRemaining} of ${subscription.washesTotal})`,
-              "QR not already used",
+              viaCode ? "Code not already used" : "QR not already used",
             ].map((label) => (
               <div
                 key={label}

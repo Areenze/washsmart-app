@@ -290,7 +290,9 @@ export type RedeemFailure =
   | "unknown-subscription"
   | "inactive-subscription"
   | "no-washes-left"
-  | "already-used";
+  | "already-used"
+  | "bad-code"
+  | "code-locked";
 
 export interface LocationRequest {
   id: string;
